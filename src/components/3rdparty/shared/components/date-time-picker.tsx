@@ -198,7 +198,7 @@ const DateTimePicker = ({
 						<DropDownSelect
 							options={months}
 							placeholder='Month'
-							className='w-[120px]'
+							className='w-30'
 							onValueChange={(value: string) => handleMonthChange(value)}
 							isSearchable={true}
 						></DropDownSelect>
@@ -206,7 +206,7 @@ const DateTimePicker = ({
 						<DropDownSelect
 							options={years}
 							placeholder='Year'
-							className='w-[120px]'
+							className='w-30'
 							onValueChange={(value: string) => handleYearChange(value)}
 							isSearchable={true}
 						></DropDownSelect>
@@ -226,7 +226,7 @@ const DateTimePicker = ({
 							<DropDownSelect
 								options={hours}
 								placeholder='Hrs'
-								className='w-[70px]'
+								className='w-17.5'
 								isSearchable={true}
 								defaultValue={selectedHour}
 								onValueChange={setSelectedHour}
@@ -235,7 +235,7 @@ const DateTimePicker = ({
 							<DropDownSelect
 								options={minutes}
 								placeholder='Min'
-								className='w-[70px]'
+								className='w-17.5'
 								isSearchable={true}
 								defaultValue={selectedMinute}
 								onValueChange={setSelectedMinute}

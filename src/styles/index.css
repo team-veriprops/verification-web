@@ -1,8 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@100..900&display=swap');
 
+/* @plugin 'tailwindcss-animate'; */
+
 /* Tailwind and Custom Layers */
 @import "tailwindcss";
 @import "./theme.css";
+
+/* @custom-variant dark (&:is(.dark *)); */
 
 #root {
   max-width: 1280px;
@@ -48,8 +52,12 @@
 }
 
 
-
-
-
-
+/* @layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+} */
 

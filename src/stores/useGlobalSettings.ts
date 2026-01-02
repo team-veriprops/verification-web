@@ -1,9 +1,5 @@
-import {
-  Language,
-  PropertyType,
-  TransactionCurrency,
-} from "@components/website/property/models";
 // import { usePropertyStore } from "@components/website/property/usePropertyStore";
+import { Language, TransactionCurrency, PropertyType } from "types/models";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
