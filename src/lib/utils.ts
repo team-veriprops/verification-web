@@ -1,0 +1,170 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { redirect } from "next/navigation";
+import { Measurement, Money } from "types/models";
+
+
+/**
+ * Combines multiple class name values into a single string,
+ * and intelligently merges Tailwind CSS classes to avoid conflicts.
+ * It’s especially useful when:
+     1. You want to conditionally join class names
+     2. You're using tailwind-variants or clsx
+     3. You want to merge conflicting Tailwind utilities properly
+ *
+ * @example
+ * cn('bg-white', 'text-black', conditional && 'opacity-50')
+ * // → "bg-white text-black opacity-50" (if conditional is truthy)
+ *
+ * @example
+ * cn('p-2', 'p-4') // → "p-4" (twMerge resolves the conflict)
+ *
+ * @param {...ClassValue[]} inputs - A list of class values, which can be strings, objects, arrays, or conditionals.
+ * @returns {string} - A single, space-separated, conflict-resolved string of class names.
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+// export const isActivePath = (path: string, pathname: string) => {
+//   return pathname.startsWith(path)
+// };
+
+export function isActivePath(
+  key: string,
+  pathname: string,
+  other_links: string[]
+): boolean {
+  // 1. Check direct match (pathname starts with key)
+  if (pathname.startsWith(key)) {
+    return true;
+  }
+
+  // 2. Check other_links match
+  const keyLast = key.substring(key.lastIndexOf("/")); // e.g. "/lands"
+  return other_links.some((link) => {
+    const linkLast = link.substring(link.lastIndexOf("/")); // e.g. "/lands"
+    // console.log("pathname: ", pathname, ", key: ", key, ", link: ", link, ", linkLast: ", linkLast, ", keyLast: ", keyLast )
+    return pathname.startsWith(link) && linkLast === keyLast;
+  });
+}
+
+export const convertMoney = (money: Money): Money => {
+  if (!(money instanceof Money)) {
+    money = Money.from(money);
+  }
+  return money;
+};
+
+export const formatMoney = (money: Money) => {
+  money = convertMoney(money);
+
+  if (money)
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: money.getCurrency(),
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(money.getValue());
+};
+
+export const formatMeasurement = (measurement: Measurement) => {
+  // console.log("formatMeasurement(measurement: Measurement): ", measurement)
+
+  return measurement.value + " " + measurement.unit;
+};
+
+export const onLogoutRedirect = () => {
+  redirect("/");
+};
+
+export const getSearchQuery = (searchKey: string, searchParams: string) => {
+  // Gets search query from browser
+
+  const params = new URLSearchParams(searchParams);
+  const query = params.get(searchKey!)?.toLowerCase() ?? "";
+
+  return query;
+};
+
+export function toQueryParams(payload: object): string {
+  const params = new URLSearchParams();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    if (Array.isArray(value)) {
+      // append each array item separately
+      value.forEach((v) => params.append(key, String(v)));
+    } else if (typeof value === "object") {
+      // stringify objects (e.g. ranges, filters)
+      params.append(key, JSON.stringify(value));
+    } else {
+      params.append(key, String(value));
+    }
+  });
+
+  return params.toString();
+}
+
+export const stringifyFilters = (filters: Record<string, unknown>) => {
+  if (!filters) return {};
+  return Object.fromEntries(
+    Object.entries(filters).map(([key, value]) => [
+      key,
+      typeof value === "object" ? JSON.stringify(value) : String(value),
+    ])
+  );
+};
+
+export const handleToggleSort = (
+  key: string,
+  orderBy: string,
+  updateOrderByInStore: (orderBy: string) => void
+) => {
+  let newOrderBy: string;
+
+  if (orderBy) {
+    const [sortKey, currentOrder = "asc"] = orderBy.split(" ");
+
+    if (sortKey === key) {
+      const nextOrder = currentOrder === "asc" ? "desc" : "asc";
+      newOrderBy = `${sortKey} ${nextOrder}`;
+    } else {
+      newOrderBy = `${key} asc`;
+    }
+  } else {
+    newOrderBy = `${key} asc`;
+  }
+
+  updateOrderByInStore(newOrderBy);
+};
+
+export async function copyToClipboard(text: string): Promise<void> {
+  if (navigator.clipboard && window.isSecureContext) {
+    return await navigator.clipboard.writeText(text);
+  } else {
+    // fallback for older browsers
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed"; // avoid scrolling to bottom
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return Promise.resolve();
+  }
+}
+
+export function buildPath(
+  template: string,
+  params: Record<string, string>
+): string {
+  return template.replace(/\{(\w+)\}/g, (_, key) => params[key] ?? "");
+}
+
+export function buildReferralLink(referralCode: string) {
+  return `${window.location.origin}/signup?ref=${referralCode}`;
+}
