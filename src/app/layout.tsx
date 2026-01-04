@@ -27,13 +27,16 @@ export const metadata: Metadata = {
     description: "We validate property ownership, survey plans, land size accuracy and disputes from any listing site or property claim. Nigeria’s trusted Property Truth Layer.",
     type: "website",
     siteName: "veriprops.ng",
-    locale: "en_NG"
+    url: "https://veriprops.ng",
+    locale: "en_NG",
+    images: [{ url: "/og-image.png" }],
   },
   twitter: {
     title: "Veriprops | Nigeria’s Property Truth Layer",
     description: "Stop property scams. Verify ownership, land size, survey plans and disputes before payment.",
     card: "summary_large_image",
     site: "@veriprops",
+    images: [{ url: "/og-image.png" }],
   },
   alternates: {
     canonical: "/"
