@@ -16,8 +16,8 @@ export async function generateConversation(): Promise<QueryConversationDto> {
     ]),
     last_message: faker.lorem.sentence(),
     last_message_time: faker.date.past().toISOString(),
-    unread_count: faker.number.int({ min: 1000, max: 9000 }),
-    user: {
+    unread_count: faker.number.int({ min: 1, max: 100 }),
+    agent: {
       name: faker.person.fullName(),
       role: faker.person.jobTitle(),
       avatar: "avatar",

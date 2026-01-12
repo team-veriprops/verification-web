@@ -10,6 +10,29 @@ export enum Language {
   FRENCH = "FR",
 }
 
+export enum PropertyAssetPhotoCategory {
+    All = "All",
+
+    // HOUSES
+    Kitchen = "Kitchen",
+    Bathroom = "Bathroom",
+    Bedroom = "Bedroom",
+    Living = "Living",
+    Dining = "Dining",
+    OtherRooms = "Other rooms",
+    Exterior = "Exterior",
+    Amenities = "Amenities",
+
+    // LAND
+    FRONT_VIEW = "Front view"
+}
+
+export interface PropertyImage {
+  title?: string;
+  url: string;
+  category?: PropertyAssetPhotoCategory;
+}
+
 export class Money {
   private value: number;
   private currency: TransactionCurrency;

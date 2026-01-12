@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "./useAuthStore";
-import { LoginSuccessDto } from "@components/user/models";
+import { LoginSuccessDto } from "@components/admin/user/models";
 import { useEffect } from "react";
 
 /**

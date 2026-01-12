@@ -20,7 +20,7 @@ export interface UpdateUserDto {
 
 
 export interface QueryUserDto extends BaseQueryDto, UpdateUserDto {
-  fullname?: string;
+  fullname: string;
   type?: UserType;
   role: string;
 }

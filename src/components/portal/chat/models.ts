@@ -30,7 +30,7 @@ export interface QueryConversationDto extends CreateConversationDto, BaseQueryDt
   last_message: string;
   last_message_time: string;
   unread_count: number;
-  user: {
+  agent: {
     name: string;
     role: string;
     avatar: string | null;
@@ -43,12 +43,13 @@ export interface QueryConversationDto extends CreateConversationDto, BaseQueryDt
 // Base Interfaces
 export interface MessageBaseDto {
   content: string;
+  timestamp: string;
 }
 
 // Create DTO
 export interface CreateMessageDto extends MessageBaseDto {
   conversation_id: string;
-  sender_id: string;
+  sender_id?: string;
 }
 
 // Update DTO (full override)
@@ -60,7 +61,6 @@ export interface SearchMessageDto extends PageRequest, BaseQueryDto {
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)
 export interface QueryMessageDto extends CreateMessageDto, BaseQueryDto {
-  timestamp: string;
   is_read: boolean;
 }
 
@@ -81,7 +81,6 @@ export interface CreateConversationParticipantDto extends ConversationParticipan
 export interface UpdateConversationParticipantDto extends ConversationParticipantBaseDto {}
 
 export interface SearchConversationParticipantDto extends PageRequest, BaseQueryDto {
-    conversation_id: string;
 }
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)

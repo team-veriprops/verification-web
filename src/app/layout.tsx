@@ -1,8 +1,9 @@
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import "@app/globals.css";
 import { ClientWrapperProvider } from "providers/client-wrapper";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://veriprops.ng"),
   title: "Veriprops - Verify Property Ownership & Land Size in Nigeria | Stop Scams Before You Pay",
   description: "Independent property verification for Nigerian buyers. We validate ownership, survey plans, land size, disputes, and real-world accuracy from any third-party listing or property claim. Verify before you pay.",
   keywords: [
@@ -41,7 +42,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/"
   },
-  viewport: "width=device-width, initial-scale=1"
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 

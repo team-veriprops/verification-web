@@ -1,4 +1,4 @@
-import { BaseQueryDto, PageRequest } from "../../../types/models";
+import { BaseQueryDto, PageRequest } from "../../../../types/models";
 import { UserPersona } from "../models";
 
 export interface UpdateProfileDto {

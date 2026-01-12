@@ -2,12 +2,12 @@
 
 import { motion } from "framer-motion";
 import { Calendar, Clock, CreditCard, Loader2 } from "lucide-react";
-import { usePaymentQueries } from "../libs/useVerificationQueries";
 import { useEffect } from "react";
-import { usePaymentStore } from "../libs/useVerificationStore";
 import StatsCard from "@components/portal/StatsCard";
 import { convertMoney, formatMoney } from "@lib/utils";
 import { formatDate } from "@lib/time";
+import { usePaymentQueries } from "@components/portal/payments/libs/usePaymentQueries";
+import { usePaymentStore } from "@components/portal/payments/libs/usePaymentStore";
 
 export default function PaymentStatsComponent() {
   const { useGetPaymentStats } = usePaymentQueries();

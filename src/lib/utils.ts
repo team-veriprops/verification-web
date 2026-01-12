@@ -68,8 +68,12 @@ export const formatMoney = (money: Money) => {
     }).format(money.getValue());
 };
 
-export const formatMeasurement = (measurement: Measurement) => {
+export const formatMeasurement = (measurement: Measurement | undefined) => {
   // console.log("formatMeasurement(measurement: Measurement): ", measurement)
+
+  if(!measurement){
+    return ""
+  }
 
   return measurement.value + " " + measurement.unit;
 };
@@ -78,8 +82,12 @@ const formatCoordinates = (value: number, isLat: boolean) => {
   const dir = isLat ? (value >= 0 ? "N" : "S") : (value >= 0 ? "E" : "W");
   return `${Math.abs(value).toFixed(4)}° ${dir}`;
 };
-export const formatLocationCoordinates = (coordinates: {lat: number, lng: number}) => {
+export const formatLocationCoordinates = (coordinates: {lat: number, lng: number} | undefined) => {
   // console.log("formatMeasurement(measurement: Measurement): ", measurement)
+
+  if(!coordinates){
+    return ""
+  }
 
   return `${formatCoordinates(coordinates.lat, true)}, ${formatCoordinates(coordinates.lng, false)}`;
 };

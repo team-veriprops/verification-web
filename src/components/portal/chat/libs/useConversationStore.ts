@@ -27,11 +27,11 @@ interface ConversationStore {
   conversationFilters: Partial<SearchConversationDto>; // persisted + synced with query params
   messageFilters: Partial<SearchMessageDto>; // persisted + synced with query params
   currentConversation: QueryConversationDto | null; // persisted only
-  viewConversationDetail: boolean;
+  viewConversationMessages: boolean;
   updateConversationFilters: (updates: Partial<SearchConversationDto>) => void; // <—
   updateMessageFilters: (updates: Partial<SearchConversationDto>) => void; // <—
   setCurrentConversation: (currentConversation: QueryConversationDto | null) => void;
-  setViewConversationDetail: (viewConversationDetail: boolean) => void;
+  setViewConversationMessages: (viewConversationMessages: boolean) => void;
 }
 
 // runtime service instance (not persisted)
@@ -44,7 +44,7 @@ export const useConversationStore = create<ConversationStore>()(
       conversationFilters: cloneDefaultConversationFilters(),
       messageFilters: cloneDefaultMessageFilters(),
       currentConversation: null,
-      viewConversationDetail: false,
+      viewConversationMessages: false,
       // update multiple filter keys at once
       updateConversationFilters: (updates) =>
         set((state) => ({
@@ -57,7 +57,7 @@ export const useConversationStore = create<ConversationStore>()(
 
       // update the currently selected conversation
       setCurrentConversation: (currentConversation) => set({ currentConversation }),
-      setViewConversationDetail: (viewConversationDetail) => set({ viewConversationDetail }),
+      setViewConversationMessages: (viewConversationMessages) => set({ viewConversationMessages }),
     }),
     {
       name: "veriprops-conversations", // localStorage key
@@ -67,12 +67,12 @@ export const useConversationStore = create<ConversationStore>()(
         conversationFilters: SearchConversationDto; 
         messageFilters: SearchMessageDto; 
         currentConversation: QueryConversationDto; 
-        viewConversationDetail: boolean;
+        viewConversationMessages: boolean;
       }) => ({
         conversationFilters: state.conversationFilters,
         messageFilters: state.messageFilters,
         currentConversation: state.currentConversation,
-        viewConversationDetail: state.viewConversationDetail,
+        viewConversationMessages: state.viewConversationMessages,
       }),
     }
   )

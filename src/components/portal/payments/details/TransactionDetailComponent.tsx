@@ -162,16 +162,9 @@ export default function PaymentDetailComponent() {
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Type</span>
-                  <span className="font-medium capitalize">
-                    {currentPayment?.type}
-                  </span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
                   <span className="text-muted-foreground">Date</span>
                   <span className="font-medium">
-                    {format(new Date(currentPayment?.date_created!), "PPP")}
+                    {format(new Date(currentPayment?.date_created ?? ""), "PPP")}
                   </span>
                 </div>
                 <Separator />
@@ -200,13 +193,6 @@ export default function PaymentDetailComponent() {
                     {paymentDetail?.gateway_response}
                   </Badge>
                 </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Wallet Impact</span>
-                  <Badge variant="outline">
-                    {paymentDetail?.wallet_impact}
-                  </Badge>
-                </div>
               </div>
             </Card>
 
@@ -222,26 +208,6 @@ export default function PaymentDetailComponent() {
                   <Download className="h-4 w-4 mr-2" />
                   Download Receipt
                 </Button>
-                {currentPayment?.type === "escrow" && (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start"
-                      onClick={handleDownloadEscrowCertificate}
-                    >
-                      <ShieldCheck className="h-4 w-4 mr-2" />
-                      Download Escrow Certificate
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <FileText className="h-4 w-4 mr-2" />
-                      View Contract
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Go to Property
-                    </Button>
-                  </>
-                )}
               </div>
             </Card>
 
