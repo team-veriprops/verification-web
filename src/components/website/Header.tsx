@@ -41,7 +41,7 @@ const Header = () => {
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
             <Button variant="ghost" size="sm">
-              Login
+              <Link href={"portal/"}>Login</Link>
             </Button>
             <Button variant="default" size="sm">
               Verify a Property

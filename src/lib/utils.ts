@@ -68,10 +68,28 @@ export const formatMoney = (money: Money) => {
     }).format(money.getValue());
 };
 
-export const formatMeasurement = (measurement: Measurement) => {
+export const formatMeasurement = (measurement: Measurement | undefined) => {
   // console.log("formatMeasurement(measurement: Measurement): ", measurement)
 
+  if(!measurement){
+    return ""
+  }
+
   return measurement.value + " " + measurement.unit;
+};
+
+const formatCoordinates = (value: number, isLat: boolean) => {
+  const dir = isLat ? (value >= 0 ? "N" : "S") : (value >= 0 ? "E" : "W");
+  return `${Math.abs(value).toFixed(4)}° ${dir}`;
+};
+export const formatLocationCoordinates = (coordinates: {lat: number, lng: number} | undefined) => {
+  // console.log("formatMeasurement(measurement: Measurement): ", measurement)
+
+  if(!coordinates){
+    return ""
+  }
+
+  return `${formatCoordinates(coordinates.lat, true)}, ${formatCoordinates(coordinates.lng, false)}`;
 };
 
 export const onLogoutRedirect = () => {
@@ -168,3 +186,20 @@ export function buildPath(
 export function buildReferralLink(referralCode: string) {
   return `${window.location.origin}/signup?ref=${referralCode}`;
 }
+
+export const getStatusBadgeColor = (status: string): string => {
+  const colors: Record<string, string> = {
+    pending: "bg-muted text-muted-foreground",
+    in_progress: "bg-warning/10 text-warning dark:bg-warning/20",
+    completed: "bg-success/10 text-success dark:bg-success/20",
+    blocked: "bg-danger/10 text-danger dark:bg-danger/20",
+    verified: "bg-success/10 text-success dark:bg-success/20",
+    flagged: "bg-danger/10 text-danger dark:bg-danger/20",
+    active: "bg-danger/10 text-danger dark:bg-danger/20",
+    under_review: "bg-warning/10 text-warning dark:bg-warning/20",
+    resolved: "bg-success/10 text-success dark:bg-success/20",
+    paid: "bg-success/10 text-success dark:bg-success/20",
+    overdue: "bg-danger/10 text-danger dark:bg-danger/20"
+  };
+  return colors[status] || "bg-muted text-muted-foreground";
+};
