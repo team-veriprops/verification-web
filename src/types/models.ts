@@ -10,6 +10,29 @@ export enum Language {
   FRENCH = "FR",
 }
 
+export enum PropertyAssetPhotoCategory {
+    All = "All",
+
+    // HOUSES
+    Kitchen = "Kitchen",
+    Bathroom = "Bathroom",
+    Bedroom = "Bedroom",
+    Living = "Living",
+    Dining = "Dining",
+    OtherRooms = "Other rooms",
+    Exterior = "Exterior",
+    Amenities = "Amenities",
+
+    // LAND
+    FRONT_VIEW = "Front view"
+}
+
+export interface PropertyImage {
+  title?: string;
+  url: string;
+  category?: PropertyAssetPhotoCategory;
+}
+
 export class Money {
   private value: number;
   private currency: TransactionCurrency;
@@ -100,7 +123,7 @@ export class Money {
 
 export enum PropertyType {
   LAND = "land",
-  HOUSE = "house",
+  STRUCTURE = "structure",
 }
 
 export interface Measurement {
@@ -114,6 +137,16 @@ export enum MeasurementUnit {
   FEET = "feet",
   SQF = "sqf",
 }
+
+export interface ExactLocation {
+    address: string;
+    country: string;
+    state: string;
+    city: string;
+    grouping_city?: string;
+    area: string;
+    coordinates?: { lat: number; lng: number };
+  };
 
 export interface BaseQueryDto {
   id?: string;                    // Unique ID
@@ -154,11 +187,3 @@ export interface PageDetails {
   description: string;
   active_tab?: string;
 }
-
-
-export const productsTableTabs: Array<{ value: PropertyType; label: string }> =
-  [
-    { value: PropertyType.LAND, label: "Lands" },
-    { value: PropertyType.HOUSE, label: "Houses" },
-    // { value: PropertyType.SERVICE, label: "Services" },
-  ] as const;
