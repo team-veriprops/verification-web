@@ -9,8 +9,9 @@ interface StatsCardProps {
     value: number;
     isPositive: boolean;
   };
-  variant?: "default" | "primary" | "success" | "warning" | "danger";
+  variant?: "default" | "primary" | "success" | "warning" | "danger" | "timeless";
   className?: string;
+  onClick?: () => void
 }
 
 const StatsCard = ({ 
@@ -19,7 +20,8 @@ const StatsCard = ({
   icon: Icon, 
   trend,
   variant = "default",
-  className 
+  className,
+  onClick
 }: StatsCardProps) => {
   const variantStyles = {
     default: "bg-card",
@@ -27,6 +29,7 @@ const StatsCard = ({
     success: "bg-success/5 border-success/20",
     warning: "bg-warning/5 border-warning/20",
     danger: "bg-danger/5 border-danger/20",
+    timeless: "bg-purple-500/5"
   };
 
   const iconStyles = {
@@ -35,6 +38,7 @@ const StatsCard = ({
     success: "bg-success/10 text-success",
     warning: "bg-warning/10 text-warning",
     danger: "bg-danger/10 text-danger",
+    timeless: "bg-purple-500/10 text-purple-500"
   };
 
   return (
@@ -42,7 +46,8 @@ const StatsCard = ({
       "rounded-xl border border-border p-4 lg:p-5 transition-shadow hover:shadow-soft",
       variantStyles[variant],
       className
-    )}>
+    )}
+    onClick={onClick}>
       <div className="flex items-start justify-between">
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">{title}</p>

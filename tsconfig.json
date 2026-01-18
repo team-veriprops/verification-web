@@ -31,7 +31,7 @@
       "@icons/*": ["./components/icons/*"],
       "@types/*": ["./types/*"],
       "@context/*": ["./context/*"],
-      "@assets/*": ["./public/assets/*"]
+      "@assets/*": ["../public/assets/*"]
     }
   },
   "include": [

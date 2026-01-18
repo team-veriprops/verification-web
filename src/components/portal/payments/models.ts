@@ -28,7 +28,9 @@ export interface QueryPaymentDto extends CreatePaymentDto, BaseQueryDto {
 export interface PaymentStats{
   total_spent_amount: Money
   last_payment_date: string
-  total_pending_payment: Money
+  total_pending_amount: Money
+  total_pending: number;
+  total_payment: number
 }
 
 export enum PaymentType {

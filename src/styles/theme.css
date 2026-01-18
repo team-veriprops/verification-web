@@ -10,8 +10,12 @@
     --popover-foreground: hsl(220 20% 15%);
 
     /* Deep teal - trust & safety */
-    --primary: hsl(168 55% 28%);
-    --primary-foreground: hsl(40 33% 98%);
+    /* --primary: hsl(168 55% 28%);
+    --primary-foreground: hsl(40 33% 98%); */
+
+    /* Primary - Deep Forest Green */
+    --primary: hsl(158 64% 18%);
+    --primary-foreground: hsl(0 0% 100%);
 
     /* Warm gold - premium Nigerian warmth */
     --secondary: hsl(38 80% 55%);
@@ -21,8 +25,12 @@
     --muted-foreground: hsl(220 10% 45%);
 
     /* Soft teal accent */
-    --accent: hsl(168 40% 92%);
-    --accent-foreground: hsl(168 55% 28%);
+    /* --accent: hsl(168 40% 92%);
+    --accent-foreground: hsl(168 55% 28%); */
+
+    /* Accent - Warm Gold */
+    --accent: hsl(38 70% 50%);
+    --accent-foreground: hsl(160 25% 10%);
 
     --destructive: hsl(0 72% 51%);
     --destructive-foreground: hsl(0 0% 100%);
@@ -30,6 +38,11 @@
     --border: hsl(40 20% 88%);
     --input: hsl(40 20% 88%);
     --ring: hsl(168 55% 28%);
+
+
+    /* Trust Panel Gradient */
+    --trust-gradient-start: hsl(158 64% 15%);
+    --trust-gradient-end: hsl(158 50% 22%);
 
     --radius: 0.75rem;
 
@@ -126,8 +139,11 @@
     --popover: hsl(220 18% 14%);
     --popover-foreground: hsl(40 20% 95%);
 
-    --primary: hsl(168 50% 45%);
-    --primary-foreground: hsl(220 20% 10%);
+    /* --primary: hsl(168 50% 45%);
+    --primary-foreground: hsl(220 20% 10%); */
+
+    --primary: hsl(158 55% 45%);
+    --primary-foreground: hsl(160 25% 10%);
 
     --secondary: hsl(38 75% 50%);
     --secondary-foreground: hsl(220 20% 10%);
@@ -135,8 +151,11 @@
     --muted: hsl(220 15% 20%);
     --muted-foreground: hsl(40 10% 65%);
 
-    --accent: hsl(168 30% 20%);
-    --accent-foreground: hsl(168 50% 70%);
+    /* --accent: hsl(168 30% 20%);
+    --accent-foreground: hsl(168 50% 70%); */
+
+    --accent: hsl(38 65% 55%);
+    --accent-foreground: hsl(160 25% 10%);
 
     --destructive: hsl(0 62.8% 30.6%);
     --destructive-foreground: hsl(0 0% 100%);
@@ -294,6 +313,71 @@
     @apply font-display;
   }
 } */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: Inter, system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Playfair Display", serif;
+  }
+}
+
+@layer components {
+  /* Trust Panel */
+  .trust-panel {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--trust-gradient-start)) 0%,
+      hsl(var(--trust-gradient-end)) 100%
+    );
+  }
+
+  /* Floating Card */
+  .floating-card {
+    box-shadow: var(--shadow-float);
+    @apply backdrop-blur-sm;
+  }
+
+  /* Auth Button */
+  .auth-button {
+    @apply relative overflow-hidden transition-all duration-300 ease-out;
+  }
+
+  .auth-button:hover {
+    @apply -translate-y-0.5;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .auth-button:active {
+    @apply translate-y-0;
+  }
+
+  /* Social Auth Button */
+  .social-auth-button {
+    @apply border border-border bg-card hover:bg-secondary/50 transition-all duration-200;
+  }
+
+  .social-auth-button:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Trust Checklist */
+  .trust-check-item {
+    @apply flex items-center gap-3 text-white/90;
+  }
+
+  .trust-check-icon {
+    @apply w-5 h-5 text-accent shrink-0;
+  }
+}
+
 
 @layer utilities {
   .text-balance {

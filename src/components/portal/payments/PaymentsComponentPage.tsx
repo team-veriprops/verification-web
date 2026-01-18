@@ -18,6 +18,7 @@ import PaymentsTable from "./PaymentsTable";
 import PaymentStatsComponent from "./stats/TransactionStatsComponent";
 import { convertMoney, formatMoney } from "@lib/utils";
 import { PaymentStatus } from "./models";
+import { usePaymentQueries } from "./libs/usePaymentQueries";
 
 export default function PaymentsComponentPage({
   title,
@@ -27,13 +28,19 @@ export default function PaymentsComponentPage({
   const { settings } = useGlobalSettings();
   const { totalPendingPayment } = usePaymentStore();
 
+  const { useGetPaymentStats } = usePaymentQueries();
+  
+  const {
+      data: paymentStats,
+    } = useGetPaymentStats();
+
   const paymentTabs: Array<{
     value: string;
     icon?: React.ComponentType<{ className?: string }>;
     label: string;
   }> = [
-    { value: PaymentStatus.PENDING, icon: Wallet, label: "Pending" },
-    { value: "all", icon: Rows4 ,  label: "All Payments" },
+    { value: PaymentStatus.PENDING, icon: Wallet, label: `Pending (${paymentStats?.total_pending ?? 0})` },
+    { value: "all", icon: Rows4 ,  label: `All Payments (${paymentStats?.total_payment ?? 0})` },
   ] as const;
   
   const handleMakePayment = () => {

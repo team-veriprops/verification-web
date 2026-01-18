@@ -5,8 +5,13 @@ import { X } from "lucide-react";
 import { SidebarProvider } from "@components/3rdparty/ui/sidebar";
 import PortalSidebar from "@components/portal/PortalSidebar";
 import PortalHeader from "@components/portal/PortalHeader";
+import { useAuthQueries } from "@components/website/auth/libs/useAuthQueries";
 
 export default function PortalLayout({ children }: { children: ReactNode }) {
+    // Get Auth Details
+  const { useGetAuth } = useAuthQueries();
+  useGetAuth();
+  
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (

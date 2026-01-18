@@ -11,8 +11,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Textarea } from "@components/3rdparty/ui/textarea";
 import TypingIndicator from "./TypingIndicator";
 import { Input } from "@components/3rdparty/ui/input";
-import { useAuthStore } from "@components/admin/user/auth/libs/useAuthStore";
+import { useAuthStore } from "@components/website/auth/libs/useAuthStore";
 import InfiniteScrollTriggerComponent from "@components/ui/InfiniteScrollTriggerComponent";
+import { formatDate } from "@lib/time";
 
 
 // Reaction button component
@@ -105,6 +106,8 @@ export default function ChatConversationMessagesComponent(){
 
     // Handle scroll to detect if we're near bottom
   const handleScroll = () => {
+    console.log("scrolling...")
+
     if (messagesContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
       const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
@@ -119,12 +122,12 @@ export default function ChatConversationMessagesComponent(){
 
   // Reset scroll button on chat switch
   useEffect(() => {
-    setShowScrollButton(false);
+    handleScroll();
   }, [allPageMessages]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [allPageMessages, isAgentTyping]);
+  // useEffect(() => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [allPageMessages, isAgentTyping]);
 
 
   
@@ -188,7 +191,7 @@ export default function ChatConversationMessagesComponent(){
 
     return (
         <div className={cn(
-        "flex-1 flex flex-col",
+        "flex-1 flex flex-col relative",
         !currentConversation && "hidden md:flex"
       )}>
         {currentConversation ? (
@@ -355,7 +358,7 @@ export default function ChatConversationMessagesComponent(){
                                 "flex items-center gap-1 mt-0.5 px-1 text-sm text-muted-foreground",
                                 message.sender_id === "user" ? "justify-end" : "justify-start"
                               )}>
-                                <span>{message.timestamp.split(" ")[1]}</span>
+                                <span>{formatDate(message.timestamp)}</span>
                                 {message.sender_id === "user" && message.is_read && (
                                   <CheckCheck className="h-4 w-4 text-primary" />
                                 )}
@@ -393,7 +396,7 @@ export default function ChatConversationMessagesComponent(){
               <button
                 onClick={scrollToBottom}
                 className={cn(
-                  "absolute bottom-4 right-4 z-10 w-10 h-10 rounded-full bg-card shadow-elevated border border-border",
+                  "absolute bottom-22 right-8 z-10 w-10 h-10 rounded-full bg-card shadow-elevated border border-border",
                   "flex items-center justify-center",
                   "transition-all duration-300 ease-in-out",
                   "hover:shadow-floating hover:scale-110 active:scale-95",

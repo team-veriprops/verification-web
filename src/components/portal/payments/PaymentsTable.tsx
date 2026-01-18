@@ -20,7 +20,7 @@ import {
   PaymentStatus,
 } from "./models";
 import { formatDate } from "@lib/time";
-import PaymentDetailComponent from "./details/TransactionDetailComponent";
+import PaymentDetailComponent from "./details/PaymentDetailComponent";
 
 export const getStatusIcon = (status: PaymentStatus | undefined) => {
   switch (status) {

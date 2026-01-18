@@ -16,6 +16,7 @@ import { Button } from "@components/3rdparty/ui/button";
 import { toast } from "@components/3rdparty/ui/use-toast";
 import VerificationsTable from "./VerificationsTable";
 import { VerificationStatus } from "./models";
+import { useDashboardQueries } from "../dashboard/libs/useDashboardQueries";
 
 export default function VerificationsComponentPage({
   title,
@@ -23,16 +24,21 @@ export default function VerificationsComponentPage({
 }: PageDetails) {
   const { filters, updateFilters } = useVerificationStore();
   const { settings } = useGlobalSettings();
+  const { useGetDashboardStats } = useDashboardQueries();
+  
+    const {
+      data: dashboardStats,
+    } = useGetDashboardStats();
 
   const verificationTabs: Array<{
     value: string;
     icon?: React.ComponentType<{ className?: string }>;
     label: string;
   }> = [
-    { value: VerificationStatus.PENDING, icon: ClipboardClock, label: "Pending" },
-    { value: VerificationStatus.FLAGGED, icon: ShieldAlert, label: "Flagged" },
-    { value: VerificationStatus.VERIFIED, icon: Shield, label: "Verified" },
-    { value: "all", icon: Rows4 ,  label: "All Verifications" },
+    { value: VerificationStatus.PENDING, icon: ClipboardClock, label: `Pending (${dashboardStats?.pending_verifications ?? 0})` },
+    { value: VerificationStatus.FLAGGED, icon: ShieldAlert, label: `Flagged (${dashboardStats?.flagged_verifications ?? 0})` },
+    { value: VerificationStatus.VERIFIED, icon: Shield, label: `Verified (${dashboardStats?.successful_verifications ?? 0})` },
+    { value: "all", icon: Rows4 ,  label: `All Verifications (${dashboardStats?.total_verifications ?? 0})` },
   ] as const;
   
   const handleMakeVerification = () => {

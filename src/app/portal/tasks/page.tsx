@@ -1,9 +1,9 @@
-import TasksComponentPage from "@components/portal/tasks/TasksComponentPage";
+import TaskComponentPage from "@components/portal/tasks/TaskComponentPage";
 import { Metadata } from "next";
 
-const title = "My Purchases";
+const title = "Welcome back";
 const description =
-  "Manage all the lands, houses, and services you’ve purchased on Veriprops. Track purchase status, download receipts, and access support for each property or service.";
+  "Here are your assigned verification tasks. Let's build trust, one property at a time.";
 
 export const metadata: Metadata = {
   title: `${title} | Veriprops`,
@@ -12,7 +12,5 @@ export const metadata: Metadata = {
 
 export default function TaskPage() {
 
-  return (
-    <TasksComponentPage></TasksComponentPage>
-  );
+  return <TaskComponentPage title={title} description={description} />;
 }

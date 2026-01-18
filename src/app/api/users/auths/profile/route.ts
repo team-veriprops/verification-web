@@ -1,5 +1,5 @@
 import { getActiveAuditor, users } from "@data/mock-users";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 // Logged In User Details
 export async function GET() {

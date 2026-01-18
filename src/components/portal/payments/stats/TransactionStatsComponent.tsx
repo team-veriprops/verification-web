@@ -10,8 +10,8 @@ import { convertMoney, formatMoney } from "@lib/utils";
 import { formatDate } from "@lib/time";
 
 export default function PaymentStatsComponent() {
-  const { useGetPaymentStats } = usePaymentQueries();
   const { setTotalPendingPayment } = usePaymentStore();
+  const { useGetPaymentStats } = usePaymentQueries();
 
   const {
     data: paymentStats,
@@ -21,9 +21,9 @@ export default function PaymentStatsComponent() {
 
   useEffect(() => {
     if (!isError) {
-      setTotalPendingPayment(paymentStats?.total_pending_payment);
+      setTotalPendingPayment(paymentStats?.total_pending_amount);
     }
-  }, [setTotalPendingPayment, paymentStats?.total_pending_payment, isError]);
+  }, [setTotalPendingPayment, paymentStats?.total_pending_amount, isError]);
 
   if (isLoading) {
     return (
@@ -74,9 +74,9 @@ export default function PaymentStatsComponent() {
         />
         <StatsCard
           title="Pending Payments"
-          value={formatMoney(paymentStats?.total_pending_payment)!}
+          value={formatMoney(paymentStats?.total_pending_amount)!}
           icon={Clock}
-          variant={convertMoney(paymentStats?.total_pending_payment).getValue() > 0 ? "warning" : "default"}
+          variant={convertMoney(paymentStats?.total_pending_amount).getValue() > 0 ? "warning" : "default"}
         />
 
     </motion.div>

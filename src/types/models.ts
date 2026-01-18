@@ -10,6 +10,11 @@ export enum Language {
   FRENCH = "FR",
 }
 
+export interface KeyValue{
+  key: string;
+  value: string;
+}
+
 export enum PropertyAssetPhotoCategory {
     All = "All",
 

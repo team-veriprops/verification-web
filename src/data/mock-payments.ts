@@ -71,10 +71,12 @@ export async function generatePaymentStats(): Promise<PaymentStats> {
       currency: TransactionCurrency.NGN,
     }),
     last_payment_date: faker.date.past().toISOString(),
-    total_pending_payment: Money.from({
+    total_pending_amount: Money.from({
       value: faker.number.int({ min: 2000000, max: 50000000 }),
       currency: TransactionCurrency.NGN,
-    })
+    }),
+    total_pending: 3,
+    total_payment: 23
   };
 }
 
