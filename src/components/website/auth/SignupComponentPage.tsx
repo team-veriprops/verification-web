@@ -120,7 +120,7 @@ export default function SignupComponentPage() {
       </div>
 
       {/* Benefits */}
-      <div className="mb-6 p-4 rounded-lg bg-secondary/50 border border-border/50">
+      {/* <div className="mb-6 p-4 rounded-lg bg-secondary/50 border border-border/50">
         <ul className="space-y-2">
           {benefits.map((benefit, index) => (
             <li key={index} className="flex items-start gap-2 text-sm text-foreground/80">
@@ -129,7 +129,7 @@ export default function SignupComponentPage() {
             </li>
           ))}
         </ul>
-      </div>
+      </div> */}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">

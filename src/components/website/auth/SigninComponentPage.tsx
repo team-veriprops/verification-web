@@ -60,6 +60,7 @@ export default function SigninComponentPage() {
           redirect('/dashboard');
           },
           onError: (error) => {
+            console.log("error: ", error)
             setIsLoading(false)
             setErrors({ general: error.message });
           }

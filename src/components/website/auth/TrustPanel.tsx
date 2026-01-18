@@ -3,11 +3,11 @@ import trustHeroImage from '@assets/trust-hero.jpg';
 import Image from 'next/image';
 
 const trustFeatures = [
-  { icon: MapPin, text: 'Physical site inspection' },
-  { icon: Shield, text: 'Survey and beacon validation' },
-  { icon: FileCheck, text: 'Ownership and title confirmation' },
-  { icon: AlertTriangle, text: 'Encumbrance and dispute checks' },
-  { icon: Camera, text: 'Photo and geo-tagged evidence' },
+  { icon: FileCheck, text: 'Ownership, title, and physical existence confirmation' },
+  { icon: AlertTriangle, text: 'Encumbrance, dispute, and government claim checks' },
+  { icon: Shield, text: 'Forgery and document consistency detection' },
+  { icon: MapPin, text: 'Survey plan, beacon, and boundary validation' },
+  { icon: Camera, text: 'On-site inspection with photo and geo-tagged evidence' },
 ];
 
 export function TrustPanel() {
@@ -39,7 +39,7 @@ export function TrustPanel() {
         
         {/* Main Heading */}
         <h1 className="font-display text-4xl lg:text-5xl text-white leading-tight mb-6">
-          Verify property authenticity before you commit
+          {"Before You Pay, let's verify it!"}
         </h1>
         
         {/* Subheading */}

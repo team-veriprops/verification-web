@@ -7,11 +7,11 @@ export interface HttpClient {
 }
 
 export class HttpError<T = any> extends Error {
-  status?: number;
+  status?: string;
   url: string;
   body?: T;
 
-  constructor(message: string, url: string, status?: number, body?: T) {
+  constructor(message: string, url: string, status?: string, body?: T) {
     super(message);
     this.name = "HttpError";
     this.url = url;
@@ -88,10 +88,12 @@ export class FetchHttpClient implements HttpClient {
         }
 
         const errorBody = await this.safeJson(response);
+
+        console.log("errorBody: ", errorBody)
         throw new HttpError(
-          errorBody?.message || `HTTP Error ${response.status}`,
+          errorBody?.error?.message || `An error occurred`,
           url,
-          response.status,
+          errorBody?.error?.code,
           errorBody
         );
       }
