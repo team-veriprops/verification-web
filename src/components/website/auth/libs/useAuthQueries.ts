@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "./useAuthStore";
 import { CreateUserDto, LoginSuccessDto } from "@components/admin/user/models";
 import { useEffect } from "react";
-import { ChangePasswordPayload, InitSocialLoginResponse, LoginPayload, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
+import { ChangePasswordPayload, EmailValidationRequest, InitSocialLoginResponse, LoginPayload, OtpVerificationRequest, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
 
 /**
  * React Query hooks wrapping AuthService
@@ -77,6 +77,18 @@ export const useAuthQueries = () => {
         service.sendRecoverPasswordMessage(payload),
   });
     
+  const useSendEmailValidationMessage = () =>
+    useMutation({
+      mutationFn: (payload: EmailValidationRequest) =>
+        service.sendEmailValidationMessage(payload),
+  });
+    
+  const useValidateEmailVerificationOtp = () =>
+    useMutation({
+      mutationFn: (payload: OtpVerificationRequest) =>
+        service.validateEmailVerificationOtp(payload),
+  });
+    
   const useRecoverPassword = () =>
     useMutation({
       mutationFn: (payload: RecoverPasswordPayload) =>
@@ -92,6 +104,8 @@ export const useAuthQueries = () => {
     useLogout,
     useChangePassword,
     useSendRecoverPasswordMessage,
+    useSendEmailValidationMessage,
+    useValidateEmailVerificationOtp,
     useRecoverPassword
   };
 };

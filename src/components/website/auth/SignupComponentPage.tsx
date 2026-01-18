@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Loader2, Check } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Input } from '@components/3rdparty/ui/input';
@@ -10,20 +10,27 @@ import { PasswordInput } from './PasswordInput';
 import { TrustBadge } from './TrustBadge';
 import { SocialAuthButtons } from './SocialAuthButtons';
 import { useAuthQueries } from './libs/useAuthQueries';
-import { SocialAuthProvider, SocialAuthType } from './models';
+import { EmailValidationRequest, SocialAuthProvider, SocialAuthType } from './models';
 import { redirect } from 'next/navigation';
 import { CreateUserDto, Gender } from '@components/admin/user/models';
 import Link from 'next/link';
 
-const signUpSchema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+type Step = 'email' | 'otp' | 'details';
+
+const emailSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
+});
+
+const detailsSchema = z.object({
+  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
+
 
 const benefits = [
   'Confirm ownership, title, and physical existence',
@@ -33,16 +40,79 @@ const benefits = [
 ];
 
 export default function SignupComponentPage() {
-  const {useCreateUser, useInitSocialAuth} = useAuthQueries();
+  const {useSendEmailValidationMessage, useValidateEmailVerificationOtp, useCreateUser, useInitSocialAuth} = useAuthQueries();
+    
+    const sendEmailValidationMessage = useSendEmailValidationMessage()
     const createUser = useCreateUser()
     const initSocialAuth = useInitSocialAuth()
     const [isLoading,  setIsLoading] = useState(false);
+
+  // Step state
+  const [currentStep, setCurrentStep] = useState<Step>('email')
   
-  const [fullName, setFullName] = useState('');
+  // Form data
   const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [otpError, setOtpError] = useState('');
+
+  // Step 1: Email submission
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const result = emailSchema.safeParse({ email });
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.issues.forEach((err) => {
+        const field = err.path[0] as string;
+        fieldErrors[field] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+    
+    setErrors({});
+    const payload: EmailValidationRequest = {email: email, is_a_new_user: true}
+
+    sendEmailValidationMessage.mutate(payload, {
+            onSuccess: (data) => {
+            setIsLoading(false)
+            setCurrentStep('otp');
+            },
+            onError: (error) => {
+              setIsLoading(false)
+              setErrors({ email: error.message || 'Failed to send verification code' });
+            }
+          });
+  };
+
+  // Step 2: OTP verification
+  const handleOtpVerify = useCallback(async (otp: string) => {
+    setOtpError('');
+    const result = await verifyOtp(email, otp);
+    
+    if (result.success) {
+      setCurrentStep('details');
+    } else {
+      setOtpError(result.error || 'Invalid verification code');
+    }
+  }, [email, verifyOtp]);
+
+  const handleOtpResend = useCallback(async () => {
+    setOtpError('');
+    await sendOtp(email);
+  }, [email, sendOtp]);
+
+  const handleOtpBack = useCallback(() => {
+    setCurrentStep('email');
+    setOtpError('');
+  }, []);
+
 
   const validateForm = () => {
     const result = signUpSchema.safeParse({ fullName, email, password, confirmPassword });

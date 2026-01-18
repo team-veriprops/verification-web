@@ -23,6 +23,16 @@ export interface ChangePasswordPayload {
   new_password: string;
 }
 
+export interface EmailValidationRequest{
+    email: string
+    is_a_new_user: boolean
+}
+
+export interface OtpVerificationRequest{
+    email_or_phone: string
+    otp: string
+}
+
 export interface RecoverPasswordPayload {
   token: string;
   new_password: string;

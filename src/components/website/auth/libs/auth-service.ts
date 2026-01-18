@@ -1,5 +1,5 @@
 import { HttpClient } from "@lib/FetchHttpClient";
-import { ChangePasswordPayload, InitSocialLoginResponse, LoginPayload, ProfileResponse, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
+import { ChangePasswordPayload, EmailValidationRequest, InitSocialLoginResponse, LoginPayload, OtpVerificationRequest, ProfileResponse, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
 import { CreateUserDto, LoginSuccessDto } from "../../../admin/user/models";
 import { toQueryParams } from "@lib/utils";
 
@@ -60,12 +60,21 @@ export class AuthService {
       payload
     );
   }
-  
+
   sendEmailValidationMessage(
-    payload: RecoverPasswordMessagePayload
+    payload: EmailValidationRequest
   ): Promise<boolean> {
-    return this.http.post<RecoverPasswordMessagePayload, boolean>(
-      `${this.auth_base_url}/auths/recover-password/message`,
+    return this.http.post<EmailValidationRequest, boolean>(
+      `${this.auth_base_url}/send-email-validation-message`,
+      payload
+    );
+  }
+
+  validateEmailVerificationOtp(
+    payload: OtpVerificationRequest
+  ): Promise<boolean> {
+    return this.http.post<OtpVerificationRequest, boolean>(
+      `${this.auth_base_url}/validate-email-otp`,
       payload
     );
   }
