@@ -60,6 +60,15 @@ export class AuthService {
       payload
     );
   }
+  
+  sendEmailValidationMessage(
+    payload: RecoverPasswordMessagePayload
+  ): Promise<boolean> {
+    return this.http.post<RecoverPasswordMessagePayload, boolean>(
+      `${this.auth_base_url}/auths/recover-password/message`,
+      payload
+    );
+  }
 
   recoverPassword(payload: RecoverPasswordPayload): Promise<boolean> {
     return this.http.post<RecoverPasswordPayload, boolean>(
