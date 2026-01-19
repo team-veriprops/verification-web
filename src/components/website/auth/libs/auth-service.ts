@@ -21,7 +21,7 @@ export class AuthService {
 
   createUser(payload: CreateUserDto): Promise<LoginSuccessDto> {
     return this.http.post<CreateUserDto, LoginSuccessDto>(
-      `${this.auth_base_url}/`,
+      `${this.auth_base_url}`,
       payload
     );
   }

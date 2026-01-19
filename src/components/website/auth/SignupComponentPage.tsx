@@ -11,7 +11,7 @@ import { TrustBadge } from './TrustBadge';
 import { SocialAuthButtons } from './SocialAuthButtons';
 import { useAuthQueries } from './libs/useAuthQueries';
 import { EmailValidationRequest, OtpVerificationRequest, SocialAuthProvider, SocialAuthType } from './models';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { CreateUserDto} from '@components/admin/user/models';
 import Link from 'next/link';
 import { SignUpProgress } from './SignUpProgress';
@@ -35,6 +35,7 @@ const detailsSchema = z.object({
 });
 
 export default function SignupComponentPage() {
+  const router = useRouter();
   const {useSendEmailValidationMessage, useValidateEmailVerificationOtp, useCreateUser, useInitSocialAuth} = useAuthQueries();
     
     const sendEmailValidationMessage = useSendEmailValidationMessage()
@@ -149,7 +150,7 @@ export default function SignupComponentPage() {
             createUser.mutate(payload, {
               onSuccess: () => {
               setIsLoading(false)
-              redirect('/dashboard');
+              router.push("/dashboard");
               },
               onError: (error) => {
                 setIsLoading(false)
@@ -164,7 +165,7 @@ export default function SignupComponentPage() {
       initSocialAuth.mutate(payload, {
             onSuccess: () => {
             setIsLoading(false)
-            redirect('/dashboard');
+            router.push("/dashboard");
             },
             onError: (error) => {
         setIsLoading(false)
