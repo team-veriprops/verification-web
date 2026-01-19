@@ -31,8 +31,8 @@ export interface CreateUserDto {
   phone?: string;
   phone_ext?: string;
   password: string;
-  first_name: string;  // min length: 2, max length: 30
-  last_name: string;   // min length: 2, max length: 30
+  firstname: string;  // min length: 2, max length: 30
+  lastname: string;   // min length: 2, max length: 30
   gender?: Gender;
 }
 

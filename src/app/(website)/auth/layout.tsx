@@ -36,7 +36,7 @@ export default function AuthLayout({
           {/* <TrustHeader /> */}
           
           {/* Form Content */}
-          <div className="animate-fade-in-up pt-28" style={{ animationDelay: '0.1s' }}>
+          <div className="animate-fade-in-up pt-14" style={{ animationDelay: '0.1s' }}>
             {children}
           </div>
         </div>
