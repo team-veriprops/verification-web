@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Check, Mail } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Input } from '@components/3rdparty/ui/input';
@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import { CreateUserDto} from '@components/admin/user/models';
 import Link from 'next/link';
 import { SignUpProgress } from './SignUpProgress';
-import { cn } from '@lib/utils';
+import { cn, openSocialPopup } from '@lib/utils';
 import { OtpVerification } from './OtpVerification';
 
 type Step = 'email' | 'otp' | 'details';
@@ -43,6 +43,8 @@ export default function SignupComponentPage() {
     const createUser = useCreateUser()
     const initSocialAuth = useInitSocialAuth()
     const [isLoading,  setIsLoading] = useState(false);
+    const [socialAuthHasError,  setSocialAuthHasError] = useState(false);
+
 
   // Step state
   const [currentStep, setCurrentStep] = useState<Step>('email')
@@ -58,6 +60,25 @@ export default function SignupComponentPage() {
   // Error states
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [otpError, setOtpError] = useState('');
+  const [socialAuthError, setSocialAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+  const handler = (event: MessageEvent) => {
+    if (event.origin !== window.location.origin) return;
+
+    if (event.data?.type === "SOCIAL_AUTH_SUCCESS") {
+      // User is now authenticated (cookie/session already set)
+      router.push("/dashboard");
+    }
+
+    if (event.data?.type === "SOCIAL_AUTH_ERROR") {
+      setSocialAuthHasError(true);
+    }
+  };
+
+  window.addEventListener("message", handler);
+  return () => window.removeEventListener("message", handler);
+}, [router]);
 
   // Step 1: Email submission
   const handleEmailSubmit = async (e?: React.FormEvent) => {
@@ -163,13 +184,16 @@ export default function SignupComponentPage() {
       const payload = {provider: provider, authType: SocialAuthType.SIGNUP}
   
       initSocialAuth.mutate(payload, {
-            onSuccess: () => {
-            setIsLoading(false)
-            router.push("/dashboard");
+            onSuccess: (data) => {
+            setSocialAuthHasError(false)
+            openSocialPopup(
+              data.redirectUrl,
+              provider
+            );
             },
             onError: (error) => {
-        setIsLoading(false)
-              setErrors({ general: error.message });
+              setSocialAuthHasError(true)
+              setSocialAuthError(error.message || 'Social login failed');
             }
           });
     };
@@ -250,9 +274,15 @@ export default function SignupComponentPage() {
         <SocialAuthButtons
           onGoogleClick={()=> handleSocialAuth(SocialAuthProvider.GOOGLE)}
           onAppleClick={()=> handleSocialAuth(SocialAuthProvider.APPLE)}
+          socialAuthHasError={socialAuthHasError}
           isLoading={isLoading}
           action="sign-up"
         />
+        {socialAuthError && (
+          <p className="text-sm text-destructive text-center">
+            {socialAuthError}
+          </p>
+        )}
 
           {/* Sign In Link */}
           <p className="text-center text-sm text-muted-foreground pt-2">

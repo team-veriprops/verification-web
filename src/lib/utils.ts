@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { redirect } from "next/navigation";
 import { Measurement, Money } from "types/models";
+import { SocialAuthProvider } from "@components/website/auth/models";
 
 
 /**
@@ -203,3 +204,35 @@ export const getStatusBadgeColor = (status: string): string => {
   };
   return colors[status] || "bg-muted text-muted-foreground";
 };
+
+export function openSocialPopup(url: string, provider: SocialAuthProvider) {
+  const width = 500;
+  const height = 600;
+
+  const left = window.screenX + (window.outerWidth - width) / 2;
+  const top = window.screenY + (window.outerHeight - height) / 2;
+
+  const popup = window.open(
+    url,
+    `${provider}-oauth`,
+    `
+      width=${width},
+      height=${height},
+      left=${left},
+      top=${top},
+      resizable=yes,
+      scrollbars=yes,
+      status=no,
+      toolbar=no,
+      menubar=no,
+      location=no
+    `.replace(/\s+/g, '')
+  );
+
+  if (!popup) {
+    throw new Error('Popup blocked by browser');
+  }
+
+  popup.focus();
+  return popup;
+}

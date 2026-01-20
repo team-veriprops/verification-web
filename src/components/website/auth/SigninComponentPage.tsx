@@ -13,6 +13,7 @@ import { useAuthQueries } from './libs/useAuthQueries';
 import { LoginPayload, SocialAuthProvider, SocialAuthType } from './models';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { openSocialPopup } from '@lib/utils';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -24,6 +25,7 @@ export default function SigninComponentPage() {
     const login = useLogin()
     const initSocialAuth = useInitSocialAuth()
     const [isLoading,  setIsLoading] = useState(false);
+    const [socialLoginHasError,  setSocialLoginHasError] = useState(false);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -71,15 +73,18 @@ export default function SigninComponentPage() {
     const payload = {provider: provider, authType: SocialAuthType.LOGIN}
 
     initSocialAuth.mutate(payload, {
-          onSuccess: (data) => {
-          setIsLoading(false)
-          redirect('/dashboard');
-          },
-          onError: (error) => {
-            setIsLoading(false)
-            setErrors({ general: error.message });
-          }
-        });
+                onSuccess: (data) => {
+                setSocialLoginHasError(false)
+                openSocialPopup(
+                  data.redirectUrl,
+                  provider
+                );
+                },
+                onError: (error) => {
+                  setSocialLoginHasError(true)
+                  setErrors({ general: error.message });
+                }
+              });
   };
 
   const isFormValid = email.length > 0 && password.length > 0;
@@ -173,6 +178,7 @@ export default function SigninComponentPage() {
           onGoogleClick={()=> handleSocialAuth(SocialAuthProvider.GOOGLE)}
           onAppleClick={()=> handleSocialAuth(SocialAuthProvider.APPLE)}
           isLoading={isLoading}
+          socialLoginHasError={socialLoginHasError}
           action="sign-in"
         />
 
