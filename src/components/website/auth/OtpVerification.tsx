@@ -152,7 +152,7 @@ export function OtpVerification({
                 <Loader2 className="w-3 h-3 animate-spin" />
                 Sending...
               </span>
-            ) : (
+            ) : !isLoading && (
               'Resend code'
             )}
           </button>

@@ -42,8 +42,19 @@ export default function SignupComponentPage() {
     const validateEmailVerificationOtp = useValidateEmailVerificationOtp()
     const createUser = useCreateUser()
     const initSocialAuth = useInitSocialAuth()
-    const [isLoading,  setIsLoading] = useState(false);
     const [socialAuthHasError,  setSocialAuthHasError] = useState(false);
+
+    const [loading, setLoading] = useState<{
+      email: boolean;
+      otp: boolean;
+      details: boolean;
+      social: boolean;
+    }>({
+      email: false,
+      otp: false,
+      details: false,
+      social: false,
+    });
 
 
   // Step state
@@ -100,14 +111,14 @@ export default function SignupComponentPage() {
     setErrors({});
     const payload: EmailValidationRequest = {email: email, is_a_new_user: true}
 
-    setIsLoading(true)
+    setLoading(l => ({ ...l, email: true }));
     sendEmailValidationMessage.mutate(payload, {
             onSuccess: () => {
-            setIsLoading(false)
+            setLoading(l => ({ ...l, email: false }));
             setCurrentStep('otp');
             },
             onError: (error) => {
-              setIsLoading(false)
+              setLoading(l => ({ ...l, email: false }));
               setErrors({ email: error.message || 'Failed to send verification code' });
             }
           });
@@ -119,15 +130,15 @@ export default function SignupComponentPage() {
 
     const payload: OtpVerificationRequest = {email_or_phone: email, otp: otp}
 
-    setIsLoading(true)
+    setLoading(l => ({ ...l, otp: true }));
     validateEmailVerificationOtp.mutate(payload, {
             onSuccess: () => {
             setOtp(otp)
-            setIsLoading(false)
+            setLoading(l => ({ ...l, otp: false }));
             setCurrentStep('details');
             },
             onError: (error) => {
-              setIsLoading(false)
+              setLoading(l => ({ ...l, otp: false }));
               setOtpError(error.message || 'Invalid verification code');
             }
           });
@@ -159,7 +170,7 @@ export default function SignupComponentPage() {
     
     setErrors({});
 
-    setIsLoading(true)
+    setLoading(l => ({ ...l, details: true }));
     const payload: CreateUserDto = {
                 otp: otp,
                 email: email,
@@ -170,11 +181,11 @@ export default function SignupComponentPage() {
             
             createUser.mutate(payload, {
               onSuccess: () => {
-              setIsLoading(false)
+              setLoading(l => ({ ...l, details: false }));
               router.push("/dashboard");
               },
               onError: (error) => {
-                setIsLoading(false)
+                setLoading(l => ({ ...l, details: false }));
                 setErrors({ general: error.message || 'An error occurred' });
               }
             });
@@ -182,9 +193,11 @@ export default function SignupComponentPage() {
 
   const handleSocialAuth = async (provider: SocialAuthProvider) => {
       const payload = {provider: provider, authType: SocialAuthType.SIGNUP}
-  
+
+      setLoading(l => ({ ...l, social: true }));
       initSocialAuth.mutate(payload, {
             onSuccess: (data) => {
+            setLoading(l => ({ ...l, social: false }));
             setSocialAuthHasError(false)
             openSocialPopup(
               data.redirectUrl,
@@ -192,6 +205,7 @@ export default function SignupComponentPage() {
             );
             },
             onError: (error) => {
+              setLoading(l => ({ ...l, social: false }));
               setSocialAuthHasError(true)
               setSocialAuthError(error.message || 'Social login failed');
             }
@@ -240,7 +254,7 @@ export default function SignupComponentPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={errors.email ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}
-              disabled={isLoading}
+              disabled={loading.email}
               autoComplete="email"
             />
             {errors.email && (
@@ -252,9 +266,9 @@ export default function SignupComponentPage() {
             type="submit"
             variant="default"
             className="w-full"
-            disabled={!isEmailValid || isLoading}
+            disabled={!isEmailValid || loading.email}
           >
-            {isLoading ? (
+            {loading.email ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Sending code...
@@ -275,7 +289,7 @@ export default function SignupComponentPage() {
           onGoogleClick={()=> handleSocialAuth(SocialAuthProvider.GOOGLE)}
           onAppleClick={()=> handleSocialAuth(SocialAuthProvider.APPLE)}
           socialAuthHasError={socialAuthHasError}
-          isLoading={isLoading}
+          isLoading={loading.social}
           action="sign-up"
         />
         {socialAuthError && (
@@ -304,7 +318,7 @@ export default function SignupComponentPage() {
       )}>
         <OtpVerification
           email={email}
-          isLoading={isLoading}
+          isLoading={loading.otp}
           onVerify={handleOtpVerify}
           onResend={handleOtpResend}
           onBack={handleOtpBack}
@@ -346,7 +360,7 @@ export default function SignupComponentPage() {
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 className={errors.firstName ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}
-                disabled={isLoading}
+                disabled={loading.details}
                 autoComplete="given-name"
               />
               {errors.firstName && (
@@ -362,7 +376,7 @@ export default function SignupComponentPage() {
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 className={errors.lastName ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}
-                disabled={isLoading}
+                disabled={loading.details}
                 autoComplete="family-name"
               />
               {errors.lastName && (
@@ -380,7 +394,7 @@ export default function SignupComponentPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               error={!!errors.password}
-              disabled={isLoading}
+              disabled={loading.details}
               autoComplete="new-password"
             />
             {password.length > 0 && (
@@ -405,7 +419,7 @@ export default function SignupComponentPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               error={!!errors.confirmPassword}
-              disabled={isLoading}
+              disabled={loading.details}
               autoComplete="new-password"
             />
             {errors.confirmPassword && (
@@ -418,9 +432,9 @@ export default function SignupComponentPage() {
             type="submit"
             variant="default"
             className="w-full"
-            disabled={!isDetailsValid || isLoading}
+            disabled={!isDetailsValid || loading.details}
           >
-            {isLoading ? (
+            {loading.details ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Creating account...
