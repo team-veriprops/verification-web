@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { httpClient } from "containers";
-import { LoginSuccessDto } from "@components/admin/user/models";
 import { AuthService } from "./auth-service";
+import { ActiveAuditor } from "../models";
 
 interface AuthStore {
   service: AuthService; // runtime only (not persisted)
-  activeAuditor: LoginSuccessDto | null; // persisted only
-  setActiveAuditor: (activeAuditor: LoginSuccessDto | null) => void;
+  activeAuditor: ActiveAuditor | null; // persisted only
+  setActiveAuditor: (activeAuditor: ActiveAuditor | null) => void;
   resetActiveAuditor: () => void;
 }
 
@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthStore>()(
     {
       name: "veriprops-active_auditor", // localStorage key
       storage: createJSONStorage(() => localStorage),
-      partialize: (state: { activeAuditor: LoginSuccessDto }) => ({
+      partialize: (state: { activeAuditor: ActiveAuditor }) => ({
         activeAuditor: state.activeAuditor,
       }),
     }

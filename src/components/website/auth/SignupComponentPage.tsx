@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Loader2, Check, Mail } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Input } from '@components/3rdparty/ui/input';
@@ -15,8 +15,9 @@ import { useRouter } from 'next/navigation';
 import { CreateUserDto} from '@components/admin/user/models';
 import Link from 'next/link';
 import { SignUpProgress } from './SignUpProgress';
-import { cn, openSocialPopup } from '@lib/utils';
+import { cn, isMobileBrowser} from '@lib/utils';
 import { OtpVerification } from './OtpVerification';
+import { openSocialPopup } from './libs/auth-utils';
 
 type Step = 'email' | 'otp' | 'details';
 
@@ -42,7 +43,6 @@ export default function SignupComponentPage() {
     const validateEmailVerificationOtp = useValidateEmailVerificationOtp()
     const createUser = useCreateUser()
     const initSocialAuth = useInitSocialAuth()
-    const [socialAuthHasError,  setSocialAuthHasError] = useState(false);
 
     const [loading, setLoading] = useState<{
       email: boolean;
@@ -73,23 +73,7 @@ export default function SignupComponentPage() {
   const [otpError, setOtpError] = useState('');
   const [socialAuthError, setSocialAuthError] = useState<string | null>(null);
 
-  useEffect(() => {
-  const handler = (event: MessageEvent) => {
-    if (event.origin !== window.location.origin) return;
-
-    if (event.data?.type === "SOCIAL_AUTH_SUCCESS") {
-      // User is now authenticated (cookie/session already set)
-      router.push("/dashboard");
-    }
-
-    if (event.data?.type === "SOCIAL_AUTH_ERROR") {
-      setSocialAuthHasError(true);
-    }
-  };
-
-  window.addEventListener("message", handler);
-  return () => window.removeEventListener("message", handler);
-}, [router]);
+  const popupRef = useRef<Window | null>(null);
 
   // Step 1: Email submission
   const handleEmailSubmit = async (e?: React.FormEvent) => {
@@ -182,7 +166,7 @@ export default function SignupComponentPage() {
             createUser.mutate(payload, {
               onSuccess: () => {
               setLoading(l => ({ ...l, details: false }));
-              router.push("/dashboard");
+              router.push("/portal/dashboard");
               },
               onError: (error) => {
                 setLoading(l => ({ ...l, details: false }));
@@ -191,26 +175,43 @@ export default function SignupComponentPage() {
             });
   };
 
-  const handleSocialAuth = async (provider: SocialAuthProvider) => {
-      const payload = {provider: provider, authType: SocialAuthType.SIGNUP}
+const handleSocialAuth = (provider: SocialAuthProvider) => {
+  const payload = {
+    provider,
+    authType: SocialAuthType.SIGNUP,
+  };
 
-      setLoading(l => ({ ...l, social: true }));
-      initSocialAuth.mutate(payload, {
-            onSuccess: (data) => {
-            setLoading(l => ({ ...l, social: false }));
-            setSocialAuthHasError(false)
-            openSocialPopup(
-              data.redirectUrl,
-              provider
-            );
-            },
-            onError: (error) => {
-              setLoading(l => ({ ...l, social: false }));
-              setSocialAuthHasError(true)
-              setSocialAuthError(error.message || 'Social login failed');
-            }
-          });
-    };
+  const isMobile = isMobileBrowser();
+
+  // Desktop: open popup immediately (sync)
+  popupRef.current = !isMobile
+    ? openSocialPopup('about:blank', provider)
+    : null;
+
+  setLoading(l => ({ ...l, social: true }));
+  initSocialAuth.mutate(payload, {
+    onSuccess: (data) => {
+      setLoading(l => ({ ...l, social: false }));
+      setSocialAuthError('');
+
+      if (isMobile) {
+        // Mobile-safe full redirect
+        window.location.href = data.redirectUrl;
+        return;
+      }
+
+      // Desktop: redirect existing popup
+      popupRef.current!.location.href = data.redirectUrl;
+    },
+    onError: (error) => {
+      setLoading(l => ({ ...l, social: false }));
+      popupRef.current?.close();
+      popupRef.current = null;
+
+      setSocialAuthError(error.message || 'Social sign-up failed');
+    },
+  });
+};
 
   const isEmailValid = email.length > 0 && emailSchema.safeParse({ email }).success;
   const isDetailsValid = firstName.length >= 2 && lastName.length >= 2 && password.length >= 8 && password === confirmPassword;
@@ -288,15 +289,11 @@ export default function SignupComponentPage() {
         <SocialAuthButtons
           onGoogleClick={()=> handleSocialAuth(SocialAuthProvider.GOOGLE)}
           onAppleClick={()=> handleSocialAuth(SocialAuthProvider.APPLE)}
-          socialAuthHasError={socialAuthHasError}
           isLoading={loading.social}
           action="sign-up"
+          inputSocialAuthError={socialAuthError!}
+          popupRef={popupRef}
         />
-        {socialAuthError && (
-          <p className="text-sm text-destructive text-center">
-            {socialAuthError}
-          </p>
-        )}
 
           {/* Sign In Link */}
           <p className="text-center text-sm text-muted-foreground pt-2">

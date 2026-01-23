@@ -1,17 +1,19 @@
 'use client'
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "./useAuthStore";
-import { CreateUserDto, LoginSuccessDto } from "@components/admin/user/models";
+import { CreateUserDto, SuccessResponse } from "@components/admin/user/models";
 import { useEffect } from "react";
-import { ChangePasswordPayload, EmailValidationRequest, InitSocialLoginResponse, LoginPayload, OtpVerificationRequest, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
+import { ActiveAuditor, ChangePasswordPayload, EmailValidationRequest, InitSocialLoginResponse, LoginPayload, OtpVerificationRequest, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
+import { useRouter } from "next/navigation";
 
 /**
  * React Query hooks wrapping AuthService
  */
 export const useAuthQueries = () => {
   const service = useAuthStore((state) => state.service);
-  const { setActiveAuditor, activeAuditor } = useAuthStore();
+  const { setActiveAuditor, resetActiveAuditor, activeAuditor } = useAuthStore();
+  const queryClient = useQueryClient();
 
 
   const useInitSocialAuth = () =>
@@ -37,16 +39,16 @@ export const useAuthQueries = () => {
   });
 
   const useGetAuth = () => {
-    const result = useQuery<LoginSuccessDto>({
+    const result = useQuery<SuccessResponse<ActiveAuditor>>({
       queryKey: ["get-active-auditor-details"] as const,
-      queryFn: async (): Promise<LoginSuccessDto> => service.getProfile(),
+      queryFn: async (): Promise<SuccessResponse<ActiveAuditor>> => service.getProfile(),
       placeholderData: (prev) => prev,
       enabled: !activeAuditor?.id
     });
 
     useEffect(() => {
       if (result.data) {
-        setActiveAuditor(result.data);
+        setActiveAuditor(result.data?.data ?? null);
       }
     }, [result.status, result.data]);
 
@@ -58,12 +60,40 @@ export const useAuthQueries = () => {
       mutationFn: () =>
         service.refreshToken(),
   });
-    
-  const useLogout = () =>
-    useMutation({
-      mutationFn: () =>
-        service.logout(),
+
+  const clearUserSession = () => {
+    // Clear cached user/session data
+    queryClient.clear();
+
+    // Clear ActiveAuditor
+    resetActiveAuditor()
+  }
+
+const useLogout = () => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationKey: ["logout"],
+    mutationFn: () => service.logout(),
+
+    onSuccess: () => {
+      clearUserSession()
+      router.replace("/auth/sign-in");
+    },
+
+    onError: (error) => {
+      console.error("Logout failed", error);
+      clearUserSession()
+      router.replace("/auth/sign-in");
+    },
   });
+};
+    
+  // const useLogout = () =>
+  //   useMutation({
+  //     mutationFn: () =>
+  //       service.logout(),
+  // });
     
   const useChangePassword = () =>
     useMutation({

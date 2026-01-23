@@ -1,9 +1,9 @@
 import SigninComponentPage from "@components/website/auth/SigninComponentPage";
 import { Metadata } from "next";
 
-const title = "My Purchases";
+const title = "Sign In";
 const description =
-  "Manage all the lands, houses, and services you’ve purchased on Veriprops. Track purchase status, download receipts, and access support for each property or service.";
+  "Securely sign into your account";
 
 export const metadata: Metadata = {
   title: `${title} | Veriprops`,

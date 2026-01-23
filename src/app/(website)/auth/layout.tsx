@@ -1,5 +1,6 @@
 import TrustHeader from "@components/website/auth/TrustHeader";
 import { TrustPanel } from "@components/website/auth/TrustPanel";
+import Link from "next/link";
 
 
 export default function AuthLayout({
@@ -18,7 +19,7 @@ export default function AuthLayout({
           
 
           {/* Logo */}
-            <div className="
+          <Link href={"/"} className="
               absolute lg:top-8 lg:right-8 lg:left-auto
               left-2/5 right-auto
             ">
@@ -30,7 +31,7 @@ export default function AuthLayout({
                   Veriprops
                 </span>
               </div>
-            </div>
+          </Link>
 
           
           {/* <TrustHeader /> */}

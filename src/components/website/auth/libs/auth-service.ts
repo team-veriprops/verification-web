@@ -1,6 +1,6 @@
 import { HttpClient } from "@lib/FetchHttpClient";
-import { ChangePasswordPayload, EmailValidationRequest, InitSocialLoginResponse, LoginPayload, OtpVerificationRequest, ProfileResponse, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
-import { CreateUserDto, LoginSuccessDto } from "../../../admin/user/models";
+import { ActiveAuditor, ChangePasswordPayload, EmailValidationRequest, InitSocialLoginResponse, LoginPayload, OtpVerificationRequest, ProfileResponse, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
+import { CreateUserDto, LoginSuccessDto, SuccessResponse } from "../../../admin/user/models";
 import { toQueryParams } from "@lib/utils";
 
 export class AuthService {
@@ -33,8 +33,8 @@ export class AuthService {
     );
   }
 
-  getProfile(): Promise<LoginSuccessDto> {
-    return this.http.get<LoginSuccessDto>(`${this.auth_base_url}/auths/profile`);
+  getProfile(): Promise<SuccessResponse<ActiveAuditor>> {
+    return this.http.get<SuccessResponse<ActiveAuditor>>(`${this.auth_base_url}/auths/profile`);
   }
 
   refreshToken(): Promise<void> {

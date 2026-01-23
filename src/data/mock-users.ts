@@ -36,13 +36,13 @@ export async function generateAdminRole(
 }
 
 export async function generateAdminUser(role: string): Promise<QueryUserDto> {
-  const first_name = faker.person.firstName();
-  const last_name = faker.person.lastName();
+  const firstname = faker.person.firstName();
+  const lastname = faker.person.lastName();
   return {
     id: faker.string.uuid(),
-    first_name: first_name,
-    last_name: last_name,
-    fullname: `${first_name} ${last_name}`,
+    firstname: firstname,
+    lastname: lastname,
+    fullname: `${firstname} ${lastname}`,
     email: faker.internet.email(),
     role: role,
     status: faker.helpers.arrayElement([
@@ -58,13 +58,13 @@ export async function generateAdminUser(role: string): Promise<QueryUserDto> {
   };
 }
 export async function generateUser(): Promise<QueryUserDto> {
-  const first_name = faker.person.firstName();
-  const last_name = faker.person.lastName();
+  const firstname = faker.person.firstName();
+  const lastname = faker.person.lastName();
   return {
     id: faker.string.uuid(),
-    first_name: first_name,
-    last_name: last_name,
-    fullname: `${first_name} ${last_name}`,
+    firstname: firstname,
+    lastname: lastname,
+    fullname: `${firstname} ${lastname}`,
     email: faker.internet.email(),
     role: system_roles_str[0],
     status: faker.helpers.arrayElement([
