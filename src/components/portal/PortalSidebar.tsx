@@ -19,6 +19,7 @@ import { Button } from "@components/3rdparty/ui/button";
 import { useSidebar } from "@components/3rdparty/ui/sidebar";
 import { Separator } from "@components/3rdparty/ui/separator";
 import { Fragment } from "react";
+import { useAuthQueries } from "@components/website/auth/libs/useAuthQueries";
 
 const navItems = [
   { title: "Dashboard", href: "/portal/dashboard", icon: LayoutDashboard, has_separator_after: false },
@@ -42,9 +43,11 @@ const PortalSidebar = ({ className, onClose, isMobile = false }: PortalSidebarPr
   const router = useRouter();
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed" && !isMobile;
+  const {useLogout} = useAuthQueries()
+  const {mutate: logout, isPending} = useLogout()
 
   const handleLogout = () => {
-    router.push("/");
+    logout();
   };
 
   const isActive = (href: string) => {
@@ -135,6 +138,7 @@ const PortalSidebar = ({ className, onClose, isMobile = false }: PortalSidebarPr
       <div className="p-2 border-t border-border">
         <button
           onClick={handleLogout}
+          disabled={isPending}
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors w-full",
             "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",

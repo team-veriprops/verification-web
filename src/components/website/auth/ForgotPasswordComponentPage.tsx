@@ -39,11 +39,12 @@ export default function ForgotPasswordComponentPage() {
     const payload: RecoverPasswordMessagePayload = {email: email};
 
     sendRecoverPasswordMessage.mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: () => {
       setIsLoading(false)
       setIsSuccess(true);
       },
       onError: () => {
+        setIsSuccess(false);
         setIsLoading(false)
       }
     });

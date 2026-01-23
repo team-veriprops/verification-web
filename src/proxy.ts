@@ -1,46 +1,48 @@
-import { authRequiredPathParamKey, authRequiredTypePathParamKey } from "containers";
 import { NextRequest, NextResponse } from "next/server";
 
 export function proxy(req: NextRequest) {
   const jwt = req.cookies.get("__Host-access_token")?.value;
 
-  // console.log("req.cookies: ", req.cookies)
-
-  const isOnLogin = req.nextUrl.pathname.startsWith('/login');
-  const isOnDashboard = req.nextUrl.pathname.startsWith('/dashboard');
+  const isOnAuth = req.nextUrl.pathname.startsWith('/auth');
+  const isOnDashboard = req.nextUrl.pathname.startsWith('/portal');
   const isOnAdmin = req.nextUrl.pathname.startsWith('/admin');
-  const shouldLogin = isOnLogin || isOnDashboard || isOnAdmin
+  const shouldLogin = isOnAuth || isOnDashboard || isOnAdmin
 
   const isLoggedIn = !!jwt;
-  const referrer = req.headers.get('referer');
+  // const referrer = req.headers.get('referer');
+  const referrer2 = req.nextUrl;
   let referringPath = undefined
-  if (referrer) {
-    const url = new URL(referrer);
-    url.searchParams.set(authRequiredPathParamKey, 'true');
-
-    if (shouldLogin){
-      url.searchParams.set(authRequiredTypePathParamKey, 'login');
-    }else{
-      url.searchParams.set(authRequiredTypePathParamKey, 'signup');
-    }
-
-    referringPath = url.pathname + url.search;
-  }
-
-  console.log("isLoggedIn: ", isLoggedIn, ", authRequired: ", referringPath)
+  let redirectUrl = undefined
 
   if (isLoggedIn) {
-      if (isOnLogin){
-        return NextResponse.redirect(new URL("/dashboard", req.url));
+      if (isOnAuth){ // Is on auth path while already logged in
+        redirectUrl = new URL("/portal/dashboard", req.url);
       }
-  }else{
-      if (referringPath) {
-        return NextResponse.redirect(new URL(referringPath, req.url));
-      }else{
-        // When the page is just reloaded with the protected page active, but user not logged in
-        return NextResponse.redirect(new URL("/login", req.url));
-      }
+  }else if(!isOnAuth){ // Not login, and not on login path
+      redirectUrl = new URL("/auth/sign-in", req.url);
   }
+
+  if(!isOnAuth){
+    referringPath = referrer2.pathname + referrer2.search;
+    if (redirectUrl){
+      redirectUrl.searchParams.set("auth-referrer", referringPath);
+    }
+  }
+
+  // console.log(", referrer2: ", referrer2)
+  // console.log("isLoggedIn: ", isLoggedIn, ", referringPath: ", referringPath)
+
+  if (redirectUrl){
+      return NextResponse.redirect(redirectUrl);
+  }
+
+  // if (isLoggedIn) {
+  //     if (isOnAuth){ // Is on auth path while already logged in
+  //       return NextResponse.redirect(new URL("/portal/dashboard", req.url));
+  //     }
+  // }else if(!isOnAuth){ // Not login, and not on login path
+  //     return NextResponse.redirect(new URL("/auth/sign-in", req.url));
+  // }
 
   return NextResponse.next();
 }
@@ -48,8 +50,7 @@ export function proxy(req: NextRequest) {
 export const config = {
  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
   matcher: [
-    '/start-your-build/:path*', 
-    // '/dashboard/:path*', 
+    '/portal/:path*', 
     '/admin/:path*', 
-    '/login'], // Routes to protect
+    '/auth/sign-in'], // Routes to protect
 };

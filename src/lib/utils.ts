@@ -2,7 +2,6 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { redirect } from "next/navigation";
 import { Measurement, Money } from "types/models";
-import { SocialAuthProvider } from "@components/website/auth/models";
 
 
 /**
@@ -205,34 +204,37 @@ export const getStatusBadgeColor = (status: string): string => {
   return colors[status] || "bg-muted text-muted-foreground";
 };
 
-export function openSocialPopup(url: string, provider: SocialAuthProvider) {
-  const width = 500;
-  const height = 600;
-
-  const left = window.screenX + (window.outerWidth - width) / 2;
-  const top = window.screenY + (window.outerHeight - height) / 2;
-
-  const popup = window.open(
-    url,
-    `${provider}-oauth`,
-    `
-      width=${width},
-      height=${height},
-      left=${left},
-      top=${top},
-      resizable=yes,
-      scrollbars=yes,
-      status=no,
-      toolbar=no,
-      menubar=no,
-      location=no
-    `.replace(/\s+/g, '')
+export function isMobileBrowser(): boolean {
+  return (
+    typeof navigator !== 'undefined' &&
+    /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(
+      navigator.userAgent
+    )
   );
+}
 
-  if (!popup) {
-    throw new Error('Popup blocked by browser');
+function normalizeBase64(input: string): string {
+  let base64 = input.replace(/-/g, '+').replace(/_/g, '/');
+
+  // Pad with '=' if needed
+  const pad = base64.length % 4;
+  if (pad) {
+    base64 += '='.repeat(4 - pad);
   }
 
-  popup.focus();
-  return popup;
+  return base64;
+}
+
+export function base64UrlToString(input: string): string {
+  const base64 = normalizeBase64(input);
+
+  // Server
+  if (typeof window === 'undefined') {
+    return Buffer.from(base64, 'base64').toString('utf-8');
+  }
+
+  // Client (UTF-8 safe)
+  const binary = window.atob(base64);
+  const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
 }

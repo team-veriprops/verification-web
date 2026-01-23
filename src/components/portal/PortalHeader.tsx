@@ -15,6 +15,7 @@ import {
 import { useSidebar } from "@components/3rdparty/ui/sidebar";
 import NotificationDropdown from "./NotificationDropdown";
 import { mockUser } from "@data/portalMockData";
+import { useAuthQueries } from "@components/website/auth/libs/useAuthQueries";
 
 interface PortalHeaderProps {
   onMenuClick: () => void;
@@ -36,6 +37,8 @@ const PortalHeader = ({ onMenuClick }: PortalHeaderProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const { state, toggleSidebar } = useSidebar();
+  const {useLogout} = useAuthQueries()
+  const {mutate: logout, isPending} = useLogout()
 
   const getPageTitle = () => {
     const path = pathname;
@@ -86,7 +89,7 @@ const PortalHeader = ({ onMenuClick }: PortalHeaderProps) => {
   };
 
   const handleLogout = () => {
-    router.push("/");
+    logout();
   };
 
   const breadcrumbs = getBreadcrumbs();
@@ -168,7 +171,7 @@ const PortalHeader = ({ onMenuClick }: PortalHeaderProps) => {
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+            <DropdownMenuItem disabled={isPending} onClick={handleLogout} className="text-destructive">
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>

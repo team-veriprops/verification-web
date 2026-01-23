@@ -19,7 +19,7 @@ export default function DashboardComponentPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-            Hello, {activeAuditor?.first_name ?? "dear"}!
+            Hello, {activeAuditor?.firstname ?? "dear"}!
           </h1>
           <p className="text-muted-foreground mt-1">
             {"Here's an overview of your property verifications"}

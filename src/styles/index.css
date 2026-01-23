@@ -3,11 +3,11 @@
 /* @plugin 'tailwindcss-animate'; */
 
 /* Tailwind and Custom Layers */
-@import "tailwindcss";
 @import "./theme.css";
+@import "tailwindcss";
 
 /* @custom-variant dark (&:is(.dark *)); */
-
+/* 
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -49,7 +49,7 @@
 
 .read-the-docs {
   color: #888;
-}
+} */
 
 
 /* @layer base {

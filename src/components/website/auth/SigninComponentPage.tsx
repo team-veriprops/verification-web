@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Input } from '@components/3rdparty/ui/input';
@@ -13,7 +13,8 @@ import { useAuthQueries } from './libs/useAuthQueries';
 import { LoginPayload, SocialAuthProvider, SocialAuthType } from './models';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { openSocialPopup } from '@lib/utils';
+import { isMobileBrowser } from '@lib/utils';
+import { openSocialPopup } from './libs/auth-utils';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -25,11 +26,14 @@ export default function SigninComponentPage() {
     const login = useLogin()
     const initSocialAuth = useInitSocialAuth()
     const [isLoading,  setIsLoading] = useState(false);
-    const [socialLoginHasError,  setSocialLoginHasError] = useState(false);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+    
+  const [socialAuthError, setSocialAuthError] = useState<string | null>(null);
+  
+  const popupRef = useRef<Window | null>(null);
 
   const validateForm = () => {
     const result = signInSchema.safeParse({ email, password });
@@ -57,9 +61,9 @@ export default function SigninComponentPage() {
         };
         
         login.mutate(payload, {
-          onSuccess: (data) => {
+          onSuccess: () => {
           setIsLoading(false)
-          redirect('/dashboard');
+          redirect('/portal/dashboard');
           },
           onError: (error) => {
             console.log("error: ", error)
@@ -69,22 +73,39 @@ export default function SigninComponentPage() {
         });
   };
 
-  const handleSocialAuth = async (provider: SocialAuthProvider) => {
-    const payload = {provider: provider, authType: SocialAuthType.LOGIN}
-
+  const handleSocialAuth = (provider: SocialAuthProvider) => {
+    const payload = {
+      provider,
+      authType: SocialAuthType.LOGIN,
+    };
+  
+    const isMobile = isMobileBrowser();
+  
+    // Desktop: open popup immediately (sync)
+    popupRef.current = !isMobile
+      ? openSocialPopup('about:blank', provider)
+      : null;
+  
     initSocialAuth.mutate(payload, {
-                onSuccess: (data) => {
-                setSocialLoginHasError(false)
-                openSocialPopup(
-                  data.redirectUrl,
-                  provider
-                );
-                },
-                onError: (error) => {
-                  setSocialLoginHasError(true)
-                  setErrors({ general: error.message });
-                }
-              });
+      onSuccess: (data) => {
+        setSocialAuthError('');
+  
+        if (isMobile) {
+          // Mobile-safe full redirect
+          window.location.href = data.redirectUrl;
+          return;
+        }
+  
+        // Desktop: redirect existing popup
+        popupRef.current!.location.href = data.redirectUrl;
+      },
+      onError: (error) => {
+        popupRef.current?.close();
+        popupRef.current = null;
+  
+        setSocialAuthError(error.message || 'Social sign-in failed');
+      },
+    });
   };
 
   const isFormValid = email.length > 0 && password.length > 0;
@@ -175,12 +196,13 @@ export default function SigninComponentPage() {
 
         {/* Social Auth */}
         <SocialAuthButtons
-          onGoogleClick={()=> handleSocialAuth(SocialAuthProvider.GOOGLE)}
-          onAppleClick={()=> handleSocialAuth(SocialAuthProvider.APPLE)}
-          isLoading={isLoading}
-          socialLoginHasError={socialLoginHasError}
-          action="sign-in"
-        />
+                  onGoogleClick={()=> handleSocialAuth(SocialAuthProvider.GOOGLE)}
+                  onAppleClick={()=> handleSocialAuth(SocialAuthProvider.APPLE)}
+                  isLoading={isLoading}
+                  action="sign-in"
+                  inputSocialAuthError={socialAuthError!}
+                  popupRef={popupRef}
+                />
 
         {/* Sign Up Link */}
         <p className="text-center text-sm text-muted-foreground pt-4">

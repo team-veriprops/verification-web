@@ -4,9 +4,11 @@ import { Button } from "@components/3rdparty/ui/button";
 import { Shield, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuthStore } from "./auth/libs/useAuthStore";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const {activeAuditor} = useAuthStore()
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -40,11 +42,18 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm">
-              <Link href={"portal/"}>Login</Link>
-            </Button>
+            {activeAuditor?.id ? (
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/portal/dashboard">Go to Dashboard</Link>
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm">
+                <Link href={"/auth/sign-in"}>Login</Link>
+              </Button>
+            )}
+            
             <Button variant="default" size="sm">
-              Verify a Property
+              <Link href={"/portal/verifications?add=1"}>Verify a Property</Link>
             </Button>
           </div>
 
@@ -75,12 +84,20 @@ const Header = () => {
                 Testimonials
               </Link>
               <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                <Button variant="ghost" className="justify-start">
-                  Login
-                </Button>
-                <Button variant="default">
-                  Verify a Property
-                </Button>
+                {activeAuditor?.id ? (
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/portal/dashboard">Go to Dashboard</Link>
+                    </Button>
+                  ) : (
+                    <>
+                      <Button variant="ghost" className="justify-start">
+                        <Link href={"/auth/sign-in"}>Login</Link>
+                      </Button>
+                      <Button variant="default">
+                        <Link href={"/portal/verifications?add=1"}>Verify a Property</Link>
+                      </Button>
+                    </>
+                  )}
               </div>
             </nav>
           </div>

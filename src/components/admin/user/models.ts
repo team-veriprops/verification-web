@@ -11,9 +11,9 @@ export interface UpdateUserDto {
   password?: string;
   password_last_updated?: string;
   status?: UserStatus;
-  first_name?: string;
+  firstname?: string;
   middle_name?: string;
-  last_name?: string;
+  lastname?: string;
   notes?: string;
   avatar?: string
 }
@@ -37,9 +37,9 @@ export interface CreateUserDto {
 }
 
 export interface UpdateNameDto {
-  first_name: string;
+  firstname: string;
   middle_name: string;
-  last_name: string;
+  lastname: string;
 }
 
 export interface SearchUserDto extends PageRequest, BaseQueryDto, UpdateUserDto {

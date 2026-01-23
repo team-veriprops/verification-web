@@ -17,7 +17,7 @@ export default function VerifierComponentPage({
         <div className=" relative">
           <div className="flex items-center justify-between">
             <PageHeader
-              title={`${title}, ${activeAuditor?.first_name ?? ""}`}
+              title={`${title}, ${activeAuditor?.firstname ?? ""}`}
               description={description}
             />
             <AvailabilityToggle />
@@ -26,7 +26,7 @@ export default function VerifierComponentPage({
 
       {/* <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <PageHeader
-              title={`${title}, ${activeAuditor?.first_name ?? ""}`}
+              title={`${title}, ${activeAuditor?.firstname ?? ""}`}
               description={description}
               />
       
