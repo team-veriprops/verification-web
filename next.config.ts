@@ -5,7 +5,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  allowedDevOrigins: ["127.0.0.1", "192.168.0.162", "192.168.0.132"],
+  allowedDevOrigins: ["127.0.0.1", "172.25.32.1", "192.168.0.132"],
   async rewrites() {
     return [
       {
