@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { ArrowLeft, Link2, FileText } from 'lucide-react';
+import { ArrowLeft, Link2, FileText, X } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/3rdparty/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/3rdparty/ui/card';
@@ -75,21 +75,12 @@ export default function NewVerificationRequestModal() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-52 bg-background"
+      className="fixed inset-0 z- bg-background"
     >
       {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-16">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleClose()}
-              className="mr-4"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
+            <header className="border-b border-border bg-card">
+        <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
             <div>
               <h1 className="text-lg font-display font-semibold text-foreground">
                 New Verification Request
@@ -98,6 +89,18 @@ export default function NewVerificationRequestModal() {
                 Submit property details for verification
               </p>
             </div>
+            <button onClick={handleClose} className="text-gray-600 hover:text-black">
+            <X className="w-6 h-6" />
+          </button>
+            {/* <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleClose()}
+              className="mr-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button> */}
           </div>
         </div>
       </header>

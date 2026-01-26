@@ -398,7 +398,7 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Local Government Area *</FormLabel>
-                    <Select 
+                    <Select
                       onValueChange={field.onChange}
                       value={field.value}
                       disabled={!watchState}
