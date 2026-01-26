@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, Link2, FileText, X } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/3rdparty/ui/tabs';
@@ -15,18 +15,23 @@ import { useVerificationStore } from '../libs/useVerificationStore';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useBodyOverflowHidden } from '@hooks/useBodyOverflowHidden';
+import CheckoutComponentModal from '../checkout/CheckoutComponentModal';
 
 export default function NewVerificationRequestModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<'manual' | 'url'>('manual');
   const [extractedData, setExtractedData] = useState<Partial<PropertyDetails> | null>(null);
-  const { viewAddVerificationModal, setViewAddVerificationModal } = useVerificationStore();
+  const { viewAddVerificationModal, setViewAddVerificationModal, viewVerificationCheckoutModal, setViewVerificationCheckoutModal } = useVerificationStore();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   
   // Lock body scroll when modal is open
   useBodyOverflowHidden(viewAddVerificationModal);
+
+  useEffect(()=>{
+    setViewVerificationCheckoutModal(true)
+  }, [setViewVerificationCheckoutModal])
 
   const handleClose = () => {
     const params = new URLSearchParams(searchParams);

@@ -20,6 +20,7 @@ interface VerificationStore {
   currentVerification: QueryVerificationDto | null; // persisted only
   viewVerificationDetail: boolean;
   viewAddVerificationModal: boolean;
+  viewVerificationCheckoutModal: boolean;
   showReceipt: boolean;
   setFilters: (
     updater:
@@ -35,6 +36,7 @@ interface VerificationStore {
   setCurrentVerification: (currentVerification: QueryVerificationDto | null) => void;
   setViewVerificationDetail: (viewVerificationDetail: boolean) => void;
   setViewAddVerificationModal: (viewAddVerificationModal: boolean) => void;
+  setViewVerificationCheckoutModal: (viewVerificationCheckoutModal: boolean) => void;
   setShowReceipt: (showReceipt: boolean) => void
 }
 
@@ -49,6 +51,7 @@ export const useVerificationStore = create<VerificationStore>()(
       currentVerification: null,
       viewVerificationDetail: false,
       viewAddVerificationModal: false,
+      viewVerificationCheckoutModal: false,
       showReceipt: false,
 
       // merge filters (instead of replacing)
@@ -78,6 +81,7 @@ export const useVerificationStore = create<VerificationStore>()(
       setCurrentVerification: (currentVerification) => set({ currentVerification }),
       setViewVerificationDetail: (viewVerificationDetail) => set({ viewVerificationDetail }),
       setViewAddVerificationModal: (viewAddVerificationModal) => set({ viewAddVerificationModal }),
+      setViewVerificationCheckoutModal: (viewVerificationCheckoutModal) => set({ viewVerificationCheckoutModal }),
       setShowReceipt: (showReceipt: boolean) => set({ showReceipt }),
     }),
     {
@@ -89,12 +93,14 @@ export const useVerificationStore = create<VerificationStore>()(
         currentVerification: QueryVerificationDto; 
         viewVerificationDetail: boolean; 
         viewAddVerificationModal: boolean;
+        viewVerificationCheckoutModal: boolean;
         showReceipt: boolean;
       }) => ({
         filters: state.filters,
         currentVerification: state.currentVerification,
         viewVerificationDetail: state.viewVerificationDetail,
         viewAddVerificationModal: state.viewAddVerificationModal,
+        viewVerificationCheckoutModal: state.viewVerificationCheckoutModal,
         showReceipt: state.showReceipt,
       }),
     }
