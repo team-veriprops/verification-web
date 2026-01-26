@@ -16,6 +16,7 @@ import { motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useBodyOverflowHidden } from '@hooks/useBodyOverflowHidden';
 import CheckoutComponentModal from '../checkout/CheckoutComponentModal';
+import BrandLogo from '@components/ui/BrandLogo';
 
 export default function NewVerificationRequestModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,7 +31,7 @@ export default function NewVerificationRequestModal() {
   useBodyOverflowHidden(viewAddVerificationModal);
 
   useEffect(()=>{
-    setViewVerificationCheckoutModal(true)
+    setViewVerificationCheckoutModal(false)
   }, [setViewVerificationCheckoutModal])
 
   const handleClose = () => {
@@ -83,20 +84,26 @@ export default function NewVerificationRequestModal() {
       className="fixed inset-0 z- bg-background"
     >
       {/* Header */}
-            <header className="border-b border-border bg-card">
+      <header className="border-b border-border bg-card">
         <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div>
+          <BrandLogo />
+          {/* <div>
               <h1 className="text-lg font-display font-semibold text-foreground">
                 New Verification Request
               </h1>
               <p className="text-sm text-muted-foreground">
                 Submit property details for verification
               </p>
-            </div>
-            <button onClick={handleClose} className="text-gray-600 hover:text-black">
+          </div> */}
+          <div className='flex gap-3'>
+            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+            <span>Verification Request</span>
+          </div>
+          <button onClick={handleClose} className="text-gray-600 hover:text-black">
             <X className="w-6 h-6" />
           </button>
+          </div>
             {/* <Button
               variant="ghost"
               size="sm"
@@ -113,7 +120,15 @@ export default function NewVerificationRequestModal() {
       {/* Main Content */}
       <div className='h-[calc(100%-4rem)] overflow-y-auto'>
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card>
+        <div className="mb-8 text-center">
+            <h1 className="font-display font-bold text-2xl sm:text-3xl text-foreground mb-2">
+              New Verification Request
+            </h1>
+            <p className="text-muted-foreground">
+              Submit property details for verification
+            </p>
+        </div>
+        <Card className='border-border'>
           <CardHeader>
             <CardTitle>Property Information</CardTitle>
             <CardDescription>
@@ -158,6 +173,8 @@ export default function NewVerificationRequestModal() {
         </div>
       </main>
       </div>
+
+      {viewVerificationCheckoutModal && <CheckoutComponentModal/>}
     </motion.div>
   );
 }

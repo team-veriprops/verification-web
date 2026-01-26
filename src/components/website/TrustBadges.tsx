@@ -12,7 +12,7 @@ const iconMap: Record<string, React.ReactNode> = {
 const TrustBadges = () => {
   return (
     <section className="py-12 bg-primary">
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap justify-center gap-6 md:gap-10 lg:gap-16">
           {trustBadges.map((badge, index) => (
             <div

@@ -105,7 +105,9 @@ export function useCheckout() {
   // Timer for FX lock countdown
   useEffect(() => {
     if (!fxLock.expiresAt || selectedCurrency === 'NGN') {
-      setTimeRemaining(null);
+      setTimeout(()=>{
+        setTimeRemaining(null);
+      }, 0)
       return;
     }
 

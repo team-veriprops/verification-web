@@ -53,7 +53,7 @@ export function CategorySelector({
               )}
             >
               {tier.recommended && (
-                <div className="absolute top-0 left-0 right-0">
+                <div className="absolute top-2 left-0 right-0">
                   <div className="badge-recommended mx-auto -translate-y-1/2 w-fit">
                     Most chosen
                   </div>

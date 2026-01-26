@@ -21,12 +21,17 @@ import { nigerianStates, getLgasForState } from '@lib/nigerianLocations';
 import { cn } from '@lib/utils';
 import { AddressDetails, PropertyDetails, UploadedDocument } from './models';
 import { PropertyPreview } from './PropertyPreview';
+import { CategorySelector } from '../checkout/CategorySelector';
+import { useCheckout } from '@components/portal/verifications/checkout/libs/useCheckout';
+import { fxRates } from '@data/verificationTiers';
+import AddressSearchForm from '@components/ui/AddressSearchForm';
 
 const steps = [
   { id: 1, title: 'Property Details', description: 'Basic property information' },
-  { id: 2, title: 'Location', description: 'Property address and location' },
-  { id: 3, title: 'Ownership', description: 'Owner and seller information' },
-  { id: 4, title: 'Documents', description: 'Upload supporting documents' },
+  { id: 2, title: 'Category', description: 'Property verification category' },
+  { id: 3, title: 'Location', description: 'Property address and location' },
+  { id: 4, title: 'Ownership', description: 'Owner and seller information' },
+  { id: 5, title: 'Documents', description: 'Upload supporting documents' },
 ];
 
 // Step 1 Schema
@@ -38,19 +43,19 @@ const step1Schema = z.object({
   plotSize: z.string().min(1, 'Plot size is required'),
   plotSizeUnit: z.enum(['sqm', 'hectares', 'acres', 'plots']),
   estimatedPrice: z.string().min(1, 'Estimated price is required'),
-  currency: z.enum(['NGN', 'USD']),
+  currency: z.enum(['NGN', 'USD', 'GBP', 'EUR']),
 });
 
-// Step 2 Schema
-const step2Schema = z.object({
+// Step 3 Schema
+const step3Schema = z.object({
   address: z.string().min(10, 'Address must be at least 10 characters'),
   formattedAddress: z.string().optional(),
   state: z.string().min(1, 'State is required'),
   lga: z.string().min(1, 'LGA is required'),
 });
 
-// Step 3 Schema
-const step3Schema = z.object({
+// Step 4 Schema
+const step4Schema = z.object({
   ownerFullName: z.string().min(3, 'Owner name must be at least 3 characters'),
   sellerFullName: z.string().min(3, 'Seller name must be at least 3 characters'),
   sellerCompany: z.string().optional(),
@@ -62,7 +67,7 @@ const step3Schema = z.object({
 });
 
 // Combined schema
-const formSchema = step1Schema.merge(step2Schema).merge(step3Schema);
+const formSchema = step1Schema.merge(step3Schema).merge(step4Schema);
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -75,6 +80,12 @@ interface PropertyFormProps {
 export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: PropertyFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [documents, setDocuments] = useState<UploadedDocument[]>(initialData?.documents || []);
+  const {
+      selectedCategory,
+      selectedCurrency,
+      tiers,
+      handleCategoryChange,
+    } = useCheckout();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -85,7 +96,7 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
       plotSize: initialData?.plotSize || '',
       plotSizeUnit: initialData?.plotSizeUnit || 'sqm',
       estimatedPrice: initialData?.estimatedPrice?.toString() || '',
-      currency: initialData?.currency || 'NGN',
+      currency: initialData?.currency ?? 'NGN',
       address: initialData?.address || '',
       formattedAddress: initialData?.formattedAddress || '',
       state: initialData?.state || '',
@@ -112,12 +123,14 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
         fieldsToValidate = ['propertyType', 'propertyTitle', 'plotSize', 'plotSizeUnit', 'estimatedPrice', 'currency'];
         break;
       case 2:
+        return true; // Verification category is  not validated
+      case 3:
         fieldsToValidate = ['address', 'state', 'lga'];
         break;
-      case 3:
+      case 4:
         fieldsToValidate = ['ownerFullName', 'sellerFullName', 'sellerEmail', 'sellerPhone'];
         break;
-      case 4:
+      case 5:
         return true; // Documents are optional
     }
 
@@ -166,6 +179,7 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
       lga: data.lga,
       state: data.state,
       estimatedPrice: parseFloat(data.estimatedPrice),
+      category: selectedCategory,
       currency: data.currency,
       surveyPlanNumber: data.surveyPlanNumber,
       beaconNumbers: data.beaconNumbers,
@@ -339,9 +353,21 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
             </div>
           </div>
 
-          {/* Step 2: Location */}
-          <div className={cn("space-y-6", currentStep !== 2 && "hidden")}>
-            <FormField
+          {/* Step 2: Property Verification Category */}
+          <section className={cn("space-y-6", currentStep !== 2 && "hidden")}>
+              <CategorySelector
+                  tiers={tiers}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={handleCategoryChange}
+                  currency={selectedCurrency}
+                  fxRate={fxRates[selectedCurrency]}
+              />
+          </section>
+
+          {/* Step 3: Location */}
+          <div className={cn("space-y-6", currentStep !== 3 && "hidden")}>
+            <AddressSearchForm />
+            {/* <FormField
               control={form.control}
               name="address"
               render={({ field }) => (
@@ -420,11 +446,11 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
           </div>
 
-          {/* Step 3: Ownership & Survey */}
-          <div className={cn("space-y-6", currentStep !== 3 && "hidden")}>
+          {/* Step 4: Ownership & Survey */}
+          <div className={cn("space-y-6", currentStep !== 4 && "hidden")}>
             <FormField
               control={form.control}
               name="ownerFullName"
@@ -552,8 +578,8 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
             />
           </div>
 
-          {/* Step 4: Documents */}
-          <div className={cn("space-y-6", currentStep !== 4 && "hidden")}>
+          {/* Step 5: Documents */}
+          <div className={cn("space-y-6", currentStep !== 5 && "hidden")}>
             <DocumentUploader
               documents={documents}
               onChange={setDocuments}

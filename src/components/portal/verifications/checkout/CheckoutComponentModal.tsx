@@ -13,7 +13,7 @@ import { fxRates } from '@data/verificationTiers';
 import { toast } from 'sonner';
 import { CheckoutHeader } from './CheckoutHeader';
 import { PropertyInfo } from './models';
-import { useCheckout } from '@hooks/useCheckout';
+import { useCheckout } from '@components/portal/verifications/checkout/libs/useCheckout';
 import { useVerificationStore } from '../libs/useVerificationStore';
 import { useBodyOverflowHidden } from '@hooks/useBodyOverflowHidden';
 import { motion } from 'framer-motion';
@@ -90,7 +90,7 @@ export default function CheckoutComponentModal(){
       <CheckoutHeader />
 
       <main className="overflow-y-auto">
-        <div className="container py-8 max-w-4xl mx-auto overflow-y-auto">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 overflow-y-auto py-8">
           {/* Page Title */}
           <div className="mb-8 text-center">
             <h1 className="font-display font-bold text-2xl sm:text-3xl text-foreground mb-2">

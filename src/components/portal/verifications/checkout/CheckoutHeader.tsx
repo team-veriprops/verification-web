@@ -3,7 +3,7 @@ import { Shield } from 'lucide-react';
 export function CheckoutHeader() {
   return (
     <header className="bg-card border-b border-border">
-      <div className="container py-4">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">

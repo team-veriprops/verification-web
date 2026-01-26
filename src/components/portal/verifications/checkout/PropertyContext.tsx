@@ -9,7 +9,7 @@ export function PropertyContext({ property }: PropertyContextProps) {
   return (
     <div className="checkout-card animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-        <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
+        <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center shrink-0">
           <Home className="w-6 h-6 text-muted-foreground" />
         </div>
         <div className="flex-1 min-w-0">

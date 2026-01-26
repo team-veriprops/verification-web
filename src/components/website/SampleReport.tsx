@@ -6,7 +6,7 @@ import { Button } from "@components/3rdparty/ui/button";
 const SampleReport = () => {
   return (
     <section className="py-20 lg:py-28 bg-background">
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div>

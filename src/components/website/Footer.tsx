@@ -6,7 +6,7 @@ import { Button } from "@components/3rdparty/ui/button";
 const Footer = () => {
   return (
     <footer className="bg-foreground text-background pt-16 pb-8">
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* CTA Section */}
         <div className="bg-primary/10 rounded-2xl p-8 md:p-12 mb-16 text-center">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-background mb-4">

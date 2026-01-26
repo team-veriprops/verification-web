@@ -1,3 +1,5 @@
+import { Currency, VerificationCategory } from "../checkout/models";
+
 export interface SellerInfo {
   fullName: string;
   company?: string;
@@ -9,22 +11,23 @@ export interface UploadedDocument {
   id: string;
   file: File;
   name: string;
-  type: 'title' | 'survey' | 'photo' | 'other';
+  type: DocumentType;
   preview?: string;
 }
 
 export interface PropertyDetails {
-  propertyType: 'residential' | 'commercial' | 'land' | 'industrial';
+  propertyType: PropertyType;
   propertyTitle: string;
   plotSize: string;
-  plotSizeUnit: 'sqm' | 'hectares' | 'acres' | 'plots';
+  plotSizeUnit: PlotSizeUnit;
   address: string;
+  category: VerificationCategory;
   formattedAddress: string;
   lga: string;
   state: string;
   coordinates?: { lat: number; lng: number };
   estimatedPrice: number;
-  currency: 'NGN' | 'USD';
+  currency: Currency;
   surveyPlanNumber?: string;
   beaconNumbers?: string;
   ownerFullName: string;
@@ -45,5 +48,4 @@ export interface AddressDetails {
 
 export type PropertyType = 'residential' | 'commercial' | 'land' | 'industrial';
 export type PlotSizeUnit = 'sqm' | 'hectares' | 'acres' | 'plots';
-export type Currency = 'NGN' | 'USD';
 export type DocumentType = 'title' | 'survey' | 'photo' | 'other';
