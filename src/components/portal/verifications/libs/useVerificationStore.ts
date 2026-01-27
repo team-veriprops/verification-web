@@ -19,6 +19,7 @@ interface VerificationStore {
   filters: Partial<SearchVerificationDto>; // persisted + synced with query params
   currentVerification: QueryVerificationDto | null; // persisted only
   viewVerificationDetail: boolean;
+  viewAddVerificationModal: boolean;
   showReceipt: boolean;
   setFilters: (
     updater:
@@ -33,6 +34,7 @@ interface VerificationStore {
   updateFilters: (updates: Partial<SearchVerificationDto>) => void; // <—
   setCurrentVerification: (currentVerification: QueryVerificationDto | null) => void;
   setViewVerificationDetail: (viewVerificationDetail: boolean) => void;
+  setViewAddVerificationModal: (viewAddVerificationModal: boolean) => void;
   setShowReceipt: (showReceipt: boolean) => void
 }
 
@@ -46,6 +48,7 @@ export const useVerificationStore = create<VerificationStore>()(
       filters: cloneDefaultFilters(),
       currentVerification: null,
       viewVerificationDetail: false,
+      viewAddVerificationModal: false,
       showReceipt: false,
 
       // merge filters (instead of replacing)
@@ -74,6 +77,7 @@ export const useVerificationStore = create<VerificationStore>()(
       // update the currently selected verification
       setCurrentVerification: (currentVerification) => set({ currentVerification }),
       setViewVerificationDetail: (viewVerificationDetail) => set({ viewVerificationDetail }),
+      setViewAddVerificationModal: (viewAddVerificationModal) => set({ viewAddVerificationModal }),
       setShowReceipt: (showReceipt: boolean) => set({ showReceipt }),
     }),
     {
@@ -84,11 +88,13 @@ export const useVerificationStore = create<VerificationStore>()(
         filters: SearchVerificationDto; 
         currentVerification: QueryVerificationDto; 
         viewVerificationDetail: boolean; 
+        viewAddVerificationModal: boolean;
         showReceipt: boolean;
       }) => ({
         filters: state.filters,
         currentVerification: state.currentVerification,
         viewVerificationDetail: state.viewVerificationDetail,
+        viewAddVerificationModal: state.viewAddVerificationModal,
         showReceipt: state.showReceipt,
       }),
     }

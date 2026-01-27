@@ -17,18 +17,27 @@ import { toast } from "@components/3rdparty/ui/use-toast";
 import VerificationsTable from "./VerificationsTable";
 import { VerificationStatus } from "./models";
 import { useDashboardQueries } from "../dashboard/libs/useDashboardQueries";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import NewVerificationRequestModal from "./add/NewVerificationRequestModal";
+import Link from "next/link";
 
 export default function VerificationsComponentPage({
   title,
   description,
 }: PageDetails) {
-  const { filters, updateFilters } = useVerificationStore();
+  const { filters, updateFilters, viewAddVerificationModal, setViewAddVerificationModal } = useVerificationStore();
   const { settings } = useGlobalSettings();
   const { useGetDashboardStats } = useDashboardQueries();
-  
-    const {
-      data: dashboardStats,
-    } = useGetDashboardStats();
+  const { data: dashboardStats} = useGetDashboardStats();
+  const searchParams = useSearchParams();
+
+  useEffect(()=>{
+    const params = new URLSearchParams(searchParams);
+    if(params.get("add")){
+      setViewAddVerificationModal(true)
+    }
+  }, [searchParams])
 
   const verificationTabs: Array<{
     value: string;
@@ -41,20 +50,14 @@ export default function VerificationsComponentPage({
     { value: "all", icon: Rows4 ,  label: `All Verifications (${dashboardStats?.total_verifications ?? 0})` },
   ] as const;
   
-  const handleMakeVerification = () => {
-      toast({
-        title: "Verification",
-        description: "Redirecting to verification gateway...",
-      });
-    };
   return (
     <>
        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <PageHeader title={title} description={description} />
 
-        <Button onClick={handleMakeVerification}>
+        <Button>
           <Plus className="h-4 w-4 mr-2" />
-          Request New Verification
+          <Link href={"/portal/verifications?add=1"}>Request New Verification</Link>
         </Button>
       </div>
 
@@ -96,6 +99,8 @@ export default function VerificationsComponentPage({
           ))}
         </Tabs>
       </motion.div>
+
+      { viewAddVerificationModal && <NewVerificationRequestModal />}
     </>
   );
 }
