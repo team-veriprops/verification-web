@@ -32,7 +32,7 @@ const steps = [
 // Step 1 Schema
 const step1Schema = z.object({
   propertyType: z.enum(['residential', 'commercial', 'land', 'industrial'], {
-    required_error: 'Please select a property type',
+    error: 'Please select a property type',
   }),
   propertyTitle: z.string().min(5, 'Property title must be at least 5 characters'),
   plotSize: z.string().min(1, 'Plot size is required'),
@@ -216,7 +216,7 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
         />
 
         {/* Step Content */}
-        <div className="min-h-[400px]">
+        <div className="min-h-100">
           {/* Step 1: Property Details */}
           <div className={cn("space-y-6", currentStep !== 1 && "hidden")}>
             <FormField
@@ -399,7 +399,7 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
                   <FormItem>
                     <FormLabel>Local Government Area *</FormLabel>
                     <Select 
-                      onValueChange={field.onChange} 
+                      onValueChange={field.onChange}
                       value={field.value}
                       disabled={!watchState}
                     >
