@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, Link2, FileText } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/3rdparty/ui/tabs';
@@ -14,15 +14,20 @@ import { toast } from '@components/3rdparty/ui/use-toast';
 import { useVerificationStore } from '../libs/useVerificationStore';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import CheckoutComponentModal from '../checkout/CheckoutComponentModal';
 
 export default function NewVerificationRequestModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<'manual' | 'url'>('manual');
   const [extractedData, setExtractedData] = useState<Partial<PropertyDetails> | null>(null);
-  const { setViewAddVerificationModal } = useVerificationStore();
+  const { setViewAddVerificationModal, viewVerificationCheckoutModal, setViewVerificationCheckoutModal } = useVerificationStore();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
+
+  useEffect(()=>{
+    setViewVerificationCheckoutModal(true)
+  }, [setViewVerificationCheckoutModal])
 
   const handleClose = () => {
     const params = new URLSearchParams(searchParams);
@@ -144,6 +149,8 @@ export default function NewVerificationRequestModal() {
           </p>
         </div>
       </main>
+
+      {viewVerificationCheckoutModal && <CheckoutComponentModal />}
     </motion.div>
   );
 }
