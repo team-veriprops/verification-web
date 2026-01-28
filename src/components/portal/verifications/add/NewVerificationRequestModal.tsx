@@ -14,16 +14,20 @@ import { toast } from '@components/3rdparty/ui/use-toast';
 import { useVerificationStore } from '../libs/useVerificationStore';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useBodyOverflowHidden } from '@hooks/useBodyOverflowHidden';
 import CheckoutComponentModal from '../checkout/CheckoutComponentModal';
 
 export default function NewVerificationRequestModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<'manual' | 'url'>('manual');
   const [extractedData, setExtractedData] = useState<Partial<PropertyDetails> | null>(null);
-  const { setViewAddVerificationModal, viewVerificationCheckoutModal, setViewVerificationCheckoutModal } = useVerificationStore();
+  const { viewAddVerificationModal, setViewAddVerificationModal, viewVerificationCheckoutModal, setViewVerificationCheckoutModal } = useVerificationStore();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
+  
+  // Lock body scroll when modal is open
+  useBodyOverflowHidden(viewAddVerificationModal);
 
   useEffect(()=>{
     setViewVerificationCheckoutModal(true)
@@ -104,7 +108,8 @@ export default function NewVerificationRequestModal() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-y-auto">
+      <div className='h-[calc(100%-4rem)] overflow-y-auto'>
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card>
           <CardHeader>
             <CardTitle>Property Information</CardTitle>
@@ -149,8 +154,7 @@ export default function NewVerificationRequestModal() {
           </p>
         </div>
       </main>
-
-      {viewVerificationCheckoutModal && <CheckoutComponentModal />}
+      </div>
     </motion.div>
   );
 }
