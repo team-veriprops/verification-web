@@ -183,13 +183,27 @@ export default function AddressSearchForm() {
         )}
 
         {/* Auto-filled (disabled) fields */}
+        <label>Country:
         <input {...register("country")} disabled />
+        </label>
+        <label>State:
         <input {...register("state")} disabled />
+        </label>
+        <label> LGA:
         <input {...register("lga")} disabled />
+        </label>
+        <label> City:
         <input {...register("city")} disabled />
+        </label>
+        <label> Area:
         <input {...register("area")} disabled />
+        </label>
+        <label> Street:
         <input {...register("street")} disabled />
+        </label>
+        <label> Postal code:
         <input {...register("postalCode")} disabled />
+        </label>
 
         <div className="flex gap-2">
           <input {...register("latitude")} disabled />
