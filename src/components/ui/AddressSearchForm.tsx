@@ -28,6 +28,7 @@ const addressSchema = z
     city: z.string().optional(),
     area: z.string().optional(),
     street: z.string().optional(),
+    streetNumber: z.string().optional(),
     postalCode: z.string().optional(),
     latitude: z.string().min(1, "Latitude missing"),
     longitude: z.string().min(1, "Longitude missing"),
@@ -54,6 +55,7 @@ const initialValues: FormValues = {
   city: "",
   area: "",
   street: "",
+  streetNumber: "",
   postalCode: "",
   latitude: "",
   longitude: "",
@@ -130,6 +132,7 @@ export default function AddressSearchForm() {
     );
 
     setValue("street", extract(components, ["route"]));
+    setValue("streetNumber", extract(components, ["street_number"]));
     setValue("postalCode", extract(components, ["postal_code"]));
 
     setValue(
