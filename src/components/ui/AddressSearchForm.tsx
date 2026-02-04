@@ -2,8 +2,8 @@ import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Autocomplete, LoadScript } from "@react-google-maps/api";
-import { publicConfig } from "@lib/config/public";
+import { Autocomplete } from "@react-google-maps/api";
+import { ExactLocation } from "types/models";
 
 /* ------------------------------------------------------------------
    Local minimal Google type (avoids library conflicts)
@@ -45,8 +45,6 @@ type FormValues = z.infer<typeof addressSchema>;
    Constants
 ------------------------------------------------------------------- */
 
-const libraries: ("places")[] = ["places"];
-
 const initialValues: FormValues = {
   address: "",
   country: "Nigeria",
@@ -62,14 +60,23 @@ const initialValues: FormValues = {
   placeId: "",
 };
 
+/* ------------------------------------------------------------------ */
+/* Props */
+/* ------------------------------------------------------------------ */
+
+type AddressSearchFormProps =  {
+  onChange: (address: ExactLocation | null) => void
+}
+
+
 /* ------------------------------------------------------------------
    Component
 ------------------------------------------------------------------- */
 
-export default function AddressSearchForm() {
+
+export default function AddressSearchForm({onChange}:AddressSearchFormProps) {
   const {
     register,
-    setValue,
     reset,
     formState: { errors },
   } = useForm<FormValues>({
@@ -91,14 +98,9 @@ export default function AddressSearchForm() {
     components.find(c => types.some(t => c.types.includes(t)))
       ?.long_name ?? "";
 
-  /** Reset all derived fields when user starts typing */
-  const onAddressInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    reset({
-      ...initialValues,
-      address: e.target.value,
-    });
+  const resetAll = (address = "") => {
+    reset({ ...initialValues, address });
+    onChange(null);
   };
 
   const onPlaceChanged = () => {
@@ -110,41 +112,43 @@ export default function AddressSearchForm() {
     const components =
       place.address_components as GoogleAddressComponent[];
 
-    setValue("address", place.formatted_address || "");
-    setValue("country", extract(components, ["country"]));
-    setValue("state", extract(components, ["administrative_area_level_1"]));
-    setValue("lga", extract(components, ["administrative_area_level_2"]));
-
-    // Nigerian reality: city can be inconsistent
-    setValue(
-      "city",
-      extract(components, ["locality"]) ||
-        extract(components, ["administrative_area_level_3"])
-    );
-
-    setValue(
-      "area",
-      extract(components, [
+    const values: FormValues = {
+      address: place.formatted_address || "",
+      country: extract(components, ["country"]),
+      state: extract(components, ["administrative_area_level_1"]),
+      lga: extract(components, ["administrative_area_level_2"]),
+      city:
+        extract(components, ["locality"]) ||
+        extract(components, ["administrative_area_level_3"]),
+      area: extract(components, [
         "sublocality",
         "sublocality_level_1",
         "neighborhood",
-      ])
-    );
+      ]),
+      street: extract(components, ["route"]),
+      streetNumber: extract(components, ["street_number"]),
+      postalCode: extract(components, ["postal_code"]),
+      latitude: place?.geometry?.location?.lat().toString() ?? "",
+      longitude: place?.geometry?.location?.lng().toString() ?? "",
+      placeId: place.place_id || "",
+    };
 
-    setValue("street", extract(components, ["route"]));
-    setValue("streetNumber", extract(components, ["street_number"]));
-    setValue("postalCode", extract(components, ["postal_code"]));
+    reset(values);
 
-    setValue(
-      "latitude",
-      place?.geometry?.location?.lat().toString() ?? ""
-    );
-    setValue(
-      "longitude",
-      place?.geometry?.location?.lng().toString() ?? ""
-    );
-
-    setValue("placeId", place.place_id || "");
+    /* Emit FINAL normalized address */
+    onChange({
+      address: values.address,
+      country: values.country,
+      state: values.state,
+      lga: values.lga ?? "",
+      city: values.city ?? "",
+      area: values.area ?? "",
+      street: values.street ?? "",
+      streetNumber: values.streetNumber ?? "",
+      postalCode: values.postalCode ?? "",
+      coordinates: { lat: Number(values.latitude), lng: Number(values.longitude) },
+      placeId: values.placeId,
+    });
   };
 
   /* ------------------------------------------------------------------
@@ -152,10 +156,6 @@ export default function AddressSearchForm() {
   ------------------------------------------------------------------- */
 
   return (
-    <LoadScript
-      googleMapsApiKey={publicConfig.googleMapsApiKey!}
-      libraries={libraries}
-    >
       <div className="space-y-2 max-w-md">
         {/* Address search */}
         <Autocomplete
@@ -173,7 +173,7 @@ export default function AddressSearchForm() {
         >
           <input
             {...register("address")}
-            onChange={onAddressInputChange}
+            onChange={e => resetAll(e.target.value)}
             placeholder="Search property address"
             className="w-full border p-2 rounded"
           />
@@ -191,6 +191,7 @@ export default function AddressSearchForm() {
         <input {...register("lga")} disabled />
         <input {...register("city")} disabled />
         <input {...register("area")} disabled />
+        <input {...register("streetNumber")} disabled />
         <input {...register("street")} disabled />
         <input {...register("postalCode")} disabled />
 
@@ -199,6 +200,5 @@ export default function AddressSearchForm() {
           <input {...register("longitude")} disabled />
         </div>
       </div>
-    </LoadScript>
   );
 }

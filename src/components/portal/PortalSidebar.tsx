@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   FileCheck,
@@ -20,6 +19,7 @@ import { useSidebar } from "@components/3rdparty/ui/sidebar";
 import { Separator } from "@components/3rdparty/ui/separator";
 import { Fragment } from "react";
 import { useAuthQueries } from "@components/website/auth/libs/useAuthQueries";
+import BrandLogo from "@components/ui/BrandLogo";
 
 const navItems = [
   { title: "Dashboard", href: "/portal/dashboard", icon: LayoutDashboard, has_separator_after: false },
@@ -40,7 +40,6 @@ interface PortalSidebarProps {
 
 const PortalSidebar = ({ className, onClose, isMobile = false }: PortalSidebarProps) => {
   const pathname = usePathname();
-  const router = useRouter();
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed" && !isMobile;
   const {useLogout} = useAuthQueries()
@@ -73,12 +72,7 @@ const PortalSidebar = ({ className, onClose, isMobile = false }: PortalSidebarPr
         )}
       >
         {!isCollapsed && (
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-lg gradient-hero flex items-center justify-center">
-              <Shield className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <span className="font-display font-bold text-lg text-foreground">Veriprops</span>
-          </Link>
+          <BrandLogo />
         )}
 
         {isCollapsed && (

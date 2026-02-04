@@ -5,6 +5,7 @@ import { Shield, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useAuthStore } from "./auth/libs/useAuthStore";
+import BrandLogo from "@components/ui/BrandLogo";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -15,14 +16,7 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 ">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl gradient-hero flex items-center justify-center shadow-soft group-hover:shadow-elevated transition-shadow">
-              <Shield className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-display font-bold text-xl text-foreground">
-              Veriprops
-            </span>
-          </Link>
+          <BrandLogo />
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">

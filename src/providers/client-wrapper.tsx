@@ -1,6 +1,8 @@
 "use client";
 
 import { Toaster } from "@components/3rdparty/ui/toaster";
+import { publicConfig } from "@lib/config/public";
+import { LoadScript } from "@react-google-maps/api";
 import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { useState, useEffect } from "react";
@@ -19,10 +21,14 @@ export function ClientWrapperProvider({ children }: { children: React.ReactNode 
   );
 
   useEffect(() => {
+    setTimeout(()=>{
     setMounted(true);
+    }, 0)
   }, []);
 
   if (!mounted) return null;
+
+  const googleLibraries: ("places")[] = ["places"];
 
   return (
     <ThemeProvider
@@ -31,7 +37,14 @@ export function ClientWrapperProvider({ children }: { children: React.ReactNode 
       enableSystem
       disableTransitionOnChange
     >
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <LoadScript
+          googleMapsApiKey={publicConfig.googleMapsApiKey!}
+          libraries={googleLibraries}
+        >
+        {children}
+        </LoadScript>
+      </QueryClientProvider>
       <Toaster />
     </ThemeProvider>
   );

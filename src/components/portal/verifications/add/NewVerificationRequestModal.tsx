@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Link2, FileText, X } from 'lucide-react';
-import { Button } from '@components/3rdparty/ui/button';
+import { Link2, FileText, X } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/3rdparty/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/3rdparty/ui/card';
 // import { useToast } from '@/hooks/use-toast';
@@ -77,7 +76,7 @@ export default function NewVerificationRequestModal() {
   };
 
   return (
-        <motion.div
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}

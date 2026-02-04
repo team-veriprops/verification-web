@@ -1,3 +1,4 @@
+import { ExactLocation } from "types/models";
 import { Currency, VerificationCategory } from "../checkout/models";
 
 export interface SellerInfo {
@@ -20,12 +21,8 @@ export interface PropertyDetails {
   propertyTitle: string;
   plotSize: string;
   plotSizeUnit: PlotSizeUnit;
-  address: string;
+  address?: ExactLocation;
   category: VerificationCategory;
-  formattedAddress: string;
-  lga: string;
-  state: string;
-  coordinates?: { lat: number; lng: number };
   estimatedPrice: number;
   currency: Currency;
   surveyPlanNumber?: string;

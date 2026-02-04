@@ -147,10 +147,15 @@ export interface ExactLocation {
     address: string;
     country: string;
     state: string;
+    lga?: string;
     city: string;
     grouping_city?: string;
     area: string;
     coordinates?: { lat: number; lng: number };
+    street?: string;
+    streetNumber?: string;
+    postalCode?: string;
+    placeId?: string;
   };
 
 export interface BaseQueryDto {

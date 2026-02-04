@@ -13,18 +13,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@components/3rdparty/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/3rdparty/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@components/3rdparty/ui/form';
 import { FormStepIndicator } from './FormStepIndicator';
-import { AddressPicker } from './AddressPicker';
 import { DocumentUploader } from './DocumentUploader';
-import { nigerianStates, getLgasForState } from '@lib/nigerianLocations';
 import { cn } from '@lib/utils';
-import { AddressDetails, PropertyDetails, UploadedDocument } from './models';
+import { PropertyDetails, UploadedDocument } from './models';
 import { PropertyPreview } from './PropertyPreview';
 import { CategorySelector } from '../checkout/CategorySelector';
 import { useCheckout } from '@components/portal/verifications/checkout/libs/useCheckout';
 import { fxRates } from '@data/verificationTiers';
 import AddressSearchForm from '@components/ui/AddressSearchForm';
+import { ExactLocation } from 'types/models';
 
 const steps = [
   { id: 1, title: 'Property Details', description: 'Basic property information' },
@@ -32,6 +38,7 @@ const steps = [
   { id: 3, title: 'Location', description: 'Property address and location' },
   { id: 4, title: 'Ownership', description: 'Owner and seller information' },
   { id: 5, title: 'Documents', description: 'Upload supporting documents' },
+  { id: 6, title: 'Review', description: 'Review your submission' },
 ];
 
 // Step 1 Schema
@@ -46,14 +53,6 @@ const step1Schema = z.object({
   currency: z.enum(['NGN', 'USD', 'GBP', 'EUR']),
 });
 
-// Step 3 Schema
-const step3Schema = z.object({
-  address: z.string().min(10, 'Address must be at least 10 characters'),
-  formattedAddress: z.string().optional(),
-  state: z.string().min(1, 'State is required'),
-  lga: z.string().min(1, 'LGA is required'),
-});
-
 // Step 4 Schema
 const step4Schema = z.object({
   ownerFullName: z.string().min(3, 'Owner name must be at least 3 characters'),
@@ -66,8 +65,7 @@ const step4Schema = z.object({
   additionalDetails: z.string().optional(),
 });
 
-// Combined schema
-const formSchema = step1Schema.merge(step3Schema).merge(step4Schema);
+const formSchema = step1Schema.and(step4Schema);
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -77,15 +75,27 @@ interface PropertyFormProps {
   isSubmitting?: boolean;
 }
 
-export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: PropertyFormProps) {
+export function PropertyForm({
+  initialData,
+  onSubmit,
+  isSubmitting = false,
+}: PropertyFormProps) {
+  const [address, setAddress] = useState<ExactLocation | null>(null);
+  const [addressIsValid, setAddressIsValid] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
-  const [documents, setDocuments] = useState<UploadedDocument[]>(initialData?.documents || []);
+  const [documents, setDocuments] = useState<UploadedDocument[]>(
+    initialData?.documents || []
+  );
+  const maxStep = 6
+
   const {
-      selectedCategory,
-      selectedCurrency,
-      tiers,
-      handleCategoryChange,
-    } = useCheckout();
+    selectedCategory,
+    selectedCurrency,
+    tiers,
+    handleCategoryChange,
+  } = useCheckout();
+
+  const addressRequiredErrorMsg = 'Property physical address is required';
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -97,10 +107,6 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
       plotSizeUnit: initialData?.plotSizeUnit || 'sqm',
       estimatedPrice: initialData?.estimatedPrice?.toString() || '',
       currency: initialData?.currency ?? 'NGN',
-      address: initialData?.address || '',
-      formattedAddress: initialData?.formattedAddress || '',
-      state: initialData?.state || '',
-      lga: initialData?.lga || '',
       ownerFullName: initialData?.ownerFullName || '',
       sellerFullName: initialData?.sellerInfo?.fullName || '',
       sellerCompany: initialData?.sellerInfo?.company || '',
@@ -112,42 +118,52 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
     },
   });
 
-  const watchState = form.watch('state');
-  const lgas = watchState ? getLgasForState(watchState) : [];
-
   const validateCurrentStep = async (): Promise<boolean> => {
     let fieldsToValidate: (keyof FormData)[] = [];
 
     switch (currentStep) {
       case 1:
-        fieldsToValidate = ['propertyType', 'propertyTitle', 'plotSize', 'plotSizeUnit', 'estimatedPrice', 'currency'];
+        fieldsToValidate = [
+          'propertyType',
+          'propertyTitle',
+          'plotSize',
+          'plotSizeUnit',
+          'estimatedPrice',
+          'currency',
+        ];
         break;
       case 2:
-        return true; // Verification category is  not validated
-      case 3:
-        fieldsToValidate = ['address', 'state', 'lga'];
-        break;
+        return !!selectedCategory;
+      case 3: {
+        const addressIsSet = !!address;
+        setAddressIsValid(addressIsSet);
+        return addressIsSet;
+      }
       case 4:
-        fieldsToValidate = ['ownerFullName', 'sellerFullName', 'sellerEmail', 'sellerPhone'];
+        fieldsToValidate = [
+          'ownerFullName',
+          'sellerFullName',
+          'sellerEmail',
+          'sellerPhone',
+        ];
         break;
       case 5:
-        return true; // Documents are optional
+        return true;
     }
 
-    const result = await form.trigger(fieldsToValidate);
-    return result;
+    return form.trigger(fieldsToValidate);
   };
 
   const handleNext = async () => {
     const isValid = await validateCurrentStep();
-    if (isValid && currentStep < 4) {
-      setCurrentStep(prev => prev + 1);
+    if (isValid && currentStep < maxStep) {
+      setCurrentStep((prev) => prev + 1);
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
     }
   };
 
@@ -157,27 +173,12 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
     }
   };
 
-  const handleAddressChange = (address: AddressDetails) => {
-    form.setValue('address', address.address);
-    form.setValue('formattedAddress', address.formattedAddress);
-    if (address.state) {
-      form.setValue('state', address.state);
-    }
-    if (address.lga) {
-      form.setValue('lga', address.lga);
-    }
-  };
-
   const handleFormSubmit = (data: FormData) => {
     const propertyData: PropertyDetails = {
       propertyType: data.propertyType,
       propertyTitle: data.propertyTitle,
       plotSize: data.plotSize,
       plotSizeUnit: data.plotSizeUnit,
-      address: data.address,
-      formattedAddress: data.formattedAddress || data.address,
-      lga: data.lga,
-      state: data.state,
       estimatedPrice: parseFloat(data.estimatedPrice),
       category: selectedCategory,
       currency: data.currency,
@@ -203,26 +204,39 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
     propertyTitle: formValues.propertyTitle,
     plotSize: formValues.plotSize,
     plotSizeUnit: formValues.plotSizeUnit,
-    address: formValues.address,
-    formattedAddress: formValues.formattedAddress,
-    state: formValues.state,
-    lga: formValues.lga,
-    estimatedPrice: formValues.estimatedPrice ? parseFloat(formValues.estimatedPrice) : undefined,
+    estimatedPrice: formValues.estimatedPrice
+      ? parseFloat(formValues.estimatedPrice)
+      : undefined,
     currency: formValues.currency,
     ownerFullName: formValues.ownerFullName,
-    sellerInfo: formValues.sellerFullName ? {
-      fullName: formValues.sellerFullName,
-      company: formValues.sellerCompany,
-      email: formValues.sellerEmail,
-      phone: formValues.sellerPhone,
-    } : undefined,
+    sellerInfo: formValues.sellerFullName
+      ? {
+          fullName: formValues.sellerFullName,
+          company: formValues.sellerCompany,
+          email: formValues.sellerEmail,
+          phone: formValues.sellerPhone,
+        }
+      : undefined,
     documents,
   };
 
+  const onAddressChange = (address: ExactLocation | null) => {
+    setAddress(address);
+  };
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-        {/* Step Indicator */}
+     <Form {...form}>
+      <form 
+      onSubmit={(e) => {
+          console.log("Submit fired: step= ", currentStep)
+        if (currentStep < maxStep) {
+          e.preventDefault(); // stop form submission
+          handleNext();       // advance to next step
+        } else {
+          form.handleSubmit(handleFormSubmit)(e); // actually submit at step 5
+        }
+      }} 
+      className="space-y-8">
         <FormStepIndicator
           steps={steps}
           currentStep={currentStep}
@@ -366,87 +380,12 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
 
           {/* Step 3: Location */}
           <div className={cn("space-y-6", currentStep !== 3 && "hidden")}>
-            <AddressSearchForm />
-            {/* <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Property Address *</FormLabel>
-                  <FormControl>
-                    <AddressPicker
-                      value={field.value}
-                      onChange={handleAddressChange}
-                      error={form.formState.errors.address?.message}
-                      placeholder="Start typing to search for address..."
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State *</FormLabel>
-                    <Select 
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        form.setValue('lga', ''); // Reset LGA when state changes
-                      }} 
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select state" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {nigerianStates.map((state) => (
-                          <SelectItem key={state.value} value={state.value}>
-                            {state.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="lga"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Local Government Area *</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      disabled={!watchState}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={watchState ? "Select LGA" : "Select state first"} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {lgas.map((lga) => (
-                          <SelectItem key={lga.value} value={lga.value}>
-                            {lga.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div> */}
+            <AddressSearchForm onChange={onAddressChange} />
+            {!addressIsValid && (
+          <p className="text-sm text-red-500">
+            {addressRequiredErrorMsg}
+          </p>
+        )}
           </div>
 
           {/* Step 4: Ownership & Survey */}
@@ -580,13 +519,14 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
 
           {/* Step 5: Documents */}
           <div className={cn("space-y-6", currentStep !== 5 && "hidden")}>
-            <DocumentUploader
+            {/* <DocumentUploader
               documents={documents}
               onChange={setDocuments}
-            />
-
-            {/* Preview */}
-            {currentStep === 4 && (
+            /> */}
+          </div>
+          {/* Step 6: Preview */}
+          <div className={cn("space-y-6", currentStep !== 6 && "hidden")}>
+            {currentStep === 6 && (
               <div className="pt-6 border-t border-border">
                 <h4 className="text-sm font-medium text-foreground mb-4">Review Your Submission</h4>
                 <PropertyPreview data={previewData} showSource={false} />
@@ -602,19 +542,19 @@ export function PropertyForm({ initialData, onSubmit, isSubmitting = false }: Pr
             variant="outline"
             onClick={handleBack}
             disabled={currentStep === 1}
-            className={cn(currentStep === 1 && "invisible")}
+            className={cn(currentStep === 1 && 'invisible')}
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
 
-          {currentStep < 4 ? (
-            <Button type="button" onClick={handleNext} variant="default">
+          {currentStep < 6 ? (
+            <Button type="button" onClick={handleNext}>
               Next
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
           ) : (
-            <Button type="submit" variant="default" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
