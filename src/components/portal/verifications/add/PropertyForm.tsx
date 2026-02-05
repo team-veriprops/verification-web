@@ -155,8 +155,9 @@ export function PropertyForm({
   };
 
   const handleNext = async () => {
+    console.log("NEXT CLICKED");
     const isValid = await validateCurrentStep();
-    if (isValid && currentStep < maxStep) {
+    if (isValid && currentStep < maxStep + 1) {
       setCurrentStep((prev) => prev + 1);
     }
   };
@@ -174,6 +175,7 @@ export function PropertyForm({
   };
 
   const handleFormSubmit = (data: FormData) => {
+    console.log("FORM SUBMITTED");
     const propertyData: PropertyDetails = {
       propertyType: data.propertyType,
       propertyTitle: data.propertyTitle,
@@ -229,7 +231,7 @@ export function PropertyForm({
       <form 
       onSubmit={(e) => {
           console.log("Submit fired: step= ", currentStep)
-        if (currentStep < maxStep) {
+        if (currentStep <= maxStep) {
           e.preventDefault(); // stop form submission
           handleNext();       // advance to next step
         } else {
