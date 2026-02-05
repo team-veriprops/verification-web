@@ -14,31 +14,30 @@ import { useVerificationStore } from '../libs/useVerificationStore';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useBodyOverflowHidden } from '@hooks/useBodyOverflowHidden';
-import CheckoutComponentModal from '../checkout/CheckoutComponentModal';
 import BrandLogo from '@components/ui/BrandLogo';
 
 export default function NewVerificationRequestModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<'manual' | 'url'>('manual');
   const [extractedData, setExtractedData] = useState<Partial<PropertyDetails> | null>(null);
-  const { viewAddVerificationModal, setViewAddVerificationModal, viewVerificationCheckoutModal, setViewVerificationCheckoutModal } = useVerificationStore();
+  const { viewAddVerificationModal, setViewAddVerificationModal } = useVerificationStore();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { replace } = useRouter();
+  const router = useRouter();
   
   // Lock body scroll when modal is open
   useBodyOverflowHidden(viewAddVerificationModal);
 
-  useEffect(()=>{
-    setViewVerificationCheckoutModal(false)
-  }, [setViewVerificationCheckoutModal])
-
   const handleClose = () => {
     const params = new URLSearchParams(searchParams);
-    params.delete("add")
-    replace(`${pathname}?${params.toString()}`);
+    params.delete("action")
+    router.replace(`${pathname}?${params.toString()}`);
 
     setViewAddVerificationModal(false)
+  }
+
+  const openCheckout = ()=> {
+    router.push("/portal/verifications?action=checkout")
   }
     
 
@@ -64,6 +63,7 @@ export default function NewVerificationRequestModal() {
       });
 
       handleClose();
+      openCheckout()
     } catch (error) {
       toast({
         title: 'Submission Failed',
@@ -80,7 +80,7 @@ export default function NewVerificationRequestModal() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z- bg-background"
+      className="fixed inset-0 z-2 bg-background"
     >
       {/* Header */}
       <header className="border-b border-border bg-card">
@@ -98,10 +98,10 @@ export default function NewVerificationRequestModal() {
           <div className='flex gap-3'>
             <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
             <span>Verification Request</span>
-          </div>
-          <button onClick={handleClose} className="text-gray-600 hover:text-black">
-            <X className="w-6 h-6" />
-          </button>
+            </div>
+            <button onClick={handleClose} className="text-gray-600 hover:text-black">
+              <X className="w-6 h-6" />
+            </button>
           </div>
             {/* <Button
               variant="ghost"
@@ -172,8 +172,6 @@ export default function NewVerificationRequestModal() {
         </div>
       </main>
       </div>
-
-      {viewVerificationCheckoutModal && <CheckoutComponentModal/>}
     </motion.div>
   );
 }

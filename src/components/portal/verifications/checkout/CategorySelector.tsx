@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { ArrowDown, Check } from 'lucide-react';
 import { currencySymbols } from '@data/verificationTiers';
 import { cn } from '@lib/utils';
 import { VerificationCategory, VerificationTier } from './models';
@@ -30,6 +30,7 @@ export function CategorySelector({
 
   return (
     <div className="space-y-4">
+     <div className='flex justify-between'>
       <div>
         <h2 className="font-display font-semibold text-xl text-foreground mb-1">
           Choose Verification Category
@@ -38,6 +39,7 @@ export function CategorySelector({
           Select the level of verification that suits your needs
         </p>
       </div>
+     </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         {tiers.map((tier) => {
@@ -45,6 +47,7 @@ export function CategorySelector({
           
           return (
             <button
+              type='button'
               key={tier.id}
               onClick={() => onCategoryChange(tier.id)}
               className={cn(

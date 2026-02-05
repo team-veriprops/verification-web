@@ -47,7 +47,7 @@ const Header = () => {
             )}
             
             <Button variant="default" size="sm">
-              <Link href={"/portal/verifications?add=1"}>Verify a Property</Link>
+              <Link href={"/portal/verifications?action=add"}>Verify a Property</Link>
             </Button>
           </div>
 
@@ -88,7 +88,7 @@ const Header = () => {
                         <Link href={"/auth/sign-in"}>Login</Link>
                       </Button>
                       <Button variant="default">
-                        <Link href={"/portal/verifications?add=1"}>Verify a Property</Link>
+                        <Link href={"/portal/verifications?action=add"}>Verify a Property</Link>
                       </Button>
                     </>
                   )}

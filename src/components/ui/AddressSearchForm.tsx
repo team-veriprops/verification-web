@@ -65,7 +65,7 @@ const initialValues: FormValues = {
 /* ------------------------------------------------------------------ */
 
 type AddressSearchFormProps =  {
-  onChange: (address: ExactLocation | null) => void
+  onChange: (address: ExactLocation | undefined) => void
 }
 
 
@@ -100,7 +100,7 @@ export default function AddressSearchForm({onChange}:AddressSearchFormProps) {
 
   const resetAll = (address = "") => {
     reset({ ...initialValues, address });
-    onChange(null);
+    onChange(undefined);
   };
 
   const onPlaceChanged = () => {

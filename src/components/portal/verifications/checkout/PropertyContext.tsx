@@ -1,11 +1,14 @@
-import { MapPin, Home, FileText, Clock } from 'lucide-react';
+import { MapPin, Home, FileText, Clock, ArrowDown } from 'lucide-react';
 import { PropertyInfo } from './models';
+import { useCheckout } from './libs/useCheckout';
+import { cn } from '@lib/utils';
 
 interface PropertyContextProps {
   property: PropertyInfo;
 }
 
 export function PropertyContext({ property }: PropertyContextProps) {
+  const {viewVerificationCategory, setViewVerificationCategory} = useCheckout()
   return (
     <div className="checkout-card animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
@@ -30,9 +33,19 @@ export function PropertyContext({ property }: PropertyContextProps) {
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-border">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="w-4 h-4" />
-          <span>Verification has not started yet.</span>
+        <div className='flex justify-between gap-3'>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Clock className="w-4 h-4" />
+            <span>Verification has not started yet.</span>
+          </div>
+          
+          <div onClick={() => setViewVerificationCategory((current) => !current)}>
+            <div className={cn('flex gap-3', viewVerificationCategory ? 'cursor-zoom-out' : 'cursor-zoom-in')}>
+              <span>Basic Verification</span>
+              <ArrowDown className='w-4 h-4' />
+            </div>
+            <span className='text-xs text-muted-foreground'>choose category</span>
+          </div>
         </div>
       </div>
     </div>

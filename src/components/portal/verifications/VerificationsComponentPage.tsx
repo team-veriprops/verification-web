@@ -21,12 +21,13 @@ import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import NewVerificationRequestModal from "./add/NewVerificationRequestModal";
 import Link from "next/link";
+import CheckoutComponentModal from "./checkout/CheckoutComponentModal";
 
 export default function VerificationsComponentPage({
   title,
   description,
 }: PageDetails) {
-  const { filters, updateFilters, viewAddVerificationModal, setViewAddVerificationModal } = useVerificationStore();
+  const { filters, updateFilters, viewAddVerificationModal, viewVerificationCheckoutModal, setViewAddVerificationModal, setViewVerificationCheckoutModal } = useVerificationStore();
   const { settings } = useGlobalSettings();
   const { useGetDashboardStats } = useDashboardQueries();
   const { data: dashboardStats} = useGetDashboardStats();
@@ -34,10 +35,14 @@ export default function VerificationsComponentPage({
 
   useEffect(()=>{
     const params = new URLSearchParams(searchParams);
-    if(params.get("add")){
+    if(params.get("action") == "add"){
       setViewAddVerificationModal(true)
     }
-  }, [searchParams])
+
+    if(params.get("action") == "checkout"){
+      setViewVerificationCheckoutModal(true)
+    }
+  }, [searchParams, setViewAddVerificationModal, setViewVerificationCheckoutModal])
 
   const verificationTabs: Array<{
     value: string;
@@ -52,12 +57,16 @@ export default function VerificationsComponentPage({
   
   return (
     <>
+      {/* MODALS */}
+      { viewAddVerificationModal && <NewVerificationRequestModal />}
+      {viewVerificationCheckoutModal && <CheckoutComponentModal/>}
+
        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <PageHeader title={title} description={description} />
 
         <Button>
           <Plus className="h-4 w-4 mr-2" />
-          <Link href={"/portal/verifications?add=1"}>Request New Verification</Link>
+          <Link href={"/portal/verifications?action=add"}>Request New Verification</Link>
         </Button>
       </div>
 
@@ -99,8 +108,6 @@ export default function VerificationsComponentPage({
           ))}
         </Tabs>
       </motion.div>
-
-      { viewAddVerificationModal && <NewVerificationRequestModal />}
     </>
   );
 }

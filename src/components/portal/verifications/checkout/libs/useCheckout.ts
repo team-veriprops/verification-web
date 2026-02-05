@@ -18,6 +18,7 @@ export function useCheckout() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('paystack');
   const [paymentState, setPaymentState] = useState<PaymentState>('idle');
   const [paymentResult, setPaymentResult] = useState<PaymentResult | null>(null);
+  const [viewVerificationCategory, setViewVerificationCategory] = useState(false)
   
   const [fxLock, setFxLock] = useState<FXRate>({
     currency: 'NGN',
@@ -173,6 +174,7 @@ export function useCheckout() {
     selectedCategory,
     selectedCurrency,
     selectedPaymentMethod,
+    viewVerificationCategory,
     paymentState,
     paymentResult,
     fxLock,
@@ -189,6 +191,7 @@ export function useCheckout() {
     handleCategoryChange,
     handleCurrencyChange,
     setSelectedPaymentMethod,
+    setViewVerificationCategory,
     processPayment,
     resetPayment,
     refreshFxRate,

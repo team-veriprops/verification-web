@@ -13,10 +13,11 @@ import { fxRates } from '@data/verificationTiers';
 import { toast } from 'sonner';
 import { CheckoutHeader } from './CheckoutHeader';
 import { PropertyInfo } from './models';
-import { useCheckout } from '@components/portal/verifications/checkout/libs/useCheckout';
+import { useCheckout } from './libs/useCheckout';
 import { useVerificationStore } from '../libs/useVerificationStore';
 import { useBodyOverflowHidden } from '@hooks/useBodyOverflowHidden';
 import { motion } from 'framer-motion';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 // Mock property data
 const mockProperty: PropertyInfo = {
@@ -27,7 +28,11 @@ const mockProperty: PropertyInfo = {
 };
 
 export default function CheckoutComponentModal(){
-  const { viewVerificationCheckoutModal } = useVerificationStore();
+  const { viewVerificationCheckoutModal, setViewVerificationCheckoutModal } = useVerificationStore();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   // Lock body scroll when modal is open
   useBodyOverflowHidden(viewVerificationCheckoutModal);
 
@@ -35,6 +40,7 @@ export default function CheckoutComponentModal(){
     selectedCategory,
     selectedCurrency,
     selectedPaymentMethod,
+    viewVerificationCategory,
     paymentState,
     paymentResult,
     fxLock,
@@ -66,6 +72,15 @@ export default function CheckoutComponentModal(){
     setTimeout(() => setPriceAnimating(false), 300);
   };
 
+  
+  const handleClose = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("action")
+    router.replace(`${pathname}?${params.toString()}`);
+
+    setViewVerificationCheckoutModal(false)
+  }
+
   const handlePayment = () => {
     if (fxExpired && selectedCurrency !== 'NGN') {
       toast.error('Please refresh your exchange rate before proceeding.');
@@ -85,9 +100,9 @@ export default function CheckoutComponentModal(){
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-63 bg-background min-h-screen flex flex-col"
+      className="fixed inset-0 z-3 bg-background min-h-screen flex flex-col"
     >
-      <CheckoutHeader />
+      <CheckoutHeader handleClose={handleClose} />
 
       <main className="overflow-y-auto">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 overflow-y-auto py-8">
@@ -106,7 +121,8 @@ export default function CheckoutComponentModal(){
             <PropertyContext property={mockProperty} />
 
             {/* Category Selection */}
-            <section>
+            {viewVerificationCategory ? (<>True</>) : (<>False</>)}
+            {  viewVerificationCategory &&     <section>
               <CategorySelector
                 tiers={tiers}
                 selectedCategory={selectedCategory}
@@ -114,7 +130,7 @@ export default function CheckoutComponentModal(){
                 currency={selectedCurrency}
                 fxRate={fxRates[selectedCurrency]}
               />
-            </section>
+            </section>}
 
             {/* Currency Selection */}
             <section className="checkout-card">

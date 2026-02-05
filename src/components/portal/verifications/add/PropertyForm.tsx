@@ -31,6 +31,8 @@ import { useCheckout } from '@components/portal/verifications/checkout/libs/useC
 import { fxRates } from '@data/verificationTiers';
 import AddressSearchForm from '@components/ui/AddressSearchForm';
 import { ExactLocation } from 'types/models';
+import { DocumentUploadField } from '@components/ui/upload/DocumentUploadField';
+import { MediaItem, MediaType } from '@components/ui/upload/MediaCard';
 
 const steps = [
   { id: 1, title: 'Property Details', description: 'Basic property information' },
@@ -65,6 +67,13 @@ const step4Schema = z.object({
   additionalDetails: z.string().optional(),
 });
 
+// // Step 5 Schema
+// const step5Schema = z.object({
+//   documents: z
+//       .array(z.custom<MediaItem>())
+//       .min(1, "At least one document is required"),
+// })
+
 const formSchema = step1Schema.and(step4Schema);
 
 type FormData = z.infer<typeof formSchema>;
@@ -80,7 +89,7 @@ export function PropertyForm({
   onSubmit,
   isSubmitting = false,
 }: PropertyFormProps) {
-  const [address, setAddress] = useState<ExactLocation | null>(null);
+  const [address, setAddress] = useState<ExactLocation | undefined>(undefined);
   const [addressIsValid, setAddressIsValid] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
   const [documents, setDocuments] = useState<UploadedDocument[]>(
@@ -115,6 +124,7 @@ export function PropertyForm({
       surveyPlanNumber: initialData?.surveyPlanNumber || '',
       beaconNumbers: initialData?.beaconNumbers || '',
       additionalDetails: initialData?.additionalDetails || '',
+      // documents: initialData?.documents || [],
     },
   });
 
@@ -137,7 +147,7 @@ export function PropertyForm({
       case 3: {
         const addressIsSet = !!address;
         setAddressIsValid(addressIsSet);
-        return addressIsSet;
+        return true; // TODO: return addressIsSet
       }
       case 4:
         fieldsToValidate = [
@@ -148,6 +158,10 @@ export function PropertyForm({
         ];
         break;
       case 5:
+        // fieldsToValidate = [
+        //   'documents',
+        // ];
+        // break;
         return true;
     }
 
@@ -157,14 +171,18 @@ export function PropertyForm({
   const handleNext = async () => {
     console.log("NEXT CLICKED");
     const isValid = await validateCurrentStep();
-    if (isValid && currentStep < maxStep + 1) {
+    if (isValid && currentStep < maxStep) {
       setCurrentStep((prev) => prev + 1);
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
+      if(currentStep == 7){
+        setCurrentStep(5);
+      } else{
       setCurrentStep((prev) => prev - 1);
+      }
     }
   };
 
@@ -194,6 +212,7 @@ export function PropertyForm({
         phone: data.sellerPhone,
       },
       additionalDetails: data.additionalDetails,
+      address,
       documents,
     };
 
@@ -219,19 +238,34 @@ export function PropertyForm({
           phone: formValues.sellerPhone,
         }
       : undefined,
+    address,
     documents,
   };
 
-  const onAddressChange = (address: ExactLocation | null) => {
+  const onAddressChange = (address: ExactLocation | undefined) => {
     setAddress(address);
   };
+
+  // const requiredDocuments: MediaType[] = [
+  //   {
+  //     key: "CofO",
+  //     type: "image",
+  //     title: "CofO"
+  //   }, 
+  //   {
+      
+  //     key: "Deep of transfer",
+  //     type: "image",
+  //     title: "Deep of transfer"
+  //   }
+  //   ]
 
   return (
      <Form {...form}>
       <form 
       onSubmit={(e) => {
           console.log("Submit fired: step= ", currentStep)
-        if (currentStep <= maxStep) {
+        if (currentStep < maxStep) {
           e.preventDefault(); // stop form submission
           handleNext();       // advance to next step
         } else {
@@ -521,10 +555,21 @@ export function PropertyForm({
 
           {/* Step 5: Documents */}
           <div className={cn("space-y-6", currentStep !== 5 && "hidden")}>
-            {/* <DocumentUploader
+            <DocumentUploader
               documents={documents}
               onChange={setDocuments}
-            /> */}
+            />
+
+            {/* <DocumentUploadField
+                            control={form.control}
+                            name="documents"
+                            label="Required Documents *"
+                            // description="Upload all required property verification documents. Survey Plan and C of O are mandatory."
+                            requiredTypes={requiredDocuments}
+                            maxFiles={requiredDocuments.length}
+                            propertyId="property-123"
+                            placeholder="Tap to upload required documents"
+                          /> */}
           </div>
           {/* Step 6: Preview */}
           <div className={cn("space-y-6", currentStep !== 6 && "hidden")}>
@@ -550,6 +595,23 @@ export function PropertyForm({
             Back
           </Button>
 
+
+          <Button type="submit" variant="default">
+            {currentStep < maxStep ? (
+              <>
+                Next
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </>
+            ) : isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              'Submit Verification Request'
+            )}
+          </Button>
+{/* 
           {currentStep < 6 ? (
             <Button type="button" onClick={handleNext}>
               Next
@@ -566,7 +628,7 @@ export function PropertyForm({
                 'Submit Verification Request'
               )}
             </Button>
-          )}
+          )} */}
         </div>
       </form>
     </Form>
