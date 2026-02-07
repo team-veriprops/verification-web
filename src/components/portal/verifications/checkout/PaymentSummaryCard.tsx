@@ -2,6 +2,7 @@ import { Receipt, Info } from 'lucide-react';
 import { PaymentSummary } from './models';
 import { currencySymbols } from '@data/verificationTiers';
 import { cn } from '@lib/utils';
+import { TransactionCurrency } from 'types/models';
 
 interface PaymentSummaryCardProps {
   summary: PaymentSummary;
@@ -13,7 +14,7 @@ export function PaymentSummaryCard({ summary, tierName, animate }: PaymentSummar
   const symbol = currencySymbols[summary.currency];
 
   const formatAmount = (amount: number) => {
-    if (summary.currency === 'NGN') {
+    if (summary.currency === TransactionCurrency.NGN) {
       return `${symbol}${amount.toLocaleString()}`;
     }
     return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -72,7 +73,7 @@ export function PaymentSummaryCard({ summary, tierName, animate }: PaymentSummar
           </span>
         </div>
 
-        {summary.currency !== 'NGN' && summary.ngnEquivalent && (
+        {summary.currency !== TransactionCurrency.NGN && summary.ngnEquivalent && (
           <div className="flex justify-between items-center text-sm text-muted-foreground">
             <span>NGN equivalent</span>
             <span>₦{summary.ngnEquivalent.toLocaleString()}</span>
@@ -80,7 +81,7 @@ export function PaymentSummaryCard({ summary, tierName, animate }: PaymentSummar
         )}
       </div>
 
-      {summary.currency !== 'NGN' && (
+      {summary.currency !== TransactionCurrency.NGN && (
         <p className="mt-4 text-xs text-muted-foreground bg-secondary/50 rounded-lg py-2 px-3">
           Converted from Nigerian Naira (₦). VAT is charged in compliance with Nigerian tax regulations.
         </p>

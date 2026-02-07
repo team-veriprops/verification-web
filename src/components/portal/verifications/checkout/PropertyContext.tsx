@@ -1,14 +1,14 @@
-import { MapPin, Home, FileText, Clock, ArrowDown } from 'lucide-react';
+import { MapPin, Home, FileText, Clock, ArrowDown, ChevronDown, ChevronUp } from 'lucide-react';
 import { PropertyInfo } from './models';
-import { useCheckout } from './libs/useCheckout';
 import { cn } from '@lib/utils';
+import { useCheckoutStore } from './libs/useCheckoutStore';
 
 interface PropertyContextProps {
   property: PropertyInfo;
 }
 
 export function PropertyContext({ property }: PropertyContextProps) {
-  const {viewVerificationCategory, setViewVerificationCategory} = useCheckout()
+  const {viewVerificationCategory, setViewVerificationCategory} = useCheckoutStore()
   return (
     <div className="checkout-card animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
@@ -39,12 +39,16 @@ export function PropertyContext({ property }: PropertyContextProps) {
             <span>Verification has not started yet.</span>
           </div>
           
-          <div onClick={() => setViewVerificationCategory((current) => !current)}>
-            <div className={cn('flex gap-3', viewVerificationCategory ? 'cursor-zoom-out' : 'cursor-zoom-in')}>
+          <div className={cn('', viewVerificationCategory ? 'cursor-zoom-out' : 'cursor-zoom-in')} onClick={() => setViewVerificationCategory(!viewVerificationCategory)}>
+            <div className='flex gap-3'>
               <span>Basic Verification</span>
-              <ArrowDown className='w-4 h-4' />
+              {
+              viewVerificationCategory ? 
+              <ChevronDown className='w-4 h-4' /> :
+              <ChevronUp className='w-4 h-4' />
+              }
             </div>
-            <span className='text-xs text-muted-foreground'>choose category</span>
+            { viewVerificationCategory && <span className='text-xs text-muted-foreground'>choose category below</span>}
           </div>
         </div>
       </div>

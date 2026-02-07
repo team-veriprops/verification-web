@@ -2,6 +2,7 @@ import { Loader2, CheckCircle2, XCircle, ArrowRight, RefreshCw } from 'lucide-re
 import { currencySymbols } from '@data/verificationTiers';
 import { verificationTiers } from '@data/verificationTiers';
 import { PaymentResult, PaymentState } from './models';
+import { TransactionCurrency } from 'types/models';
 
 interface PaymentStatesProps {
   state: PaymentState;
@@ -34,7 +35,7 @@ export function PaymentStates({ state, result, onRetry, onViewProgress }: Paymen
     const tierName = verificationTiers.find(t => t.id === result.category)?.name;
     
     const formatAmount = () => {
-      if (result.currency === 'NGN') {
+      if (result.currency === TransactionCurrency.NGN) {
         return `${symbol}${result.amount.toLocaleString()}`;
       }
       return `${symbol}${result.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

@@ -36,10 +36,12 @@ export default function VerificationsComponentPage({
   useEffect(()=>{
     const params = new URLSearchParams(searchParams);
     if(params.get("action") == "add"){
+      setViewVerificationCheckoutModal(false)
       setViewAddVerificationModal(true)
     }
 
     if(params.get("action") == "checkout"){
+      setViewAddVerificationModal(false)
       setViewVerificationCheckoutModal(true)
     }
   }, [searchParams, setViewAddVerificationModal, setViewVerificationCheckoutModal])

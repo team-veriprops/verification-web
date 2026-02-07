@@ -9,15 +9,17 @@ import { WhatHappensNext } from './WhatHappensNext';
 import { PaymentCTA } from './PaymentCTA';
 import { PaymentStates } from './PaymentStates';
 import { CheckoutFooter } from './CheckoutFooter';
-import { fxRates } from '@data/verificationTiers';
+import { fxRates, verificationTiers } from '@data/verificationTiers';
 import { toast } from 'sonner';
 import { CheckoutHeader } from './CheckoutHeader';
 import { PropertyInfo } from './models';
-import { useCheckout } from './libs/useCheckout';
 import { useVerificationStore } from '../libs/useVerificationStore';
 import { useBodyOverflowHidden } from '@hooks/useBodyOverflowHidden';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCheckoutStore } from './libs/useCheckoutStore';
+import { useFxTimer } from './libs/utils';
+import { TransactionCurrency } from 'types/models';
 
 // Mock property data
 const mockProperty: PropertyInfo = {
@@ -32,6 +34,8 @@ export default function CheckoutComponentModal(){
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  useFxTimer();
   
   // Lock body scroll when modal is open
   useBodyOverflowHidden(viewVerificationCheckoutModal);
@@ -49,14 +53,13 @@ export default function CheckoutComponentModal(){
     timeRemaining,
     selectedTier,
     paymentSummary,
-    tiers,
     handleCategoryChange,
     handleCurrencyChange,
     setSelectedPaymentMethod,
     processPayment,
     resetPayment,
     refreshFxRate,
-  } = useCheckout();
+  } = useCheckoutStore();
 
   const [priceAnimating, setPriceAnimating] = useState(false);
 
@@ -82,7 +85,7 @@ export default function CheckoutComponentModal(){
   }
 
   const handlePayment = () => {
-    if (fxExpired && selectedCurrency !== 'NGN') {
+    if (fxExpired && selectedCurrency !== TransactionCurrency.NGN) {
       toast.error('Please refresh your exchange rate before proceeding.');
       return;
     }
@@ -121,10 +124,9 @@ export default function CheckoutComponentModal(){
             <PropertyContext property={mockProperty} />
 
             {/* Category Selection */}
-            {viewVerificationCategory ? (<>True</>) : (<>False</>)}
             {  viewVerificationCategory &&     <section>
               <CategorySelector
-                tiers={tiers}
+                tiers={verificationTiers}
                 selectedCategory={selectedCategory}
                 onCategoryChange={onCategoryChange}
                 currency={selectedCurrency}
@@ -172,7 +174,7 @@ export default function CheckoutComponentModal(){
             {/* CTA */}
             <PaymentCTA
               summary={paymentSummary}
-              disabled={fxExpired && selectedCurrency !== 'NGN'}
+              disabled={fxExpired && selectedCurrency !== TransactionCurrency.NGN}
               onSubmit={handlePayment}
             />
           </div>

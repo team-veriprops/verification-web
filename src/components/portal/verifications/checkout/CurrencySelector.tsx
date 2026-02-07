@@ -1,13 +1,13 @@
 import { currencySymbols, currencyNames } from '@data/verificationTiers';
 import { cn } from '@lib/utils';
-import { Currency } from './models';
+import { TransactionCurrency } from 'types/models';
 
 interface CurrencySelectorProps {
-  selectedCurrency: Currency;
-  onCurrencyChange: (currency: Currency) => void;
+  selectedCurrency: TransactionCurrency;
+  onCurrencyChange: (currency: TransactionCurrency) => void;
 }
 
-const currencies: Currency[] = ['NGN', 'USD', 'GBP', 'EUR'];
+const currencies: TransactionCurrency[] = [TransactionCurrency.NGN, TransactionCurrency.USD, TransactionCurrency.GBP, TransactionCurrency.EUR];
 
 export function CurrencySelector({ selectedCurrency, onCurrencyChange }: CurrencySelectorProps) {
   return (
@@ -43,9 +43,9 @@ export function CurrencySelector({ selectedCurrency, onCurrencyChange }: Currenc
         })}
       </div>
 
-      {selectedCurrency !== 'NGN' && (
+      {selectedCurrency !== TransactionCurrency.NGN && (
         <p className="text-xs text-muted-foreground">
-          Prices are converted from {currencyNames['NGN']} (₦) to {currencyNames[selectedCurrency]}.
+          Prices are converted from {currencyNames[TransactionCurrency.NGN]} (₦) to {currencyNames[selectedCurrency]}.
         </p>
       )}
     </div>

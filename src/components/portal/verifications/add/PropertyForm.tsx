@@ -27,12 +27,10 @@ import { cn } from '@lib/utils';
 import { PropertyDetails, UploadedDocument } from './models';
 import { PropertyPreview } from './PropertyPreview';
 import { CategorySelector } from '../checkout/CategorySelector';
-import { useCheckout } from '@components/portal/verifications/checkout/libs/useCheckout';
-import { fxRates } from '@data/verificationTiers';
+import { fxRates, verificationTiers } from '@data/verificationTiers';
 import AddressSearchForm from '@components/ui/AddressSearchForm';
 import { ExactLocation } from 'types/models';
-import { DocumentUploadField } from '@components/ui/upload/DocumentUploadField';
-import { MediaItem, MediaType } from '@components/ui/upload/MediaCard';
+import { useCheckoutStore } from '../checkout/libs/useCheckoutStore';
 
 const steps = [
   { id: 1, title: 'Property Details', description: 'Basic property information' },
@@ -100,9 +98,8 @@ export function PropertyForm({
   const {
     selectedCategory,
     selectedCurrency,
-    tiers,
     handleCategoryChange,
-  } = useCheckout();
+  } = useCheckoutStore();
 
   const addressRequiredErrorMsg = 'Property physical address is required';
 
@@ -406,7 +403,7 @@ export function PropertyForm({
           {/* Step 2: Property Verification Category */}
           <section className={cn("space-y-6", currentStep !== 2 && "hidden")}>
               <CategorySelector
-                  tiers={tiers}
+                  tiers={verificationTiers}
                   selectedCategory={selectedCategory}
                   onCategoryChange={handleCategoryChange}
                   currency={selectedCurrency}
