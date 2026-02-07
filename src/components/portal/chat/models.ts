@@ -7,7 +7,7 @@ import { BaseQueryDto, PageRequest } from "types/models";
 // Base Interfaces
 export interface ConversationBaseDto {
   title: string;
-  verification_id: string;
+  verificationId: string;
 }
 
 // Create DTO
@@ -21,15 +21,15 @@ export interface UpdateConversationDto extends ConversationBaseDto {}
 export interface SearchConversationDto extends PageRequest, BaseQueryDto {
     status?: ConversationStatus;
     title?: string;
-    verification_id?: string;
+    verificationId?: string;
 }
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)
 export interface QueryConversationDto extends CreateConversationDto, BaseQueryDto {
   status: ConversationStatus;
-  last_message: string;
-  last_message_time: string;
-  unread_count: number;
+  lastMessage: string;
+  lastMessageTime: string;
+  unreadCount: number;
   agent: {
     name: string;
     role: string;
@@ -48,20 +48,20 @@ export interface MessageBaseDto {
 
 // Create DTO
 export interface CreateMessageDto extends MessageBaseDto {
-  conversation_id: string;
-  sender_id?: string;
+  conversationId: string;
+  senderId?: string;
 }
 
 // Update DTO (full override)
 export interface UpdateMessageDto extends MessageBaseDto {}
 
 export interface SearchMessageDto extends PageRequest, BaseQueryDto {
-    conversation_id: string;
+    conversationId: string;
 }
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)
 export interface QueryMessageDto extends CreateMessageDto, BaseQueryDto {
-  is_read: boolean;
+  isRead: boolean;
 }
 
 
@@ -85,7 +85,7 @@ export interface SearchConversationParticipantDto extends PageRequest, BaseQuery
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)
 export interface QueryConversationParticipantDto extends CreateConversationParticipantDto, BaseQueryDto {
-  conversation_id: string;
+  conversationId: string;
   name: string;
   role: string;
   avatar: string | null;

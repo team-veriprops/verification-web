@@ -4,10 +4,10 @@ import { QueryProfileDto, SearchProfileDto } from "./profile/models";
 export interface UpdateUserDto {
   dob?: string;
   gender?: Gender;
-  last_active_date?: string;
+  lastActiveDate?: string;
   email?: string;
   phone?: string;
-  phone_ext?: string;
+  phoneExt?: string;
   password?: string;
   password_last_updated?: string;
   status?: UserStatus;
@@ -29,7 +29,7 @@ export interface CreateUserDto {
   otp: string;
   email: string;
   phone?: string;
-  phone_ext?: string;
+  phoneExt?: string;
   password: string;
   firstname: string;  // min length: 2, max length: 30
   lastname: string;   // min length: 2, max length: 30
@@ -43,13 +43,13 @@ export interface UpdateNameDto {
 }
 
 export interface SearchUserDto extends PageRequest, BaseQueryDto, UpdateUserDto {
-  user_type?: UserType;
+  userType?: UserType;
 }
 
 export interface SearchUserAndProfileDto extends SearchProfileDto, SearchUserDto {}
 
 export interface LoginSuccessDto extends QueryUserDto, QueryProfileDto {
-  profile_id?: string;
+  profileId?: string;
   pending_kyc?: string[]
 }
 

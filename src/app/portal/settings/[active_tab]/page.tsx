@@ -11,16 +11,16 @@ export const metadata: Metadata = {
 
 interface SettingsPageProps {
   params: Promise<{
-    active_tab?: string;
+    activeTab?: string;
   }>;
 }
 
 export default async function SettingsPage({ params }: SettingsPageProps) {
-  const { active_tab } = await params;
+  const { activeTab } = await params;
 
   return (
     <SettingsComponentPage
-      active_tab={active_tab!}
+      activeTab={activeTab!}
       title={title}
       description={description}
     />

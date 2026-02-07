@@ -42,7 +42,7 @@ const TaskCard = ({ task }: TaskCardProps) => {
             </h3>
           </div>
           <Badge className={cn("capitalize", getStatusBadgeColor(task.status))}>
-            {task.status === "in_progress" ? "In Progress" : task.status}
+            {task.status === "inProgress" ? "In Progress" : task.status}
           </Badge>
         </div>
 

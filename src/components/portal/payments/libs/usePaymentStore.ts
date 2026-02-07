@@ -7,7 +7,7 @@ import { Money } from "types/models";
 
 const defaultFilters: Partial<SearchPaymentDto> = {
   page: 0,
-  page_size: 6,
+  pageSize: 6,
   status: PaymentStatus.PENDING
 };
 

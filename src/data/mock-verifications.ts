@@ -9,28 +9,28 @@ import { faker } from "@faker-js/faker";
 import { Money, TransactionCurrency, PropertyType, MeasurementUnit } from "types/models";
 
 
-export const stateCityMap: { state: string; grouping_city: string; cities: string[] }[] = [
-  { state: "Lagos", grouping_city: "Lagos", cities: ["Ikeja", "Lekki", "Victoria Island", "Surulere", "Yaba"],},
-  { state: "Abuja", grouping_city: "Abuja", cities: ["Garki", "Maitama", "Wuse", "Asokoro"] },
-  { state: "Oyo", grouping_city: "Ibadan", cities: ["Ibadan", "Ogbomosho", "Oyo Town"] },
-  { state: "Rivers", grouping_city: "Port Harcourt", cities: ["Port Harcourt", "Obio-Akpor"] },
-  { state: "Enugu", grouping_city: "Enugu", cities: ["Enugu", "Nsukka"] },
-  { state: "Delta", grouping_city: "Asaba", cities: ["Cable Point", "GRA", "Cable Point", "Bonsaac Layout", "Okpanam"] },
+export const stateCityMap: { state: string; groupingCity: string; cities: string[] }[] = [
+  { state: "Lagos", groupingCity: "Lagos", cities: ["Ikeja", "Lekki", "Victoria Island", "Surulere", "Yaba"],},
+  { state: "Abuja", groupingCity: "Abuja", cities: ["Garki", "Maitama", "Wuse", "Asokoro"] },
+  { state: "Oyo", groupingCity: "Ibadan", cities: ["Ibadan", "Ogbomosho", "Oyo Town"] },
+  { state: "Rivers", groupingCity: "Port Harcourt", cities: ["Port Harcourt", "Obio-Akpor"] },
+  { state: "Enugu", groupingCity: "Enugu", cities: ["Enugu", "Nsukka"] },
+  { state: "Delta", groupingCity: "Asaba", cities: ["Cable Point", "GRA", "Cable Point", "Bonsaac Layout", "Okpanam"] },
 ];
 
 export function getRandomStateCity() {
   const stateEntry = faker.helpers.arrayElement(stateCityMap);
   const city = faker.helpers.arrayElement(stateEntry.cities);
-  return { state: stateEntry.state, grouping_city:stateEntry.grouping_city, city };
+  return { state: stateEntry.state, groupingCity:stateEntry.groupingCity, city };
 }
 
 export async function generateVerification(): Promise<QueryVerificationDto> {
-  const { state, grouping_city, city } = getRandomStateCity();
+  const { state, groupingCity, city } = getRandomStateCity();
 
   return {
     id: faker.string.uuid(),
-    ref_id: `VRP-2026-00${faker.number.int({ min: 1000, max: 9000 })}`,
-    property_type: faker.helpers.arrayElement([
+    refId: `VRP-2026-00${faker.number.int({ min: 1000, max: 9000 })}`,
+    propertyType: faker.helpers.arrayElement([
       PropertyType.LAND,
       PropertyType.STRUCTURE
     ]),
@@ -38,7 +38,7 @@ export async function generateVerification(): Promise<QueryVerificationDto> {
       address: faker.location.streetAddress(),
       country: "Nigeria",
       state,
-      grouping_city,
+      groupingCity,
       city,
       area: faker.word.noun(),
       coordinates: {
@@ -52,16 +52,16 @@ export async function generateVerification(): Promise<QueryVerificationDto> {
       VerificationStatus.FLAGGED,
       VerificationStatus.CANCELLED,
     ]),
-    owner_fullname: `${faker.person.firstName()} ${faker.person.lastName()}`,
-    risk_score: faker.number.int({ min: 10, max: 100 }),
+    ownerFullName: `${faker.person.firstName()} ${faker.person.lastName()}`,
+    riskScore: faker.number.int({ min: 10, max: 100 }),
 
-    property_title: faker.company.catchPhrase(),
+    propertyTitle: faker.company.catchPhrase(),
     property_description: faker.lorem.sentence(),
-    property_plot_size: {
+    propertyPlotSize: {
       value: faker.number.int({ min: 200, max: 1000 }),
       unit: MeasurementUnit.SQM,
     },
-    property_estimated_price: Money.from({
+    propertyEstimatedPrice: Money.from({
       value: faker.number.int({ min: 20000, max: 500000 }),
       currency: TransactionCurrency.NGN,
     }),
@@ -76,7 +76,7 @@ export async function generateVerification(): Promise<QueryVerificationDto> {
           VerificationStatus.FLAGGED,
           VerificationStatus.CANCELLED,
         ]), 
-        verified_date: faker.date.past().toISOString(),
+        verifiedDate: faker.date.past().toISOString(),
       },
       { 
         name: "Survey Plan", 
@@ -86,7 +86,7 @@ export async function generateVerification(): Promise<QueryVerificationDto> {
           VerificationStatus.FLAGGED,
           VerificationStatus.CANCELLED,
         ]), 
-        verified_date: faker.date.past().toISOString(),
+        verifiedDate: faker.date.past().toISOString(),
       },
       { 
         name: "Deed of Assignment", 
@@ -96,7 +96,7 @@ export async function generateVerification(): Promise<QueryVerificationDto> {
           VerificationStatus.FLAGGED,
           VerificationStatus.CANCELLED,
         ]), 
-        verified_date: faker.date.past().toISOString(),
+        verifiedDate: faker.date.past().toISOString(),
       },
       { 
         name: "Governor's Consent", 
@@ -106,23 +106,23 @@ export async function generateVerification(): Promise<QueryVerificationDto> {
           VerificationStatus.FLAGGED,
           VerificationStatus.CANCELLED,
         ]), 
-        verified_date: faker.date.past().toISOString(),
+        verifiedDate: faker.date.past().toISOString(),
       },
     ]),
 
-    date_created: faker.date.past().toISOString(),
-    date_completed: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
+    dateCompleted: faker.date.past().toISOString(),
   };
 }
 
 
 export async function generateVerificationDetail(
-  ref_id: string,
+  refId: string,
 ): Promise<QueryVerificationDetailDto> {
   return {
     id: faker.string.uuid(),
-    ref_id: ref_id,
-    title_status: "Clean Title - Certificate of Occupancy",
+    refId: refId,
+    titleStatus: "Clean Title - Certificate of Occupancy",
     encumbrances: faker.helpers.arrayElements([
       "Government acquisition pending review",
       "Pending litigation", 
@@ -155,7 +155,7 @@ export async function generateVerificationDetail(
         description: "Property verified with low risk score", 
       }
     ]),
-    date_created: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
   };
 }
 

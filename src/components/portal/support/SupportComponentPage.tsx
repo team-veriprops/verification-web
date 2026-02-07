@@ -16,7 +16,7 @@ export default function SupportComponentPage({
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <PageHeader title={title} description={description} active_tab={""} />
+      <PageHeader title={title} description={description} activeTab={""} />
 
       {/* Tabs */}
       <Tabs defaultValue="faq" className="space-y-6">

@@ -9,14 +9,14 @@ import { HttpClient } from "@lib/FetchHttpClient";
 import { QueryPaymentDetailDto } from "../details/models";
 
 export class PaymentService {
-  payment_base_url: string;
+  paymentBaseUrl: string;
   constructor(private readonly http: HttpClient) {
-    this.payment_base_url = "/payments";
+    this.paymentBaseUrl = "/payments";
   }
 
   async getPaymentStats(): Promise<PaymentStats> {
     return await this.http.get<PaymentStats>(
-      `${this.payment_base_url}/stats`
+      `${this.paymentBaseUrl}/stats`
     );
   }
 
@@ -25,15 +25,15 @@ export class PaymentService {
   ): Promise<Page<QueryPaymentDto>> {
     const query = toQueryParams(payload);
     return await this.http.get<Page<QueryPaymentDto>>(
-      `${this.payment_base_url}?${query}`
+      `${this.paymentBaseUrl}?${query}`
     );
   }
 
   async getPaymentDetail(
-      ref_id: string
+      refId: string
     ): Promise<QueryPaymentDetailDto> {
       return await this.http.get<QueryPaymentDetailDto>(
-        `${this.payment_base_url}/${ref_id}`
+        `${this.paymentBaseUrl}/${refId}`
       );
     }
 }

@@ -58,10 +58,10 @@ export default function VerificationsComponentPage({
     icon?: React.ComponentType<{ className?: string }>;
     label: string;
   }> = [
-    { value: VerificationStatus.PENDING, icon: ClipboardClock, label: `Pending (${dashboardStats?.pending_verifications ?? 0})` },
-    { value: VerificationStatus.FLAGGED, icon: ShieldAlert, label: `Flagged (${dashboardStats?.flagged_verifications ?? 0})` },
-    { value: VerificationStatus.VERIFIED, icon: Shield, label: `Verified (${dashboardStats?.successful_verifications ?? 0})` },
-    { value: "all", icon: Rows4 ,  label: `All Verifications (${dashboardStats?.total_verifications ?? 0})` },
+    { value: VerificationStatus.PENDING, icon: ClipboardClock, label: `Pending (${dashboardStats?.pendingVerifications ?? 0})` },
+    { value: VerificationStatus.FLAGGED, icon: ShieldAlert, label: `Flagged (${dashboardStats?.flaggedVerifications ?? 0})` },
+    { value: VerificationStatus.VERIFIED, icon: Shield, label: `Verified (${dashboardStats?.successfulVerifications ?? 0})` },
+    { value: "all", icon: Rows4 ,  label: `All Verifications (${dashboardStats?.totalVerifications ?? 0})` },
   ] as const;
   
   return (

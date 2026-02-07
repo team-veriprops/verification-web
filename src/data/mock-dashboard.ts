@@ -5,11 +5,11 @@ import { Money, TransactionCurrency } from "types/models";
 
 export async function generateDashboardStats(): Promise<DashboardStats> {
   return {
-    total_verifications: 20,
-    pending_verifications: 3,
-    successful_verifications: 15,
-    flagged_verifications: 2,
-    total_spent_amount:  Money.from({
+    totalVerifications: 20,
+    pendingVerifications: 3,
+    successfulVerifications: 15,
+    flaggedVerifications: 2,
+    totalSpentAmount:  Money.from({
       value: faker.number.int({ min: 2000000, max: 50000000 }),
       currency: TransactionCurrency.NGN,
     }),

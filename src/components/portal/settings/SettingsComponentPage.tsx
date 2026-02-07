@@ -13,13 +13,13 @@ import PageHeader from "@components/ui/PageHeader";
 export default function SettingsComponentPage({
   title,
   description,
-  active_tab,
+  activeTab,
 }: PageDetails) {
   return (
     <div className="space-y-6 animate-fade-in">
-      <PageHeader title={title} description={description} active_tab={""} />
+      <PageHeader title={title} description={description} activeTab={""} />
 
-      <Tabs defaultValue={active_tab} className="space-y-6">
+      <Tabs defaultValue={activeTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4 mb-8 bg-muted/50 p-1 rounded-lg h-auto">
           <TabsTrigger
             value="profile"

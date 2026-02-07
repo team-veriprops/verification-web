@@ -3,41 +3,41 @@ import { ConversationStatus, QueryConversationDto, QueryMessageDto } from "@comp
 import { faker } from "@faker-js/faker";
 
 export async function generateConversation(): Promise<QueryConversationDto> {
-  const verification_id = `VRP-2026-00${faker.number.int({ min: 1000, max: 9000 })}`
+  const verificationId = `VRP-2026-00${faker.number.int({ min: 1000, max: 9000 })}`
 
   return {
     id: faker.string.uuid(),
-    title: `${verification_id} - ${faker.company.catchPhrase()}`,
-    verification_id: verification_id,
+    title: `${verificationId} - ${faker.company.catchPhrase()}`,
+    verificationId: verificationId,
     status: faker.helpers.arrayElement([
       ConversationStatus.PENDING,
       ConversationStatus.ACTIVE,
       ConversationStatus.RESOLVED,
     ]),
-    last_message: faker.lorem.sentence(),
-    last_message_time: faker.date.past().toISOString(),
-    unread_count: faker.number.int({ min: 1, max: 100 }),
+    lastMessage: faker.lorem.sentence(),
+    lastMessageTime: faker.date.past().toISOString(),
+    unreadCount: faker.number.int({ min: 1, max: 100 }),
     agent: {
       name: faker.person.fullName(),
       role: faker.person.jobTitle(),
       avatar: "avatar",
     },
-    date_created: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
   };
 }
 
 
 export async function generateConversationMessage(
-  conversation_id: string,
+  conversationId: string,
 ): Promise<QueryMessageDto> {
   return {
     id: faker.string.uuid(),
-    conversation_id: conversation_id,
-    sender_id: faker.helpers.arrayElement(["user", "agent"]),
+    conversationId: conversationId,
+    senderId: faker.helpers.arrayElement(["user", "agent"]),
     content: faker.lorem.paragraph(),
     timestamp: faker.date.past().toISOString(),
-    is_read: faker.helpers.arrayElement([true, false]),
-    date_created: faker.date.past().toISOString(),
+    isRead: faker.helpers.arrayElement([true, false]),
+    dateCreated: faker.date.past().toISOString(),
   };
 }
 

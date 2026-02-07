@@ -168,7 +168,7 @@ export default function ChatConversationMessagesComponent(){
       if (!messageInput.trim() || !currentConversation) return;
 
       const newMessage: CreateMessageDto = {
-        conversation_id: currentConversation?.id ?? "",
+        conversationId: currentConversation?.id ?? "",
         content: messageInput,
         timestamp: new Date().toLocaleString(),
       };
@@ -264,11 +264,11 @@ export default function ChatConversationMessagesComponent(){
                         key={message.id}
                         className={cn(
                           "flex gap-2 group",
-                          message.sender_id === "user" ? "justify-end" : "justify-start"
+                          message.senderId === "user" ? "justify-end" : "justify-start"
                         )}
                       >
 
-                        {message.sender_id !== "user" && (
+                        {message.senderId !== "user" && (
                           <Avatar className="h-8 w-8 shrink-0 mt-1">
                             <AvatarFallback className="bg-muted text-muted-foreground text-xs">
                               {currentConversation.agent.name.split(" ").map(n => n[0]).join("")}
@@ -280,7 +280,7 @@ export default function ChatConversationMessagesComponent(){
                           {/* Bubble row with ellipsis - vertically centered */}
                       <div className="flex items-center gap-1">
                         {/* Ellipsis for user messages (left of bubble) */}
-                        {message.sender_id === "user" && (
+                        {message.senderId === "user" && (
                           <ChatMessageActionButton
                             dropDownAlignment={"start"}
                             editMessageHandler={() => handleEditMessage(message)}
@@ -291,7 +291,7 @@ export default function ChatConversationMessagesComponent(){
                         {/* Message bubble */}
                           <div className={cn(
                             "rounded-2xl px-4 py-2 transition-all duration-200 cursor-default hover:-translate-y-0.5 hover:shadow-md relative",
-                            message.sender_id === "user" 
+                            message.senderId === "user"
                               ? "bg-primary text-primary-foreground rounded-br-none" 
                               : "bg-white text-foreground rounded-bl-none shadow-sm"
                           )}>
@@ -313,7 +313,7 @@ export default function ChatConversationMessagesComponent(){
                           </div>
                         
                         {/* Ellipsis for agent messages (right of bubble) */}
-                        {message.sender_id !== "user" && (
+                        {message.senderId !== "user" && (
                           <ChatMessageActionButton
                             dropDownAlignment={"end"}
                             editMessageHandler={() => handleEditMessage(message)}
@@ -325,7 +325,7 @@ export default function ChatConversationMessagesComponent(){
                       {/* Reactions row */}
                           <div className={cn(
                             "flex items-center gap-1 mt-1.5 transition-opacity duration-200",
-                            message.sender_id === "user" ? "justify-end flex-row-reverse" : "justify-end",
+                            message.senderId === "user" ? "justify-end flex-row-reverse" : "justify-end",
                             !hasAnyReaction && "opacity-0 group-hover:opacity-100"
                           )}>
                             <div className="flex items-center gap-1">
@@ -356,17 +356,17 @@ export default function ChatConversationMessagesComponent(){
                           {/* Timestamp and read receipts */}
                           <div className={cn(
                                 "flex items-center gap-1 mt-0.5 px-1 text-sm text-muted-foreground",
-                                message.sender_id === "user" ? "justify-end" : "justify-start"
+                                message.senderId === "user" ? "justify-end" : "justify-start"
                               )}>
                                 <span>{formatDate(message.timestamp)}</span>
-                                {message.sender_id === "user" && message.is_read && (
+                                {message.senderId === "user" && message.isRead && (
                                   <CheckCheck className="h-4 w-4 text-primary" />
                                 )}
                           </div>
 
                       </div>
                           
-                        {message.sender_id === "user" && (
+                        {message.senderId === "user" && (
                           <Avatar className="h-8 w-8 shrink-0 mt-1">
                             <AvatarFallback className="bg-primary/10 text-primary text-xs">
                               {activeAuditor?.fullname.split(" ").map(n => n[0]).join("")}

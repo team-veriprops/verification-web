@@ -14,7 +14,7 @@ import { Money, TransactionCurrency } from "types/models";
 export async function generatePayment(): Promise<QueryPaymentDto> {
   return {
     id: faker.string.uuid(),
-    ref_id: `INV-2026-00${faker.number.int({ min: 1000, max: 9000 })}`,
+    refId: `INV-2026-00${faker.number.int({ min: 1000, max: 9000 })}`,
     description: faker.helpers.arrayElement([
       `Basic Verification - VRP-2026-00${faker.number.int({ min: 1000, max: 9000 })}`,
       `Standard Verification - VRP-2026-00${faker.number.int({ min: 1000, max: 9000 })}`,
@@ -30,7 +30,7 @@ export async function generatePayment(): Promise<QueryPaymentDto> {
       PaymentStatus.CANCELLED,
       PaymentStatus.FAILED,
     ]),
-    date_created: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
   };
 }
 
@@ -45,38 +45,38 @@ export async function generatePayment(): Promise<QueryPaymentDto> {
   }
 
 export async function generatePaymentDetail(
-  ref_id: string,
+  refId: string,
   status: PaymentStatus
 ): Promise<QueryPaymentDetailDto> {
   return {
     id: faker.string.uuid(),
-    ref_id: ref_id,
-    payment_channel: faker.helpers.arrayElement([
+    refId: refId,
+    paymentChannel: faker.helpers.arrayElement([
       PaymentChannel.FLUTTERWAVE,
       PaymentChannel.PAYSTACK,
     ]),
-    gateway_response: getGatewayResponse(status),
-    property_title: faker.company.catchPhrase(),
-    property_location: faker.location.streetAddress(),
+    gatewayResponse: getGatewayResponse(status),
+    propertyTitle: faker.company.catchPhrase(),
+    propertyLocation: faker.location.streetAddress(),
     seller: faker.person.fullName(),
-    date_created: faker.date.past().toISOString(),
-    date_paid: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
+    datePaid: faker.date.past().toISOString(),
   };
 }
 
 export async function generatePaymentStats(): Promise<PaymentStats> {
   return {
-    total_spent_amount: Money.from({
+    totalSpentAmount: Money.from({
       value: faker.number.int({ min: 2000000, max: 50000000 }),
       currency: TransactionCurrency.NGN,
     }),
-    last_payment_date: faker.date.past().toISOString(),
-    total_pending_amount: Money.from({
+    lastPaymentDate: faker.date.past().toISOString(),
+    totalPendingAmount: Money.from({
       value: faker.number.int({ min: 2000000, max: 50000000 }),
       currency: TransactionCurrency.NGN,
     }),
-    total_pending: 3,
-    total_payment: 23
+    totalPending: 3,
+    totalPayment: 23
   };
 }
 

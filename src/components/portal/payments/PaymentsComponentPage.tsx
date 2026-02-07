@@ -39,8 +39,8 @@ export default function PaymentsComponentPage({
     icon?: React.ComponentType<{ className?: string }>;
     label: string;
   }> = [
-    { value: PaymentStatus.PENDING, icon: Wallet, label: `Pending (${paymentStats?.total_pending ?? 0})` },
-    { value: "all", icon: Rows4 ,  label: `All Payments (${paymentStats?.total_payment ?? 0})` },
+    { value: PaymentStatus.PENDING, icon: Wallet, label: `Pending (${paymentStats?.totalPending ?? 0})` },
+    { value: "all", icon: Rows4 ,  label: `All Payments (${paymentStats?.totalPayment ?? 0})` },
   ] as const;
   
   const handleMakePayment = () => {

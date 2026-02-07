@@ -27,7 +27,7 @@
 //   const [systemRoles, setSystemRoles] = useState<string[]>([]);
 //   const [isModalOpen, setIsModalOpen] = useState(false);
 
-//   const role_page_size = 100;
+//   const role_pageSize = 100;
 
 //   const {currentCompany} = useCompanyStore()
 //   const { updateFilters } = useRoleStore();
@@ -36,8 +36,8 @@
 //   const { data: dataPage, isLoading, isError } = useSearchRolePage(currentCompany?.id!);
 
 //   useEffect(() => {
-//     updateFilters({ page_size: role_page_size});
-//   }, [role_page_size, updateFilters]);
+//     updateFilters({ pageSize: role_pageSize});
+//   }, [role_pageSize, updateFilters]);
 
 //   const { useCreateRole } = useRoleQueries();
 //   const createRole = useCreateRole(currentCompany?.id!);

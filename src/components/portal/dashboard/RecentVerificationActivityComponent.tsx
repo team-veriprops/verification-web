@@ -50,7 +50,7 @@ export default function RecentVerificationActivityComponent() {
                       >
                         <div className="space-y-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-medium text-foreground">{v.property_title}</span>
+                            <span className="font-medium text-foreground">{v.propertyTitle}</span>
                             <Badge className={cn("capitalize text-xs", Icon)}>
                               {v.status}
                             </Badge>

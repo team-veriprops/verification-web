@@ -19,18 +19,18 @@ export interface SearchPaymentDto extends PageRequest, BaseQueryDto {
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)
 export interface QueryPaymentDto extends CreatePaymentDto, BaseQueryDto {
-  ref_id: string;
+  refId: string;
   description: string;
   amount: Money;
   status: PaymentStatus;
 }
 
 export interface PaymentStats{
-  total_spent_amount: Money
-  last_payment_date: string
-  total_pending_amount: Money
-  total_pending: number;
-  total_payment: number
+  totalSpentAmount: Money
+  lastPaymentDate: string
+  totalPendingAmount: Money
+  totalPending: number;
+  totalPayment: number
 }
 
 export enum PaymentType {

@@ -267,8 +267,8 @@ export function RegistryForm({
                 name="documents"
                 label="Required Documents *"
                 // description="Upload all required property verification documents. Survey Plan and C of O are mandatory."
-                requiredTypes={task.required_response}
-                maxFiles={task.required_response.length}
+                requiredTypes={task.requiredResponse}
+                maxFiles={task.requiredResponse.length}
                 propertyId="property-123"
                 placeholder="Tap to upload required documents"
               />

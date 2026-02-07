@@ -21,9 +21,9 @@ export default function PaymentStatsComponent() {
 
   useEffect(() => {
     if (!isError) {
-      setTotalPendingPayment(paymentStats?.total_pending_amount);
+      setTotalPendingPayment(paymentStats?.totalPendingAmount);
     }
-  }, [setTotalPendingPayment, paymentStats?.total_pending_amount, isError]);
+  }, [setTotalPendingPayment, paymentStats?.totalPendingAmount, isError]);
 
   if (isLoading) {
     return (
@@ -63,20 +63,20 @@ export default function PaymentStatsComponent() {
     >
       <StatsCard
           title="Total Spent"
-          value={formatMoney(paymentStats?.total_spent_amount)!}
+          value={formatMoney(paymentStats?.totalSpentAmount)!}
           icon={CreditCard}
           variant="primary"
         />
         <StatsCard
           title="Last Payment"
-          value={paymentStats?.last_payment_date ? formatDate(paymentStats?.last_payment_date) : "N/A"}
+          value={paymentStats?.lastPaymentDate ? formatDate(paymentStats?.lastPaymentDate) : "N/A"}
           icon={Calendar}
         />
         <StatsCard
           title="Pending Payments"
-          value={formatMoney(paymentStats?.total_pending_amount)!}
+          value={formatMoney(paymentStats?.totalPendingAmount)!}
           icon={Clock}
-          variant={convertMoney(paymentStats?.total_pending_amount).getValue() > 0 ? "warning" : "default"}
+          variant={convertMoney(paymentStats?.totalPendingAmount).getValue() > 0 ? "warning" : "default"}
         />
 
     </motion.div>

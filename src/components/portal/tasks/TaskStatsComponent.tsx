@@ -18,7 +18,7 @@ export default function TaskStatsComponent() {
       data: taskStats,
       isLoading,
       isError,
-    } = useGetTaskStats(activeAuditor?.verifier_id ?? "");
+    } = useGetTaskStats(activeAuditor?.verifierId ?? "");
 
   if (isLoading) {
     return (
@@ -67,14 +67,14 @@ export default function TaskStatsComponent() {
         />
         <StatsCard 
           title="In Progress" 
-          value={taskStats?.in_progress ?? 0} 
+          value={taskStats?.inProgress ?? 0}
           icon={Clock}
           onClick={() => handleOnClick("in-progress")}
           className="cursor-pointer hover:scale-105"
         />
         <StatsCard 
           title="Due Soon" 
-          value={taskStats?.due_soon ?? 0} 
+          value={taskStats?.dueSoon ?? 0}
           icon={AlertCircle} variant={"warning"}
           onClick={() => handleOnClick("due-soon")}
           className="cursor-pointer hover:scale-105"
@@ -98,7 +98,7 @@ export default function TaskStatsComponent() {
         <StatsCard 
           title="Avg Resolution" 
           trend={{isPositive: true, value: 6}} 
-          value={`${(taskStats?.avg_resolution__hours ?? 0)}h`} 
+          value={`${(taskStats?.avgResolutionHours ?? 0)}h`}
           icon={Clock} 
           variant="timeless"
           onClick={() => handleOnClick("avg-resolution")}

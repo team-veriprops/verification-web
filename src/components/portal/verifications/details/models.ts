@@ -19,8 +19,8 @@ export interface SearchVerificationDetailDto extends PageRequest, BaseQueryDto {
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)
 export interface QueryVerificationDetailDto extends CreateVerificationDetailDto, BaseQueryDto {
-  ref_id: string;
-  title_status: string;
+  refId: string;
+  titleStatus: string;
   encumbrances: string[];
   timeline: TimelineEvent[];
 }

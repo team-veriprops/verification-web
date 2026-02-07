@@ -51,11 +51,11 @@ export default function DashboardStatsComponent() {
       transition={{ delay: 0.1 }}
       className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4"
     >
-        <StatsCard title="Total Verifications" value={dashboardStats.total_verifications} icon={FileCheck} variant="primary" />
-        <StatsCard title="Pending" value={dashboardStats.pending_verifications} icon={Clock} />
-        <StatsCard title="Verified" value={dashboardStats.successful_verifications} icon={CheckCircle} variant="success" />
-        <StatsCard title="Flagged" value={dashboardStats.flagged_verifications} icon={AlertTriangle} variant="danger" />
-        <StatsCard title="Total Spent" value={formatMoney(dashboardStats.total_spent_amount)!} icon={CreditCard} />
+        <StatsCard title="Total Verifications" value={dashboardStats.totalVerifications} icon={FileCheck} variant="primary" />
+        <StatsCard title="Pending" value={dashboardStats.pendingVerifications} icon={Clock} />
+        <StatsCard title="Verified" value={dashboardStats.successfulVerifications} icon={CheckCircle} variant="success" />
+        <StatsCard title="Flagged" value={dashboardStats.flaggedVerifications} icon={AlertTriangle} variant="danger" />
+        <StatsCard title="Total Spent" value={formatMoney(dashboardStats.totalSpentAmount)!} icon={CreditCard} />
         {/* <StatsCard title="Active Tasks" value={activeTasks} icon={ClipboardList} variant="warning" />
         <StatsCard title="Open Disputes" value={openDisputes} icon={AlertCircle} variant={openDisputes > 0 ? "danger" : "default"} /> */}
     </motion.div>

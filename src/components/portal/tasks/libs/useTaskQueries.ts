@@ -121,8 +121,8 @@ export const useTaskQueries = () => {
           ...TaskFilters,
           page: pageParam,
         } as SearchVerifierActivityAuditDto),
-      getNextPageParam: (lastPage) => lastPage.next_page, // next page number
-      getPreviousPageParam: (firstPage) => firstPage.prev_page, // previous page number
+      getNextPageParam: (lastPage) => lastPage.nextPage, // next page number
+      getPreviousPageParam: (firstPage) => firstPage.prevPage, // previous page number
       initialPageParam: 0,
     });
 

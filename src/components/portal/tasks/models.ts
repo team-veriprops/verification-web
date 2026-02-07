@@ -19,9 +19,9 @@ export interface TaskBaseDto {}
 export interface CreateTaskDto extends TaskBaseDto {}
 
 export interface SearchTaskDto extends PageRequest, BaseQueryDto {
-  is_available?: boolean;
+  isAvailable?: boolean;
   jurisdiction?: string;
-  verifier_id?: string;
+  verifierId?: string;
   status?: TaskStatus;
 }
 
@@ -31,32 +31,24 @@ export interface QueryTaskDto
     BaseQueryDto {
   property_id: string;
   property_parcel_id: string;
-  property_title: string;
-  plot_size: Measurement;
-  location: {
-    address: string;
-    country: string;
-    state: string;
-    city: string;
-    grouping_city: string;
-    area: string;
-    coordinates?: { lat: number; lng: number };
-  };
+  propertyTitle: string;
+  plotSize: Measurement;
+  location: ExactLocation;
 
-  verifier_id: string | null;
-  role_required: VerifierRole;
-  verification_focus: string[];
-  required_response: MediaType[];
-  provided_response: MediaType[];
+  verifierId: string | null;
+  roleRequired: VerifierRole;
+  verificationFocus: string[];
+  requiredResponse: MediaType[];
+  providedResponse: MediaType[];
   status: TaskStatus;
-  availability_status?: TaskAvailabilityStatus;
-  date_assigned: string;
-  date_due: string;
+  availabilityStatus?: TaskAvailabilityStatus;
+  dateAssigned: string;
+  dateDue: string;
   // sla_progress: number;
   // sla_hours: number;
   // progress?: number;
   notes?: string[];
-  qualified_verifier_ids: string[];
+  qualifiedVerifierIds: string[];
 
   // response?: ResponseItem[];
   // history?: AuditEntry[];
@@ -82,11 +74,11 @@ export enum TaskAvailabilityStatus {
 
 export interface QueryTaskStatsDto {
   assigned: number;
-  in_progress: number;
-  due_soon: number;
+  inProgress: number;
+  dueSoon: number;
   submitted: number;
   overdue: number;
-  avg_resolution__hours: number;
+  avgResolutionHours: number;
 }
 
 export interface TaskStatusDetail {
@@ -103,7 +95,7 @@ export const verifierStatuses: KeyValue[] = [
   { key: "all", value: "All Status" },
   { key: "assigned", value: "Assigned" },
   { key: "accepted", value: "Accepted" },
-  { key: "in_progress", value: "In Progress" },
+  { key: "inProgress", value: "In Progress" },
   { key: "submitted", value: "Submitted" },
   { key: "completed", value: "Completed" },
   { key: "declined", value: "Declined" },
@@ -130,20 +122,20 @@ export interface QueryVerifierResponseDto
 
 export interface CreateVerifierResponseUploadsDto
   extends BaseQueryDto {
-  task_id: string;
+  taskId: string;
   type: AttachmentType;
   status?: AttachmentStatus;
   filename: string;
-  filesize_bytes?: number;
+  filesizeBytes?: number;
   hash?: string;
   metadata?: {
     lat?: number;
     lng?: number;
     timestamp?: string;
-    device_id?: string;
+    deviceId?: string;
     exif?: any;
   };
-  date_uploaded?: string;
+  dateUploaded?: string;
   comment?: string;
 }
 
@@ -183,9 +175,9 @@ export interface SearchVerifierActivityAuditDto extends PageRequest, BaseQueryDt
 export interface QueryVerifierActivityAuditDto
   extends CreateVerifierActivityAuditDto,
     BaseQueryDto {
-  task_id: string;
-  verifier_id: string;
+  taskId: string;
+  verifierId: string;
   action: string;
-  date_audited: string;
+  dateAudited: string;
   details?: any;
 }

@@ -10,7 +10,7 @@ import { VerifierService } from "./task-service";
 
 const defaultTaskFilters: Partial<SearchTaskDto> = {
   page: 0,
-  page_size: 6,
+  pageSize: 6,
 };
 
 const cloneDefaultTaskFilters = (): Partial<SearchTaskDto> => ({
@@ -20,7 +20,7 @@ const cloneDefaultTaskFilters = (): Partial<SearchTaskDto> => ({
 const defaultVerifierActivityAuditFilters: Partial<SearchVerifierActivityAuditDto> =
   {
     page: 0,
-    page_size: 6,
+    pageSize: 6,
   };
 
 const cloneDefaultVerifierActivityAuditFilters =

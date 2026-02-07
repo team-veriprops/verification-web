@@ -67,12 +67,12 @@ export default function VerificationsTable() {
   const { data, isLoading, isError, error } = useSearchVerificationPage();
 
   useEffect(() => {
-    updateFilters({ page_size: settings.rowsPerPage });
+    updateFilters({ pageSize: settings.rowsPerPage });
   }, [settings.rowsPerPage, updateFilters]);
 
   const columns: Column<QueryVerificationDto>[] = [
     {
-      key: "ref_id",
+      key: "refId",
       label: "Reference ID",
       sortable: true,
       render: (value) => (
@@ -82,13 +82,13 @@ export default function VerificationsTable() {
       ),
     },
     {
-      key: "date_created",
+      key: "dateCreated",
       label: "Date submitted",
       sortable: true,
       render: (value) => formatDate(value),
     },
     {
-      key: "property_type",
+      key: "propertyType",
       label: "Property type",
       sortable: true,
       render: (value) => (
@@ -104,23 +104,23 @@ export default function VerificationsTable() {
       render: (value, item) => item.location.address,
     },
     {
-      key: "property_estimated_price",
+      key: "propertyEstimatedPrice",
       label: "Property estimated price",
       sortable: true,
       render: (value) => formatMoney(value),
     },
     {
-      key: "risk_score",
+      key: "riskScore",
       label: "Risk score",
       sortable: true,
-      render: (value, item) => item.risk_score ? (
+      render: (value, item) => item.riskScore ? (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary rounded px-1">
-                <Progress value={100 - item.risk_score} className="w-16 h-2 bg-danger" />
+                <Progress value={100 - item.riskScore} className="w-16 h-2 bg-danger" />
                 <span className="text-sm font-medium w-8">
-                  {item.risk_score}%
+                  {item.riskScore}%
                 </span>
               </div>
             </TooltipTrigger>

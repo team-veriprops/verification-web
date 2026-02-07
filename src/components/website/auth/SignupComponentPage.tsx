@@ -93,7 +93,7 @@ export default function SignupComponentPage() {
     }
     
     setErrors({});
-    const payload: EmailValidationRequest = {email: email, is_a_new_user: true}
+    const payload: EmailValidationRequest = {email: email, isANewUser: true}
 
     setLoading(l => ({ ...l, email: true }));
     sendEmailValidationMessage.mutate(payload, {
@@ -112,7 +112,7 @@ export default function SignupComponentPage() {
   const handleOtpVerify = useCallback(async (otp: string) => {
     setOtpError('');
 
-    const payload: OtpVerificationRequest = {email_or_phone: email, otp: otp}
+    const payload: OtpVerificationRequest = {emailOrPhone: email, otp: otp}
 
     setLoading(l => ({ ...l, otp: true }));
     validateEmailVerificationOtp.mutate(payload, {

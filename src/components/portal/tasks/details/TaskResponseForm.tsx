@@ -24,7 +24,7 @@ export default function TaskResponseForm() {
   };
 
   const getRoleForm = () => {
-    switch (currentTask?.role_required) {
+    switch (currentTask?.roleRequired) {
       case VerifierRole.LAWYER:
         return (
           <LawyerForm

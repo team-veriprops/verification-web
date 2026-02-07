@@ -113,7 +113,7 @@ const getDocStatusIcon = (status: string) => {
                   >
                     {"Verification Details"}
                   </h2>
-                  <CopyText text={currentVerification?.ref_id ?? ""} />
+                  <CopyText text={currentVerification?.refId ?? ""} />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex gap-2">
@@ -141,7 +141,7 @@ const getDocStatusIcon = (status: string) => {
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">
                     Risk score:{" "}
-                    {currentVerification?.risk_score ?? "N/A"}%
+                    {currentVerification?.riskScore ?? "N/A"}%
                   </span>
                   <Badge
                     variant="outline"
@@ -151,7 +151,7 @@ const getDocStatusIcon = (status: string) => {
                     <span className="capitalize">{currentVerification?.status}</span>
                   </Badge>
                 </div>
-                {currentVerification?.risk_score && <Progress value={100 - currentVerification?.risk_score} className="h-2 bg-danger" />}
+                {currentVerification?.riskScore && <Progress value={100 - currentVerification?.riskScore} className="h-2 bg-danger" />}
               </div>
             </div>
 
@@ -170,7 +170,7 @@ const getDocStatusIcon = (status: string) => {
                 <Ruler className="h-5 w-5 text-muted-foreground" />
                 <div>
                     <div className="text-xs text-muted-foreground">Size</div>
-                    <div className="text-sm font-medium">{formatMeasurement(currentVerification?.property_plot_size)}</div>
+                    <div className="text-sm font-medium">{formatMeasurement(currentVerification?.propertyPlotSize)}</div>
                 </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
@@ -184,7 +184,7 @@ const getDocStatusIcon = (status: string) => {
                 <FileText className="h-5 w-5 text-muted-foreground" />
                 <div>
                     <div className="text-xs text-muted-foreground">Property Type</div>
-                    <div className="text-sm font-medium capitalize">{currentVerification?.property_type}</div>
+                    <div className="text-sm font-medium capitalize">{currentVerification?.propertyType}</div>
                 </div>
                 </div>
             </div>
@@ -198,14 +198,14 @@ const getDocStatusIcon = (status: string) => {
                 <User className="h-5 w-5 text-muted-foreground" />
                 <div>
                     <div className="text-xs text-muted-foreground">Current Owner</div>
-                    <div className="text-sm font-medium">{currentVerification?.owner_fullname}</div>
+                    <div className="text-sm font-medium">{currentVerification?.ownerFullName}</div>
                 </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                 <FileText className="h-5 w-5 text-muted-foreground" />
                 <div>
                     <div className="text-xs text-muted-foreground">Title Status</div>
-                    <div className="text-sm font-medium">{verificationDetail?.title_status}</div>
+                    <div className="text-sm font-medium">{verificationDetail?.titleStatus}</div>
                 </div>
                 </div>
                 {(verificationDetail?.encumbrances.length ?? 0) > 0 && (
@@ -238,9 +238,9 @@ const getDocStatusIcon = (status: string) => {
                     <Badge className={cn("capitalize text-xs", getStatusBadgeColor(doc.status.toLowerCase()))}>
                         {doc.status}
                     </Badge>
-                    {doc.verified_date && (
+                    {doc.verifiedDate && (
                         <span className="text-xs text-muted-foreground hidden sm:inline">
-                        {formatDate(doc.verified_date)}
+                        {formatDate(doc.verifiedDate)}
                         </span>
                     )}
                     </div>

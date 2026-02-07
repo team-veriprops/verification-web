@@ -6,7 +6,7 @@ import { SearchVerificationDto } from "@components/portal/verifications/models";
 
 const defaultFilters: Partial<SearchVerificationDto> = {
   page: 0,
-  page_size: 6,
+  pageSize: 6,
 };
 
 const cloneDefaultFilters = (): Partial<SearchVerificationDto> => ({

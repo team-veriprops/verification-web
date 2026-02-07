@@ -18,7 +18,7 @@ export async function generateSystemRole(name: string): Promise<QueryRoleDto> {
     description: faker.person.jobDescriptor(),
     system_roles: [name],
     is_system_role: true,
-    date_created: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
   };
 }
 
@@ -31,7 +31,7 @@ export async function generateAdminRole(
     description: faker.person.jobDescriptor(),
     system_roles: system_roles,
     is_system_role: false,
-    date_created: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
   };
 }
 
@@ -54,7 +54,7 @@ export async function generateAdminUser(role: string): Promise<QueryUserDto> {
     ]),
     type: UserType.ADMIN,
     avatar: (await getRandomImages({ query: "person", count: 1 }).catch(() => []))?.[0]?.url ?? "/placeholder.jpg",
-    date_created: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
   };
 }
 export async function generateUser(): Promise<QueryUserDto> {
@@ -76,7 +76,7 @@ export async function generateUser(): Promise<QueryUserDto> {
     ]),
     type: UserType.USER,
     avatar: (await getRandomImages({ query: "person", count: 1 }).catch(() => []))?.[0]?.url ?? "/placeholder.jpg",
-    date_created: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
   };
 }
 
@@ -86,7 +86,7 @@ export async function generateUserProfile(
   return {
     id: faker.string.uuid(),
     user_id: userId,
-    verifier_id: faker.string.uuid(),
+    verifierId: faker.string.uuid(),
     referral_code: `VTN-${faker.number.int({ min: 1000, max: 500000 })}`,
   };
 }

@@ -5,15 +5,15 @@ import { MeasurementUnit } from "types/models";
 import { getActiveAuditor } from "./mock-users";
 
 export async function generateTask(
-  verifier_id: string
+  verifierId: string
 ): Promise<QueryTaskDto> {
-  const { state, grouping_city, city } = getRandomStateCity();
+  const { state, groupingCity, city } = getRandomStateCity();
   return {
     id: faker.string.uuid(),
     property_parcel_id: `PARC-${faker.number.int({ min: 200, max: 1000 })}`,
     property_id: faker.string.uuid(),
-    property_title: faker.company.buzzPhrase(),
-    plot_size: {
+    propertyTitle: faker.company.buzzPhrase(),
+    plotSize: {
       value: faker.number.int({ min: 200, max: 1000 }),
       unit: MeasurementUnit.SQM,
     },
@@ -21,7 +21,7 @@ export async function generateTask(
       address: faker.location.streetAddress(),
       country: "Nigeria",
       state,
-      grouping_city,
+      groupingCity,
       city,
       area: faker.word.noun(),
       coordinates: {
@@ -30,14 +30,14 @@ export async function generateTask(
       },
     },
 
-    verifier_id: verifier_id || faker.string.uuid(),
-    role_required: faker.helpers.arrayElement([
+    verifierId: verifierId || faker.string.uuid(),
+    roleRequired: faker.helpers.arrayElement([
       VerifierRole.FIELD_AGENT,
       VerifierRole.LAWYER,
       VerifierRole.REGISTRY,
       VerifierRole.SURVEYOR,
     ]),
-    verification_focus: faker.helpers.arrayElements([
+    verificationFocus: faker.helpers.arrayElements([
       "Title chain check",
       "Encumbrance search",
       "Land use compliance",
@@ -79,7 +79,7 @@ export async function generateTask(
       "Land use classification",
       "Registry compliance",
     ]),
-    required_response: faker.helpers.arrayElements([
+    requiredResponse: faker.helpers.arrayElements([
       {
         key: "title_document",
         title: "Title document",
@@ -116,7 +116,7 @@ export async function generateTask(
         type: "pdf"
       },
     ]),
-    provided_response: [],
+    providedResponse: [],
     status: faker.helpers.arrayElement([
       TaskStatus.ACCEPTED,
       TaskStatus.ASSIGNED,
@@ -126,23 +126,23 @@ export async function generateTask(
       TaskStatus.OVERDUE,
       TaskStatus.SUBMITTED,
     ]),
-    availability_status: faker.helpers.arrayElement([
+    availabilityStatus: faker.helpers.arrayElement([
       TaskAvailabilityStatus.ACCEPTED,
       TaskAvailabilityStatus.DECLINED,
       TaskAvailabilityStatus.PENDING,
     ]),
-    date_assigned: faker.date.past().toISOString(),
-    date_due: faker.date.past().toISOString(),
+    dateAssigned: faker.date.past().toISOString(),
+    dateDue: faker.date.past().toISOString(),
     // sla_progress: number;
     // sla_hours: number;
     // progress?: number;
     notes: faker.helpers.arrayElements(
       await Promise.all(Array.from({ length: 4 }, () => faker.lorem.sentence()))
     ),
-    qualified_verifier_ids: faker.helpers.arrayElements(
+    qualifiedVerifierIds: faker.helpers.arrayElements(
       await Promise.all(Array.from({ length: 4 }, () => faker.string.uuid()))
     ),
-    date_created: faker.date.past().toISOString(),
+    dateCreated: faker.date.past().toISOString(),
   };
 }
 
@@ -157,7 +157,7 @@ async function initData() {
     // Verifier Tasks
     const thisTasks = await Promise.all(
       Array.from({ length: 30 }, () =>
-        generateTask(activeAuditor?.verifier_id ?? "")
+        generateTask(activeAuditor?.verifierId ?? "")
       )
     );
 

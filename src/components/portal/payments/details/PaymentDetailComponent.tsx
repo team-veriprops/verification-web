@@ -41,11 +41,11 @@ export default function PaymentDetailComponent() {
   } = useGetPaymentDetail(currentPayment?.id ?? "");
 
   const statusTimeline = [
-    { status: "Initiated", completed: true, date: currentPayment?.date_created },
+    { status: "Initiated", completed: true, date: currentPayment?.dateCreated },
     {
       status: "Processing",
       completed: currentPayment?.status !== "failed",
-      date: currentPayment?.date_created,
+      date: currentPayment?.dateCreated,
     },
     {
       status:
@@ -57,13 +57,13 @@ export default function PaymentDetailComponent() {
       completed: currentPayment?.status === "completed",
       date:
         currentPayment?.status === "completed"
-          ? currentPayment?.date_created
+          ? currentPayment?.dateCreated
           : null,
     },
   ];
 
   const handleDownloadReceipt = () => {
-    toast.success(`Downloading receipt for ${currentPayment?.ref_id}`, {
+    toast.success(`Downloading receipt for ${currentPayment?.refId}`, {
       icon: <Download className="h-4 w-4" />,
     });
     console.log("Download receipt:", currentPayment);
@@ -87,7 +87,7 @@ export default function PaymentDetailComponent() {
         }
       }}
       title="Payment details"
-      reference={currentPayment?.ref_id ?? ""}
+      reference={currentPayment?.refId ?? ""}
       drawerWidth={DetailDrawerWidth.SMALL}
     >
       <AsyncStateComponent
@@ -164,21 +164,21 @@ export default function PaymentDetailComponent() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Date</span>
                   <span className="font-medium">
-                    {format(new Date(currentPayment?.date_created ?? ""), "PPP")}
+                    {format(new Date(currentPayment?.dateCreated ?? ""), "PPP")}
                   </span>
                 </div>
                 <Separator />
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Reference ID</span>
                   <span className="font-mono text-xs">
-                    {currentPayment?.ref_id}
+                    {currentPayment?.refId}
                   </span>
                 </div>
                 <Separator />
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Payment Channel</span>
                   <span className="font-medium">
-                    {paymentDetail?.payment_channel}
+                    {paymentDetail?.paymentChannel}
                   </span>
                 </div>
                 <Separator />
@@ -190,7 +190,7 @@ export default function PaymentDetailComponent() {
                     variant="outline"
                     className="bg-success/10 text-success"
                   >
-                    {paymentDetail?.gateway_response}
+                    {paymentDetail?.gatewayResponse}
                   </Badge>
                 </div>
               </div>

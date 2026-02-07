@@ -6,7 +6,7 @@ import { httpClient } from "containers";
 
 const defaultFilters: Partial<SearchVerificationDto> = {
   page: 0,
-  page_size: 6,
+  pageSize: 6,
   status: VerificationStatus.PENDING
 };
 

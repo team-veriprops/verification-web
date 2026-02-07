@@ -28,7 +28,7 @@ import { PropertyPreview } from './PropertyPreview';
 import { CategorySelector } from '../checkout/CategorySelector';
 import { fxRates, verificationTiers } from '@data/verificationTiers';
 import AddressSearchForm from '@components/ui/AddressSearchForm';
-import { ExactLocation, PropertyType } from 'types/models';
+import { ExactLocation, MeasurementUnit, Money, PropertyType, TransactionCurrency } from 'types/models';
 import { useCheckoutStore } from '../checkout/libs/useCheckoutStore';
 import { CreateVerificationDto, UpdateVerificationDto, VerificationDocument } from '../models';
 
@@ -47,10 +47,10 @@ const step1Schema = z.object({
     error: 'Please select a property type',
   }),
   propertyTitle: z.string().min(5, 'Property title must be at least 5 characters'),
-  plotSize: z.string().min(1, 'Plot size is required'),
-  plotSizeUnit: z.enum(['sqm', 'hectares', 'acres', 'plots']),
-  estimatedPrice: z.string().min(1, 'Estimated price is required'),
-  currency: z.enum(['NGN', 'USD', 'GBP', 'EUR']),
+  propertyPlotSize: z.string().min(1, 'Plot size is required'),
+  propertyPlotSizeUnit: z.enum([MeasurementUnit.SQM, MeasurementUnit.HECTARES, MeasurementUnit.ACRES, MeasurementUnit.PLOTS]),
+  propertyEstimatedPrice: z.string().min(1, 'Estimated price is required'),
+  currency: z.enum([TransactionCurrency.NGN, TransactionCurrency.USD, TransactionCurrency.GBP, TransactionCurrency.EUR]),
 });
 
 // Step 4 Schema
@@ -80,8 +80,8 @@ export function PropertyForm({
   onSubmit,
   isSubmitting = false,
 }: PropertyFormProps) {
-  const [address, setAddress] = useState<ExactLocation | undefined>(undefined);
-  const [addressIsValid, setAddressIsValid] = useState(true);
+  const [location, setLocation] = useState<ExactLocation | undefined>(undefined);
+  const [locationIsValid, setLocationIsValid] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
   const [documents, setDocuments] = useState<VerificationDocument[]>(
     initialData?.documents || []
@@ -102,10 +102,12 @@ export function PropertyForm({
     defaultValues: {
       propertyType: initialData?.propertyType || undefined,
       propertyTitle: initialData?.propertyTitle || '',
-      plotSize: initialData?.plotSize || '',
-      plotSizeUnit: initialData?.plotSizeUnit || 'sqm',
-      estimatedPrice: initialData?.estimatedPrice?.toString() || '',
-      currency: initialData?.currency ?? 'NGN',
+      propertyPlotSize: initialData?.propertyPlotSize?.value.toString() || '',
+      propertyPlotSizeUnit: initialData?.propertyPlotSize?.unit ?? MeasurementUnit.SQM,
+
+      propertyEstimatedPrice: initialData?.propertyEstimatedPrice?.getValue().toString() || '0.0',
+      currency: initialData?.propertyEstimatedPrice?.getCurrency() ?? TransactionCurrency.NGN,
+
       ownerFullName: initialData?.ownerFullName || '',
       sellerFullName: initialData?.sellerInfo?.fullName || '',
       sellerCompany: initialData?.sellerInfo?.company || '',
@@ -126,17 +128,17 @@ export function PropertyForm({
         fieldsToValidate = [
           'propertyType',
           'propertyTitle',
-          'plotSize',
-          'plotSizeUnit',
-          'estimatedPrice',
+          'propertyPlotSize',
+          'propertyPlotSizeUnit',
+          'propertyEstimatedPrice',
           'currency',
         ];
         break;
       case 2:
         return !!selectedCategory;
       case 3: {
-        const addressIsSet = !!address;
-        setAddressIsValid(addressIsSet);
+        const addressIsSet = !!location;
+        setLocationIsValid(addressIsSet);
         return true; // TODO: return addressIsSet
       }
       case 4:
@@ -187,11 +189,9 @@ export function PropertyForm({
     const propertyData: CreateVerificationDto | UpdateVerificationDto = {
       propertyType: data.propertyType,
       propertyTitle: data.propertyTitle,
-      plotSize: data.plotSize,
-      plotSizeUnit: data.plotSizeUnit,
-      estimatedPrice: parseFloat(data.estimatedPrice),
+      propertyPlotSize: {value: parseFloat(data.propertyPlotSize), unit: data.propertyPlotSizeUnit},
+      propertyEstimatedPrice: Money.from({value: parseFloat(data.propertyEstimatedPrice), currency: data.currency}),
       category: selectedCategory,
-      currency: data.currency,
       surveyPlanNumber: data.surveyPlanNumber,
       beaconNumbers: data.beaconNumbers,
       ownerFullName: data.ownerFullName,
@@ -202,23 +202,19 @@ export function PropertyForm({
         phone: data.sellerPhone,
       },
       additionalDetails: data.additionalDetails,
-      address,
+      location,
       documents,
     };
 
     onSubmit(propertyData);
-  };
+};
 
   const formValues = form.watch();
   const previewData: Partial<CreateVerificationDto | UpdateVerificationDto> = {
     propertyType: formValues.propertyType,
     propertyTitle: formValues.propertyTitle,
-    plotSize: formValues.plotSize,
-    plotSizeUnit: formValues.plotSizeUnit,
-    estimatedPrice: formValues.estimatedPrice
-      ? parseFloat(formValues.estimatedPrice)
-      : undefined,
-    currency: formValues.currency,
+    propertyPlotSize: {value: parseFloat(formValues.propertyPlotSize), unit: formValues.propertyPlotSizeUnit},
+    propertyEstimatedPrice: Money.from({value: parseFloat(formValues.propertyEstimatedPrice), currency: formValues.currency}),
     ownerFullName: formValues.ownerFullName,
     sellerInfo: formValues.sellerFullName
       ? {
@@ -228,12 +224,12 @@ export function PropertyForm({
           phone: formValues.sellerPhone,
         }
       : undefined,
-    address,
+    location,
     documents,
   };
 
-  const onAddressChange = (address: ExactLocation | undefined) => {
-    setAddress(address);
+  const onAddressChange = (location: ExactLocation | undefined) => {
+    setLocation(location);
   };
 
   // const requiredDocuments: MediaType[] = [
@@ -286,10 +282,10 @@ export function PropertyForm({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="residential">Residential</SelectItem>
-                      <SelectItem value="commercial">Commercial</SelectItem>
-                      <SelectItem value="land">Land</SelectItem>
-                      <SelectItem value="industrial">Industrial</SelectItem>
+                      <SelectItem value={PropertyType.RESIDENTIAL}>Residential</SelectItem>
+                      <SelectItem value={PropertyType.COMMERCIAL}>Commercial</SelectItem>
+                      <SelectItem value={PropertyType.LAND}>Land</SelectItem>
+                      <SelectItem value={PropertyType.INDUSTRIAL}>Industrial</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -317,7 +313,7 @@ export function PropertyForm({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="plotSize"
+                name="propertyPlotSize"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Plot Size *</FormLabel>
@@ -331,7 +327,7 @@ export function PropertyForm({
 
               <FormField
                 control={form.control}
-                name="plotSizeUnit"
+                name="propertyPlotSizeUnit"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Unit</FormLabel>
@@ -342,10 +338,10 @@ export function PropertyForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="sqm">Square Meters (sqm)</SelectItem>
-                        <SelectItem value="hectares">Hectares</SelectItem>
-                        <SelectItem value="acres">Acres</SelectItem>
-                        <SelectItem value="plots">Plots</SelectItem>
+                        <SelectItem value={MeasurementUnit.SQM}>Square Meters (sqm)</SelectItem>
+                        <SelectItem value={MeasurementUnit.HECTARES}>Hectares</SelectItem>
+                        <SelectItem value={MeasurementUnit.ACRES}>Acres</SelectItem>
+                        <SelectItem value={MeasurementUnit.PLOTS}>Plots</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -357,7 +353,7 @@ export function PropertyForm({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="estimatedPrice"
+                name="propertyEstimatedPrice"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Estimated Price *</FormLabel>
@@ -407,7 +403,7 @@ export function PropertyForm({
           {/* Step 3: Location */}
           <div className={cn("space-y-6", currentStep !== 3 && "hidden")}>
             <AddressSearchForm onChange={onAddressChange} />
-            {!addressIsValid && (
+            {!locationIsValid && (
           <p className="text-sm text-red-500">
             {addressRequiredErrorMsg}
           </p>

@@ -6,7 +6,7 @@ import { httpClient } from "containers";
 
 const defaultConversationFilters: Partial<SearchConversationDto> = {
   page: 0,
-  page_size: 6,
+  pageSize: 6,
 };
 
 const cloneDefaultConversationFilters = (): Partial<SearchConversationDto> => ({
@@ -15,7 +15,7 @@ const cloneDefaultConversationFilters = (): Partial<SearchConversationDto> => ({
 
 const defaultMessageFilters: Partial<SearchMessageDto> = {
   page: 0,
-  page_size: 6,
+  pageSize: 6,
 };
 
 const cloneDefaultMessageFilters = (): Partial<SearchMessageDto> => ({

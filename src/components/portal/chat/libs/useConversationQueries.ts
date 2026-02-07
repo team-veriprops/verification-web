@@ -48,8 +48,8 @@ export const useConversationQueries = () => {
           ...conversationFilters,
           page: pageParam,
         } as SearchConversationDto),
-      getNextPageParam: (lastPage) => lastPage.next_page, // next page number
-      getPreviousPageParam: (firstPage) => firstPage.prev_page, // previous page number
+      getNextPageParam: (lastPage) => lastPage.nextPage, // next page number
+      getPreviousPageParam: (firstPage) => firstPage.prevPage, // previous page number
       initialPageParam: 0,
     });
 
@@ -57,48 +57,48 @@ export const useConversationQueries = () => {
   // ##################################################################################################
   // ConversationMessage
   // Search ConversationMessage list (paged)
-  const useSearchConversationMessagePage = (conversation_id: string) =>
+  const useSearchConversationMessagePage = (conversationId: string) =>
     useQuery<Page<QueryMessageDto>>({
-      queryKey: ["conversation message page", normalizedMessageFilters, conversation_id],
+      queryKey: ["conversation message page", normalizedMessageFilters, conversationId],
       queryFn: async (): Promise<Page<QueryMessageDto>> =>
-        service.searchConversationMessagePage(conversation_id, messageFilters as SearchMessageDto),
+        service.searchConversationMessagePage(conversationId, messageFilters as SearchMessageDto),
       placeholderData: (prev) => prev,
     });
 
   // Infinite scroll version of conversation list
-  const useSearchConversationMessageInfinite = (conversation_id: string) =>
+  const useSearchConversationMessageInfinite = (conversationId: string) =>
     useInfiniteQuery<
       Page<QueryMessageDto>, // TData
       Error, // TError
       InfiniteData<Page<QueryMessageDto>>, // TQueryFnData
       readonly unknown[] // TQueryKey
     >({
-      queryKey: ["conversation message page", normalizedMessageFilters, conversation_id] as const,
+      queryKey: ["conversation message page", normalizedMessageFilters, conversationId] as const,
       queryFn: async ({ pageParam = 0 }): Promise<Page<QueryMessageDto>> =>
-        service.searchConversationMessagePage(conversation_id, {
+        service.searchConversationMessagePage(conversationId, {
           ...messageFilters,
           page: pageParam,
         } as SearchMessageDto),
-      getNextPageParam: (lastPage) => lastPage.next_page, // next page number
-      getPreviousPageParam: (firstPage) => firstPage.prev_page, // previous page number
+      getNextPageParam: (lastPage) => lastPage.nextPage, // next page number
+      getPreviousPageParam: (firstPage) => firstPage.prevPage, // previous page number
       initialPageParam: 0,
     });
 
   
-    const useCreateConversationMessage = (conversation_id: string) =>
+    const useCreateConversationMessage = (conversationId: string) =>
     useMutation({
       mutationFn: (payload: CreateMessageDto) =>
-        service.createConversationMessage(conversation_id, payload),
+        service.createConversationMessage(conversationId, payload),
       onSuccess: () => {
         queryClient.invalidateQueries({ 
-          queryKey: ["conversation message page", normalizedMessageFilters, conversation_id] as const 
+          queryKey: ["conversation message page", normalizedMessageFilters, conversationId] as const
         });
       },
     });
 
 
   const useUpdateConversationMessage = (
-        conversation_id: string,
+        conversationId: string,
       ) =>
     useMutation({
       mutationFn: ({
@@ -108,26 +108,26 @@ export const useConversationQueries = () => {
         message_id: string;
         new_message: UpdateMessageDto;
       }) =>
-        service.updateConversationMessage(conversation_id, message_id, new_message),
+        service.updateConversationMessage(conversationId, message_id, new_message),
         onSuccess: (_, variables) => {
           queryClient.invalidateQueries({
-            queryKey: ["conversation message", conversation_id, variables.message_id],
+            queryKey: ["conversation message", conversationId, variables.message_id],
           });
         },
     });
 
   const useDeleteConversationMessage = (
-    conversation_id: string,
+    conversationId: string,
   ) =>
     useMutation({
       mutationFn: ({
         message_id,
       }: {
         message_id: string;
-      }) => service.deleteConversationMessage(conversation_id, message_id),
+      }) => service.deleteConversationMessage(conversationId, message_id),
       onSuccess: (_, variables) => {
           queryClient.invalidateQueries({
-            queryKey: ["conversation message", conversation_id, variables.message_id],
+            queryKey: ["conversation message", conversationId, variables.message_id],
           });
         },
     });

@@ -4,11 +4,11 @@ import { verificationDetails } from "@data/mock-verifications";
 // GET one
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ ref_id: string }> }
+  { params }: { params: Promise<{ refId: string }> }
 ) {
-  const { ref_id } = await params;
+  const { refId } = await params;
 
-  const verificationDetail = verificationDetails.find((p) => p.ref_id === ref_id);
+  const verificationDetail = verificationDetails.find((p) => p.refId === refId);
 
   return verificationDetail
     ? NextResponse.json(verificationDetail)

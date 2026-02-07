@@ -4,7 +4,7 @@ import { CreateUserDto, LoginSuccessDto, SuccessResponse } from "../../../admin/
 import { toQueryParams } from "@lib/utils";
 
 export class AuthService {
-  private readonly auth_base_url = "/users";
+  private readonly authBaseUrl = "/users";
 
   constructor(private readonly http: HttpClient) {}
 
@@ -15,39 +15,39 @@ export class AuthService {
     const params = { operation_type: authType };
     const query = toQueryParams(params);
     return this.http.get<InitSocialLoginResponse>(
-      `${this.auth_base_url}/auths/socials/${provider}/init?${query}`
+      `${this.authBaseUrl}/auths/socials/${provider}/init?${query}`
     );
   }
 
   createUser(payload: CreateUserDto): Promise<LoginSuccessDto> {
     return this.http.post<CreateUserDto, LoginSuccessDto>(
-      `${this.auth_base_url}`,
+      `${this.authBaseUrl}`,
       payload
     );
   }
 
   login(payload: LoginPayload): Promise<LoginSuccessDto> {
     return this.http.post<LoginPayload, LoginSuccessDto>(
-      `${this.auth_base_url}/auths/login`,
+      `${this.authBaseUrl}/auths/login`,
       payload
     );
   }
 
   getProfile(): Promise<SuccessResponse<ActiveAuditor>> {
-    return this.http.get<SuccessResponse<ActiveAuditor>>(`${this.auth_base_url}/auths/profile`);
+    return this.http.get<SuccessResponse<ActiveAuditor>>(`${this.authBaseUrl}/auths/profile`);
   }
 
   refreshToken(): Promise<void> {
-    return this.http.post<void>(`${this.auth_base_url}/auths/refresh-token`);
+    return this.http.post<void>(`${this.authBaseUrl}/auths/refresh-token`);
   }
 
   logout(): Promise<boolean> {
-    return this.http.post<null, boolean>(`${this.auth_base_url}/auths/logout`);
+    return this.http.post<null, boolean>(`${this.authBaseUrl}/auths/logout`);
   }
 
   changePassword(payload: ChangePasswordPayload): Promise<boolean> {
     return this.http.patch<ChangePasswordPayload, boolean>(
-      `${this.auth_base_url}/auths/change-password`,
+      `${this.authBaseUrl}/auths/change-password`,
       payload
     );
   }
@@ -56,7 +56,7 @@ export class AuthService {
     payload: RecoverPasswordMessagePayload
   ): Promise<boolean> {
     return this.http.post<RecoverPasswordMessagePayload, boolean>(
-      `${this.auth_base_url}/auths/recover-password/message`,
+      `${this.authBaseUrl}/auths/recover-password/message`,
       payload
     );
   }
@@ -65,7 +65,7 @@ export class AuthService {
     payload: EmailValidationRequest
   ): Promise<boolean> {
     return this.http.post<EmailValidationRequest, boolean>(
-      `${this.auth_base_url}/send-email-validation-message`,
+      `${this.authBaseUrl}/send-email-validation-message`,
       payload
     );
   }
@@ -74,14 +74,14 @@ export class AuthService {
     payload: OtpVerificationRequest
   ): Promise<boolean> {
     return this.http.post<OtpVerificationRequest, boolean>(
-      `${this.auth_base_url}/validate-email-otp`,
+      `${this.authBaseUrl}/validate-email-otp`,
       payload
     );
   }
 
   recoverPassword(payload: RecoverPasswordPayload): Promise<boolean> {
     return this.http.post<RecoverPasswordPayload, boolean>(
-      `${this.auth_base_url}/auths/recover-password`,
+      `${this.authBaseUrl}/auths/recover-password`,
       payload
     );
   }

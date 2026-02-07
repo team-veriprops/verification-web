@@ -21,23 +21,23 @@ export interface LoginPayload {
 }
 
 export interface ChangePasswordPayload {
-  old_password: string;
-  new_password: string;
+  oldPassword: string;
+  newPassword: string;
 }
 
 export interface EmailValidationRequest{
     email: string
-    is_a_new_user: boolean
+    isANewUser: boolean
 }
 
 export interface OtpVerificationRequest{
-    email_or_phone: string
+    emailOrPhone: string
     otp: string
 }
 
 export interface RecoverPasswordPayload {
   token: string;
-  new_password: string;
+  newPassword: string;
 }
 
 export interface RecoverPasswordMessagePayload {
@@ -61,26 +61,25 @@ export interface ActiveAuditor {
   lastname: string;
   fullname: string;
   phone?: string;
-  phone_ext?: string;
+  phoneExt?: string;
   email: string;
-  user_type: string;
+  userType: string;
   personas?: UserPersona[];
-  last_active_date?: Date;
+  lastActiveDate?: Date;
 
-  has_profile_picture?: boolean;
-  has_selfie_picture?: boolean;
-  phone_validated?: boolean;
-  email_validated?: boolean;
+  hasProfilePicture?: boolean;
+  hasSelfiePicture?: boolean;
+  phoneValidated?: boolean;
+  emailValidated?: boolean;
   languages?: string[];
-  bvn_validated?: boolean;
-  identity_validated?: boolean;
-  address_validated?: boolean;
-  driver_id?: string;
-  wallet_id?: string;
-  profile_id?: string;
-  host_id?: string;
-  escrow_id?: string;
-  lien_id?: string;
-  inbox_id?: string;
+  bvnValidated?: boolean;
+  identityValidated?: boolean;
+  addressValidated?: boolean;
+  driverId?: string;
+  walletId?: string;
+  profileId?: string;
+  hostId?: string;
+  escrowId?: string;
+  inboxId?: string;
 }
 

@@ -60,17 +60,17 @@ export const useVerificationQueries = () => {
           ...filters,
           page: pageParam,
         } as SearchVerificationDto),
-      getNextPageParam: (lastPage) => lastPage.next_page, // next page number
-      getPreviousPageParam: (firstPage) => firstPage.prev_page, // previous page number
+      getNextPageParam: (lastPage) => lastPage.nextPage, // next page number
+      getPreviousPageParam: (firstPage) => firstPage.prevPage, // previous page number
       initialPageParam: 0,
     });
 
-  const useGetVerificationDetail = (verification_id: string) =>
+  const useGetVerificationDetail = (verificationId: string) =>
       useQuery<QueryVerificationDetailDto>({
-        queryKey: ["verification detail", verification_id] as const,
+        queryKey: ["verification detail", verificationId] as const,
         queryFn: async (): Promise<QueryVerificationDetailDto> =>
-          service.getVerificationDetail(verification_id),
-        enabled: !!verification_id, // only fetch if id exists
+          service.getVerificationDetail(verificationId),
+        enabled: !!verificationId, // only fetch if id exists
         placeholderData: (prev) => prev,
       });
 

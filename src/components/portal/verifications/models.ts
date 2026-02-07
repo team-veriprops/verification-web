@@ -4,21 +4,21 @@ import { BaseQueryDto, ExactLocation, Measurement, Money, PageRequest, PropertyT
 
 // Base Interfaces
 export interface VerificationBaseDto {
-  property_type: PropertyType;
-  property_title: string;
-  property_plot_size: Measurement;
+  propertyType: PropertyType;
+  propertyTitle: string;
+  propertyPlotSize: Measurement;
   location?: ExactLocation;
-  property_estimated_price: Money;
-  survey_plan_number?: string;
-  beacon_numbers?: string;
+  propertyEstimatedPrice: Money;
+  surveyPlanNumber?: string;
+  beaconNumbers?: string;
   documents: VerificationDocument[];
 
   category: VerificationCategory;
-  owner_fullname: string;
-  seller_info: SellerInfo;
-  additional_details?: string;
-  source_url?: string;
-  source_platform?: string;
+  ownerFullName: string;
+  sellerInfo: SellerInfo;
+  additionalDetails?: string;
+  sourceUrl?: string;
+  sourcePlatform?: string;
 }
 
 // Create DTO
@@ -35,10 +35,10 @@ export interface SearchVerificationDto extends PageRequest, BaseQueryDto {
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)
 export interface QueryVerificationDto extends CreateVerificationDto, BaseQueryDto {
-  ref_id: string;
+  refId: string;
   status: VerificationStatus;
-  risk_score?: number;
-  date_completed?: string;
+  riskScore?: number;
+  dateCompleted?: string;
   paid: boolean;
 }
 
@@ -50,7 +50,7 @@ export interface VerificationDocument {
 
   name?: string;
   status?: VerificationStatus;
-  verified_date?: string;
+  verifiedDate?: string;
 }
 
 export interface TimelineEvent {
@@ -73,7 +73,7 @@ export enum VerificationCategory {
 }
 
 export interface SellerInfo {
-  full_name: string;
+  fullName: string;
   company?: string;
   email: string;
   phone: string;

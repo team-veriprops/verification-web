@@ -11,9 +11,9 @@ import { toQueryParams } from "@lib/utils";
 import { HttpClient } from "@lib/FetchHttpClient";
 
 export class ConversationService {
-  conversation_base_url: string;
+  conversationBaseUrl: string;
   constructor(private readonly http: HttpClient) {
-    this.conversation_base_url = "/conversations";
+    this.conversationBaseUrl = "/conversations";
   }
 
   async searchConversationPage(
@@ -21,44 +21,44 @@ export class ConversationService {
   ): Promise<Page<QueryConversationDto>> {
     const query = toQueryParams(payload);
     return await this.http.get<Page<QueryConversationDto>>(
-      `${this.conversation_base_url}?${query}`
+      `${this.conversationBaseUrl}?${query}`
     );
   }
 
   async searchConversationMessagePage(
-      conversation_id: string,
+      conversationId: string,
       payload: SearchMessageDto
     ): Promise<Page<QueryMessageDto>> {
     const query = toQueryParams(payload);
       return await this.http.get<Page<QueryMessageDto>>(
-        `${this.conversation_base_url}/${conversation_id}/messages?${query}`
+        `${this.conversationBaseUrl}/${conversationId}/messages?${query}`
       );
     }
 
-  async createConversationMessage(conversation_id: string, payload: CreateMessageDto): Promise<QueryMessageDto> {
+  async createConversationMessage(conversationId: string, payload: CreateMessageDto): Promise<QueryMessageDto> {
     return await this.http.post<CreateMessageDto>(
-      `${this.conversation_base_url}/${conversation_id}/messages`,
+      `${this.conversationBaseUrl}/${conversationId}/messages`,
       payload
     );
   }
 
   async updateConversationMessage(
-    conversation_id: string,
+    conversationId: string,
     message_id: string,
     new_message: UpdateMessageDto
   ): Promise<QueryMessageDto> {
     return await this.http.put<UpdateMessageDto, QueryMessageDto>(
-      `${this.conversation_base_url}/${conversation_id}/messages/${message_id}`,
+      `${this.conversationBaseUrl}/${conversationId}/messages/${message_id}`,
       new_message
     );
   }
 
   async deleteConversationMessage(
-    conversation_id: string,
+    conversationId: string,
     message_id: string,
   ): Promise<QueryMessageDto> {
     return await this.http.delete<QueryMessageDto>(
-      `${this.conversation_base_url}/${conversation_id}/messages/${message_id}`
+      `${this.conversationBaseUrl}/${conversationId}/messages/${message_id}`
     );
   }
 }

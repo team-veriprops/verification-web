@@ -55,7 +55,7 @@ export interface Assignee {
 }
 
 export type TaskRole = "land_surveyor" | "property_lawyer" | "registry_staff" | "field_agent";
-export type TaskStatus = "pending" | "in_progress" | "completed" | "blocked";
+export type TaskStatus = "pending" | "inProgress" | "completed" | "blocked";
 export type TaskPriority = "high" | "medium" | "low";
 
 export interface Task {
@@ -365,7 +365,7 @@ export const mockTasks: Task[] = [
     propertyLocation: "Scheme 2, Block 5, Ajah, Lagos",
     role: "property_lawyer",
     assignee: { name: "Barr. Chioma Eze", phone: "+234 802 345 6789", email: "chioma@legalservices.ng" },
-    status: "in_progress",
+    status: "inProgress",
     priority: "high",
     dueDate: "2024-01-30",
     createdAt: "2024-01-24",
@@ -878,7 +878,7 @@ export const getDisputeTypeLabel = (type: DisputeType): string => {
 export const getStatusBadgeColor = (status: string): string => {
   const colors: Record<string, string> = {
     pending: "bg-muted text-muted-foreground",
-    in_progress: "bg-warning/10 text-warning dark:bg-warning/20",
+    inProgress: "bg-warning/10 text-warning dark:bg-warning/20",
     completed: "bg-success/10 text-success dark:bg-success/20",
     blocked: "bg-danger/10 text-danger dark:bg-danger/20",
     verified: "bg-success/10 text-success dark:bg-success/20",

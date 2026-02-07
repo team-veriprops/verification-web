@@ -82,15 +82,15 @@ export default function ChatConversationComponent(){
                 <div className="flex items-center justify-between gap-2">
                     <span className="font-medium text-sm truncate">{conv.title}</span>
 
-                    {conv.unread_count > 0 && (
+                    {conv.unreadCount > 0 && (
                     <Badge className="bg-primary text-primary-foreground h-5 w-5 p-0 flex items-center justify-center text-xs">
-                        {conv.unread_count}
+                        {conv.unreadCount}
                     </Badge>
                     )}
                 </div>
 
-                <p className="text-xs text-muted-foreground truncate">{conv.last_message}</p>
-                <p className="text-xs text-muted-foreground mt-1">{formatDate(conv.last_message_time)}</p>
+                <p className="text-xs text-muted-foreground truncate">{conv.lastMessage}</p>
+                <p className="text-xs text-muted-foreground mt-1">{formatDate(conv.lastMessageTime)}</p>
                 </div>
             </button>
             ))}

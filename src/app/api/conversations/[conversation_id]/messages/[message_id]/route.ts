@@ -4,9 +4,9 @@ import { conversationMessages } from "@data/mock-conversations";
 // PUT - update
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ conversation_id: string, message_id: string }> }
+  { params }: { params: Promise<{ conversationId: string, message_id: string }> }
 ) {
-  const { conversation_id } = await params;
+  const { conversationId } = await params;
   const { message_id } = await params;
 
   const idx = conversationMessages.findIndex((p) => p.id === message_id);
@@ -23,9 +23,9 @@ export async function PUT(
 // DELETE
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: Promise<{ conversation_id: string, message_id: string }> }
+  { params }: { params: Promise<{ conversationId: string, message_id: string }> }
 ) {
-   const { conversation_id } = await params;
+   const { conversationId } = await params;
   const { message_id } = await params;
 
   const idx = conversationMessages.findIndex((p) => p.id === message_id);

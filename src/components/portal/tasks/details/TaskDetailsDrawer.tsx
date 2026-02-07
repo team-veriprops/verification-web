@@ -64,9 +64,9 @@ export default function TaskDetailsDrawer() {
     }
   };
 
-  const RoleIcon = verifierRoleIcons[currentTask?.role_required ?? VerifierRole.LAWYER];
+  const RoleIcon = verifierRoleIcons[currentTask?.roleRequired ?? VerifierRole.LAWYER];
   const showAcceptDecline =
-    currentTask?.availability_status ===
+    currentTask?.availabilityStatus ===
       TaskAvailabilityStatus.PENDING &&
     currentTask?.status === TaskStatus.ASSIGNED;
 
@@ -118,10 +118,10 @@ export default function TaskDetailsDrawer() {
                       id="task-title"
                       className="text-lg font-semibold text-foreground capitalize"
                     >
-                      {currentTask?.property_title}
+                      {currentTask?.propertyTitle}
                     </h2>
                     {/* <SheetTitle className="text-xl">
-                    {currentTask?.property_title}
+                    {currentTask?.propertyTitle}
                   </SheetTitle> */}
                     <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1 capitalize">
                       <MapPin className="h-4 w-4" />
@@ -134,7 +134,7 @@ export default function TaskDetailsDrawer() {
                       className="bg-primary/10 text-primary border-primary/20"
                     >
                       <RoleIcon className="mr-1 h-3 w-3" />
-                      {currentTask?.role_required}
+                      {currentTask?.roleRequired}
                     </Badge>
                     <Button
                       variant="ghost"
@@ -149,14 +149,14 @@ export default function TaskDetailsDrawer() {
                 {/* SLA Banner */}
                 <div>
                   <SLAProgressBar
-                    start_date={currentTask?.date_assigned ?? ""}
-                    due_date={currentTask?.date_due ?? ""}
+                    start_date={currentTask?.dateAssigned ?? ""}
+                    due_date={currentTask?.dateDue ?? ""}
                     current_date={settings.currentTime}
                   />
                   <div className="text-xs text-muted-foreground mt-1">
                     {formatSLATimeRemaining(
                       settings.currentTime,
-                      currentTask?.date_due ?? ""
+                      currentTask?.dateDue ?? ""
                     )}
                   </div>
                 </div>

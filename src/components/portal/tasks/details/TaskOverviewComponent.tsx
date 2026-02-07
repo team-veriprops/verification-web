@@ -21,12 +21,12 @@ export default function TaskOverviewComponent() {
                 </span>
               </div>
             )}
-            {currentTask?.plot_size && (
+            {currentTask?.plotSize && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Size:</span>
                 <span className="font-medium">
                   {" "}
-                  {formatMeasurement(currentTask.plot_size)}
+                  {formatMeasurement(currentTask.plotSize)}
                 </span>
               </div>
             )}
@@ -45,7 +45,7 @@ export default function TaskOverviewComponent() {
         <div >
           <h4 className="text-sm font-medium mb-2">Verification Focus</h4>
           <ul className="space-y-1">
-            {currentTask?.verification_focus.map((focus, key) => (
+            {currentTask?.verificationFocus.map((focus, key) => (
               <li key={key} className="flex items-start gap-2 text-sm">
                 <span className="text-primary mt-0.5">•</span>
                 <span>{focus}</span>
@@ -57,7 +57,7 @@ export default function TaskOverviewComponent() {
         <div>
           <h4 className="text-sm font-medium mb-2">Required Evidence</h4>
           <div className="flex flex-wrap gap-2">
-            {currentTask?.required_response.map((req, key) => (
+            {currentTask?.requiredResponse.map((req, key) => (
               <Badge key={key} variant="outline">
                 <FileText className="mr-1 h-3 w-3" />
                 {req.title.replace(/_/g, " ")}

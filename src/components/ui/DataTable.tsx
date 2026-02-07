@@ -138,18 +138,18 @@ export function DataTable<T extends Record<string, any>>({
     }
 
     setOrderBy(newOrderBy);
-    updateFilters({ order_by: newOrderBy, page: settings.firstPage });
+    updateFilters({ orderBy: newOrderBy, page: settings.firstPage });
   };
 
   const handleNextPage = () => {
-    if (dataPage?.next_page) {
-      updateFilters({ page: dataPage?.next_page });
+    if (dataPage?.nextPage) {
+      updateFilters({ page: dataPage?.nextPage });
     }
   };
 
   const handlePrevPage = () => {
-    if (dataPage?.prev_page !== undefined && dataPage?.prev_page >= 0) {
-      updateFilters({ page: dataPage?.prev_page });
+    if (dataPage?.prevPage !== undefined && dataPage?.prevPage >= 0) {
+      updateFilters({ page: dataPage?.prevPage });
     }
   };
 
@@ -311,7 +311,7 @@ export function DataTable<T extends Record<string, any>>({
         {/* Pagination footer */}
         <TableFooterPagination
           page={currentPage}
-          totalPages={dataPage?.total_pages || 0}
+          totalPages={dataPage?.totalPages || 0}
           onPreviousPage={handlePrevPage}
           onNextPage={handleNextPage}
           onResetPage={handlePageReset}

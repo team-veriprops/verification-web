@@ -26,15 +26,15 @@ export const TaskStatsComponent = () => {
     data: userVerifierStats,
     isLoading,
     isError,
-  } = useGetTaskStats(activeAuditor?.verifier_id ?? "");
+  } = useGetTaskStats(activeAuditor?.verifierId ?? "");
 
   useEffect(() => {
     setAssigned(userVerifierStats?.assigned);
-    setInProgress(userVerifierStats?.in_progress);
-    setDueSoon(userVerifierStats?.due_soon);
+    setInProgress(userVerifierStats?.inProgress);
+    setDueSoon(userVerifierStats?.dueSoon);
     setSubmitted(userVerifierStats?.submitted);
     setOverdue(userVerifierStats?.overdue);
-    setAvgResolutionTimeHours(userVerifierStats?.avg_resolution__hours);
+    setAvgResolutionTimeHours(userVerifierStats?.avgResolutionHours);
   }, [userVerifierStats]);
 
   const verifierStatusesDetails: TaskStatusDetail[] = [
@@ -48,7 +48,7 @@ export const TaskStatsComponent = () => {
       bgColor: 'bg-primary/10',
     },
     {
-      key: "in_progress",
+      key: "inProgress",
       title: 'In Progress',
       value: inProgress,
       icon: Clock,
@@ -56,7 +56,7 @@ export const TaskStatsComponent = () => {
       bgColor: 'bg-accent/10',
     },
     {
-      key: "due_soon",
+      key: "dueSoon",
       title: 'Due Soon',
       value: dueSoon,
       icon: AlertCircle,

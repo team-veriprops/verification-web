@@ -21,7 +21,7 @@
 //   const { data, isLoading, isError, error } = useSearchRolePage(currentCompany?.id!);
 
 //   useEffect(() => {
-//     updateFilters({ page_size: settings.rowsPerPage, is_system_role: undefined});
+//     updateFilters({ pageSize: settings.rowsPerPage, is_system_role: undefined});
 //   }, [settings.rowsPerPage, updateFilters]);
 
 //   const columns: Column<QueryRoleDto>[] = [

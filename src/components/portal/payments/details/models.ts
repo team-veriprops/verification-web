@@ -18,13 +18,13 @@ export interface SearchPaymentDetailDto extends PageRequest, BaseQueryDto {
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)
 export interface QueryPaymentDetailDto extends CreatePaymentDetailDto, BaseQueryDto {
-  ref_id: string;
-  payment_channel: PaymentChannel;
-  gateway_response: string | undefined;
-  property_title?: string;
-  property_location?: string;
+  refId: string;
+  paymentChannel: PaymentChannel;
+  gatewayResponse: string | undefined;
+  propertyTitle?: string;
+  propertyLocation?: string;
   seller?: string;
-  date_paid?: string;
+  datePaid?: string;
 }
 
 export enum PaymentChannel{

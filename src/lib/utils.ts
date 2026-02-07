@@ -190,7 +190,7 @@ export function buildReferralLink(referralCode: string) {
 export const getStatusBadgeColor = (status: string): string => {
   const colors: Record<string, string> = {
     pending: "bg-muted text-muted-foreground",
-    in_progress: "bg-warning/10 text-warning dark:bg-warning/20",
+    inProgress: "bg-warning/10 text-warning dark:bg-warning/20",
     completed: "bg-success/10 text-success dark:bg-success/20",
     blocked: "bg-danger/10 text-danger dark:bg-danger/20",
     verified: "bg-success/10 text-success dark:bg-success/20",

@@ -10,16 +10,16 @@ import { HttpClient } from "@lib/FetchHttpClient";
 import { QueryVerificationDetailDto } from "../details/models";
 
 export class VerificationService {
-  verification_base_url: string;
+  verificationBaseUrl: string;
   constructor(private readonly http: HttpClient) {
-    this.verification_base_url = "/verifications";
+    this.verificationBaseUrl = "/verifications";
   }
 
   async createVerification(
       payload: CreateVerificationDto
   ): Promise<QueryVerificationDto> {
       return await this.http.post<CreateVerificationDto>(
-        `${this.verification_base_url}`,
+        `${this.verificationBaseUrl}`,
         payload
       );
   }
@@ -29,7 +29,7 @@ export class VerificationService {
       payload: UpdateVerificationDto
   ): Promise<QueryVerificationDto> {
       return await this.http.put<UpdateVerificationDto>(
-        `${this.verification_base_url}/${verificationId}`,
+        `${this.verificationBaseUrl}/${verificationId}`,
         payload
       );
   }
@@ -39,15 +39,15 @@ export class VerificationService {
   ): Promise<Page<QueryVerificationDto>> {
     const query = toQueryParams(payload);
     return await this.http.get<Page<QueryVerificationDto>>(
-      `${this.verification_base_url}?${query}`
+      `${this.verificationBaseUrl}?${query}`
     );
   }
 
   async getVerificationDetail(
-      ref_id: string
+      refId: string
     ): Promise<QueryVerificationDetailDto> {
       return await this.http.get<QueryVerificationDetailDto>(
-        `${this.verification_base_url}/${ref_id}`
+        `${this.verificationBaseUrl}/${refId}`
       );
     }
 }

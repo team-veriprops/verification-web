@@ -66,18 +66,18 @@ export default function PaymentsTable() {
   const { data, isLoading, isError, error } = useSearchPaymentPage();
 
   useEffect(() => {
-    updateFilters({ page_size: settings.rowsPerPage });
+    updateFilters({ pageSize: settings.rowsPerPage });
   }, [settings.rowsPerPage, updateFilters]);
 
   const columns: Column<QueryPaymentDto>[] = [
     {
-      key: "ref_id",
+      key: "refId",
       label: "Invoice ID",
       sortable: true,
       render: (value) => value,
     },
     {
-      key: "date_created",
+      key: "dateCreated",
       label: "Date",
       sortable: true,
       render: (value) => formatDate(value),
