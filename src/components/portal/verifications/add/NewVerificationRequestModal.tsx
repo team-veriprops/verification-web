@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link2, FileText, X } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/3rdparty/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/3rdparty/ui/card';
-// import { useToast } from '@/hooks/use-toast';
-// import { useAuth } from '@/contexts/AuthContext';
-import { PropertyDetails } from '@components/portal/verifications/add/models';
 import { PropertyForm } from '@components/portal/verifications/add/PropertyForm';
 import { UrlExtractor } from '@components/portal/verifications/add/UrlExtractor';
 import { toast } from '@components/3rdparty/ui/use-toast';
@@ -15,15 +12,22 @@ import { motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useBodyOverflowHidden } from '@hooks/useBodyOverflowHidden';
 import BrandLogo from '@components/ui/BrandLogo';
+import { useVerificationQueries } from '../libs/useVerificationQueries';
+import { CreateVerificationDto, UpdateVerificationDto } from '../models';
 
 export default function NewVerificationRequestModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<'manual' | 'url'>('manual');
-  const [extractedData, setExtractedData] = useState<Partial<PropertyDetails> | null>(null);
-  const { viewAddVerificationModal, setViewAddVerificationModal } = useVerificationStore();
+  const [extractedData, setExtractedData] = useState<Partial<CreateVerificationDto | UpdateVerificationDto> | null>(null);
+  const { viewAddVerificationModal, setViewAddVerificationModal, setIsEditing, isEditing, currentVerification } = useVerificationStore();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const {useCreateVerification, useUpdateVerification} = useVerificationQueries();
+      
+  const createVerification = useCreateVerification()
+  const updateVerification = useUpdateVerification(currentVerification?.id ?? "")
   
   // Lock body scroll when modal is open
   useBodyOverflowHidden(viewAddVerificationModal);
@@ -34,6 +38,7 @@ export default function NewVerificationRequestModal() {
     router.replace(`${pathname}?${params.toString()}`);
 
     setViewAddVerificationModal(false)
+    setIsEditing(false)
   }
 
   const openCheckout = ()=> {
@@ -41,7 +46,7 @@ export default function NewVerificationRequestModal() {
   }
     
 
-  const handleExtractedData = (data: Partial<PropertyDetails>) => {
+  const handleExtractedData = (data: Partial<CreateVerificationDto | UpdateVerificationDto>) => {
     setExtractedData(data);
     setActiveTab('manual');
     toast({
@@ -50,27 +55,51 @@ export default function NewVerificationRequestModal() {
     });
   };
 
-  const handleSubmit = async (data: PropertyDetails) => {
+  const handleSubmit = async (payload: CreateVerificationDto | UpdateVerificationDto) => {
+    console.log("form payload: ", payload)
     setIsSubmitting(true);
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+    try{
+      if(isEditing){
+        updateVerification.mutate(payload, {
+              onSuccess: () => {
+                toast({
+                  title: 'Verification Request Updated',
+                  description: 'Your property verification request has been submitted successfully. You can proceed to checkout now.',
+                });
 
-      toast({
-        title: 'Verification Request Submitted',
-        description: 'Your property verification request has been submitted successfully. We will review it shortly.',
-      });
+                handleClose();
+                openCheckout()
+              },
+              onError: (error) => {
+                toast({
+                  title: 'Submission Failed',
+                  description: 'Failed to submit verification request. Please try again.',
+                  variant: 'destructive',
+                });
+              }
+            });
+      } else {
+        createVerification.mutate(payload, {
+              onSuccess: () => {
+                toast({
+                  title: 'Verification Request Submitted',
+                  description: 'Your property verification request has been submitted successfully. You can proceed to checkout now.',
+                });
 
-      handleClose();
-      openCheckout()
-    } catch (error) {
-      toast({
-        title: 'Submission Failed',
-        description: 'Failed to submit verification request. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
+                handleClose();
+                openCheckout()
+              },
+              onError: (error) => {
+                toast({
+                  title: 'Submission Failed',
+                  description: 'Failed to submit verification request. Please try again.',
+                  variant: 'destructive',
+                });
+              }
+            });
+      }
+    }finally{
       setIsSubmitting(false);
     }
   };
@@ -86,32 +115,15 @@ export default function NewVerificationRequestModal() {
       <header className="border-b border-border bg-card">
         <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-          <BrandLogo />
-          {/* <div>
-              <h1 className="text-lg font-display font-semibold text-foreground">
-                New Verification Request
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Submit property details for verification
-              </p>
-          </div> */}
-          <div className='flex gap-3'>
-            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-            <span>Verification Request</span>
+            <BrandLogo />
+            <div className='flex gap-3'>
+              <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Verification Request</span>
+              </div>
+              <button onClick={handleClose} className="text-gray-600 hover:text-black">
+                <X className="w-6 h-6" />
+              </button>
             </div>
-            <button onClick={handleClose} className="text-gray-600 hover:text-black">
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-            {/* <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleClose()}
-              className="mr-4"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button> */}
           </div>
         </div>
       </header>

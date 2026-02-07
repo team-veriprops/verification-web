@@ -27,7 +27,7 @@ export default function VerificationsComponentPage({
   title,
   description,
 }: PageDetails) {
-  const { filters, updateFilters, viewAddVerificationModal, viewVerificationCheckoutModal, setViewAddVerificationModal, setViewVerificationCheckoutModal } = useVerificationStore();
+  const { filters, updateFilters, viewAddVerificationModal, viewVerificationCheckoutModal, setIsEditing, setViewAddVerificationModal, setViewVerificationCheckoutModal } = useVerificationStore();
   const { settings } = useGlobalSettings();
   const { useGetDashboardStats } = useDashboardQueries();
   const { data: dashboardStats} = useGetDashboardStats();
@@ -37,6 +37,13 @@ export default function VerificationsComponentPage({
     const params = new URLSearchParams(searchParams);
     if(params.get("action") == "add"){
       setViewVerificationCheckoutModal(false)
+      setIsEditing(false)
+      setViewAddVerificationModal(true)
+    }
+
+    if(params.get("action") == "edit"){
+      setViewVerificationCheckoutModal(false)
+      setIsEditing(true)
       setViewAddVerificationModal(true)
     }
 

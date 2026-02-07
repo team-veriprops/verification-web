@@ -24,13 +24,13 @@ import {
 import { FormStepIndicator } from './FormStepIndicator';
 import { DocumentUploader } from './DocumentUploader';
 import { cn } from '@lib/utils';
-import { PropertyDetails, UploadedDocument } from './models';
 import { PropertyPreview } from './PropertyPreview';
 import { CategorySelector } from '../checkout/CategorySelector';
 import { fxRates, verificationTiers } from '@data/verificationTiers';
 import AddressSearchForm from '@components/ui/AddressSearchForm';
-import { ExactLocation } from 'types/models';
+import { ExactLocation, PropertyType } from 'types/models';
 import { useCheckoutStore } from '../checkout/libs/useCheckoutStore';
+import { CreateVerificationDto, UpdateVerificationDto, VerificationDocument } from '../models';
 
 const steps = [
   { id: 1, title: 'Property Details', description: 'Basic property information' },
@@ -43,7 +43,7 @@ const steps = [
 
 // Step 1 Schema
 const step1Schema = z.object({
-  propertyType: z.enum(['residential', 'commercial', 'land', 'industrial'], {
+  propertyType: z.enum([PropertyType.RESIDENTIAL, PropertyType.COMMERCIAL, PropertyType.LAND, PropertyType.INDUSTRIAL], {
     error: 'Please select a property type',
   }),
   propertyTitle: z.string().min(5, 'Property title must be at least 5 characters'),
@@ -65,20 +65,13 @@ const step4Schema = z.object({
   additionalDetails: z.string().optional(),
 });
 
-// // Step 5 Schema
-// const step5Schema = z.object({
-//   documents: z
-//       .array(z.custom<MediaItem>())
-//       .min(1, "At least one document is required"),
-// })
-
 const formSchema = step1Schema.and(step4Schema);
 
 type FormData = z.infer<typeof formSchema>;
 
 interface PropertyFormProps {
-  initialData?: Partial<PropertyDetails>;
-  onSubmit: (data: PropertyDetails) => void;
+  initialData?: Partial<CreateVerificationDto | UpdateVerificationDto>;
+  onSubmit: (data: CreateVerificationDto | UpdateVerificationDto) => void;
   isSubmitting?: boolean;
 }
 
@@ -90,7 +83,7 @@ export function PropertyForm({
   const [address, setAddress] = useState<ExactLocation | undefined>(undefined);
   const [addressIsValid, setAddressIsValid] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
-  const [documents, setDocuments] = useState<UploadedDocument[]>(
+  const [documents, setDocuments] = useState<VerificationDocument[]>(
     initialData?.documents || []
   );
   const maxStep = 6
@@ -191,7 +184,7 @@ export function PropertyForm({
 
   const handleFormSubmit = (data: FormData) => {
     console.log("FORM SUBMITTED");
-    const propertyData: PropertyDetails = {
+    const propertyData: CreateVerificationDto | UpdateVerificationDto = {
       propertyType: data.propertyType,
       propertyTitle: data.propertyTitle,
       plotSize: data.plotSize,
@@ -217,7 +210,7 @@ export function PropertyForm({
   };
 
   const formValues = form.watch();
-  const previewData: Partial<PropertyDetails> = {
+  const previewData: Partial<CreateVerificationDto | UpdateVerificationDto> = {
     propertyType: formValues.propertyType,
     propertyTitle: formValues.propertyTitle,
     plotSize: formValues.plotSize,

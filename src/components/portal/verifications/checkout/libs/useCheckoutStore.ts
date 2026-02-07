@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 import {
-  VerificationCategory,
   PaymentMethod,
   PaymentState,
   PaymentSummary,
@@ -12,6 +11,7 @@ import {
 
 import { verificationTiers, VAT_RATE, fxRates } from '@data/verificationTiers';
 import { TransactionCurrency } from 'types/models';
+import { VerificationCategory } from '../../models';
 
 const FX_LOCK_DURATION = 15 * 60 * 1000;
 
@@ -46,7 +46,7 @@ interface CheckoutStore {
 export const useCheckoutStore = create<CheckoutStore>()(
   persist(
     (set, get) => ({
-      selectedCategory: 'standard',
+      selectedCategory: VerificationCategory.STANDARD,
       selectedCurrency: TransactionCurrency.NGN,
       selectedPaymentMethod: 'paystack',
       viewVerificationCategory: false,
@@ -187,7 +187,7 @@ export const useCheckoutStore = create<CheckoutStore>()(
       version: 1,
 
       // Prevent persisting volatile stuff
-      partialize: (state: any) => ({
+      partialize: (state: CheckoutStore) => ({
         selectedCategory: state.selectedCategory,
         selectedCurrency: state.selectedCurrency,
         selectedPaymentMethod: state.selectedPaymentMethod,
@@ -196,7 +196,7 @@ export const useCheckoutStore = create<CheckoutStore>()(
       }),
 
       // Auto-expire FX after reload
-      onRehydrateStorage: () => (state: any) => {
+      onRehydrateStorage: () => (state: CheckoutStore) => {
         if (!state?.fxLock?.expiresAt) return;
 
         const expired =

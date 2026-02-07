@@ -77,19 +77,17 @@ export function PropertyPreview({ data, showSource = true }: PropertyPreviewProp
         )}
 
         {/* Location */}
-        {(data.address || data.state) && (
+        {(data.address) && (
           <div className="flex items-start gap-3">
             <MapPin className="w-5 h-5 text-primary mt-0.5" />
             <div>
-              {data.formattedAddress ? (
-                <p className="text-sm text-foreground">{data.formattedAddress}</p>
-              ) : data.address ? (
-                <p className="text-sm text-foreground">{data.address}</p>
-              ) : null}
-              {(data.state || data.lga) && (
+              <p className="text-sm text-foreground">
+                {data?.address?.address}
+              </p>
+              {(data.address?.state || data.address?.city) && (
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  {data.lga && data.state && `${getLgaLabel(data.state, data.lga)}, `}
-                  {data.state && getStateLabel(data.state)}
+                  {data.address?.city && `${data.address?.city}, `}
+                  {data.address?.state && data.address?.state}
                 </p>
               )}
             </div>
@@ -122,7 +120,7 @@ export function PropertyPreview({ data, showSource = true }: PropertyPreviewProp
               )}
               {data.sellerInfo?.fullName && (
                 <div className="mt-2">
-                  <p className="text-sm text-foreground">{data.sellerInfo.fullName}</p>
+                  <p className="text-sm text-foreground">{data.sellerInfo.fullName} <span className="text-xs text-muted-foreground">(Property Seller)</span></p>
                   {data.sellerInfo.company && (
                     <p className="text-xs text-muted-foreground">{data.sellerInfo.company}</p>
                   )}

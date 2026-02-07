@@ -2,10 +2,13 @@ import {
   useInfiniteQuery,
   InfiniteData,
   useQuery,
+  useMutation,
 } from "@tanstack/react-query";
 import {
+  CreateVerificationDto,
   QueryVerificationDto,
   SearchVerificationDto,
+  UpdateVerificationDto,
 } from "@components/portal/verifications/models";
 import { Page } from "types/models";
 import { useShallow } from "zustand/react/shallow";
@@ -21,6 +24,18 @@ export const useVerificationQueries = () => {
   const filters = useVerificationStore(useShallow((state) => state.filters));
 
   const normalizedFilters = stringifyFilters(filters);
+
+  const useCreateVerification = () =>
+    useMutation({
+      mutationFn: (payload: CreateVerificationDto) =>
+        service.createVerification(payload),
+  });
+
+  const useUpdateVerification = (verificationId: string) =>
+    useMutation({
+      mutationFn: (payload: UpdateVerificationDto) =>
+        service.updateVerification(verificationId, payload),
+  });
 
   // Search verification list (paged)
   const useSearchVerificationPage = () =>
@@ -60,6 +75,8 @@ export const useVerificationQueries = () => {
       });
 
   return {
+    useCreateVerification,
+    useUpdateVerification,
     useSearchVerificationPage,
     useSearchVerificationInfinite,
     useGetVerificationDetail

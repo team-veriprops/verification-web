@@ -1,6 +1,8 @@
 import {
+  CreateVerificationDto,
   QueryVerificationDto,
   SearchVerificationDto,
+  UpdateVerificationDto,
 } from "../models";
 import { Page } from "types/models";
 import { toQueryParams } from "@lib/utils";
@@ -11,6 +13,25 @@ export class VerificationService {
   verification_base_url: string;
   constructor(private readonly http: HttpClient) {
     this.verification_base_url = "/verifications";
+  }
+
+  async createVerification(
+      payload: CreateVerificationDto
+  ): Promise<QueryVerificationDto> {
+      return await this.http.post<CreateVerificationDto>(
+        `${this.verification_base_url}`,
+        payload
+      );
+  }
+
+  async updateVerification(
+      verificationId: string,
+      payload: UpdateVerificationDto
+  ): Promise<QueryVerificationDto> {
+      return await this.http.put<UpdateVerificationDto>(
+        `${this.verification_base_url}/${verificationId}`,
+        payload
+      );
   }
 
   async searchVerificationPage(

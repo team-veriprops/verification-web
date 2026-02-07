@@ -128,7 +128,9 @@ export class Money {
 
 export enum PropertyType {
   LAND = "land",
-  STRUCTURE = "structure",
+  RESIDENTIAL = "residential",
+  COMMERCIAL = "commercial",
+  INDUSTRIAL = "industrial"
 }
 
 export interface Measurement {
@@ -141,6 +143,9 @@ export enum MeasurementUnit {
   SQM = "sqm",
   FEET = "feet",
   SQF = "sqf",
+  HECTARES = "hectares",
+  ACRES = "acres",
+  PLOTS = "plots"
 }
 
 export interface ExactLocation {
