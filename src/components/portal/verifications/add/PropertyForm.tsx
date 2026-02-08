@@ -215,6 +215,7 @@ export function PropertyForm({
     propertyTitle: formValues.propertyTitle,
     propertyPlotSize: {value: parseFloat(formValues.propertyPlotSize), unit: formValues.propertyPlotSizeUnit},
     propertyEstimatedPrice: Money.from({value: parseFloat(formValues.propertyEstimatedPrice), currency: formValues.currency}),
+    category: selectedCategory,
     ownerFullName: formValues.ownerFullName,
     sellerInfo: formValues.sellerFullName
       ? {

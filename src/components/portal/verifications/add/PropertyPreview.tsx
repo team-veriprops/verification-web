@@ -1,11 +1,11 @@
-import { Building2, MapPin, Banknote, User, FileText, ExternalLink } from 'lucide-react';
+import { Building2, MapPin, Banknote, User, FileText, ExternalLink, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/3rdparty/ui/card';
 import { Badge } from '@components/3rdparty/ui/badge';
-import { getStateLabel, getLgaLabel } from '@lib/nigerianLocations';
-import { PropertyDetails } from './models';
+import { CreateVerificationDto, UpdateVerificationDto } from '../models';
+import { formatMoney } from '@lib/utils';
 
 interface PropertyPreviewProps {
-  data: Partial<PropertyDetails>;
+  data: Partial<CreateVerificationDto | UpdateVerificationDto>;
   showSource?: boolean;
 }
 
@@ -66,9 +66,9 @@ export function PropertyPreview({ data, showSource = true }: PropertyPreviewProp
                     {propertyTypeLabels[data.propertyType] || data.propertyType}
                   </Badge>
                 )}
-                {data.plotSize && data.plotSizeUnit && (
+                {data.propertyPlotSize && (
                   <span className="text-sm text-muted-foreground">
-                    {data.plotSize} {plotSizeUnitLabels[data.plotSizeUnit] || data.plotSizeUnit}
+                    {data.propertyPlotSize.value} {plotSizeUnitLabels[data.propertyPlotSize.unit] || data.propertyPlotSize.unit}
                   </span>
                 )}
               </div>
@@ -77,30 +77,45 @@ export function PropertyPreview({ data, showSource = true }: PropertyPreviewProp
         )}
 
         {/* Location */}
-        {(data.address) && (
+        {(data.location) && (
           <div className="flex items-start gap-3">
             <MapPin className="w-5 h-5 text-primary mt-0.5" />
             <div>
               <p className="text-sm text-foreground">
-                {data?.address?.address}
+                {data?.location?.address}
               </p>
-              {(data.address?.state || data.address?.city) && (
+              {(data.location?.state || data.location?.city) && (
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  {data.address?.city && `${data.address?.city}, `}
-                  {data.address?.state && data.address?.state}
+                  {data.location?.city && `${data.location?.city}, `}
+                  {data.location?.state && data.location?.state}
                 </p>
               )}
             </div>
           </div>
         )}
 
+        
+
+        {/* Verification Category */}
+        {data.category && (
+          <div className="flex items-start gap-3">
+            <Shield className="w-5 h-5 text-primary mt-0.5" />
+            <div>
+              <p className="font-medium text-foreground">
+                {data.category}
+              </p>
+              <p className="text-xs text-muted-foreground">Verification Category</p>
+            </div>
+          </div>
+        )}
+
         {/* Price */}
-        {data.estimatedPrice && data.currency && (
+        {data.propertyEstimatedPrice && (
           <div className="flex items-start gap-3">
             <Banknote className="w-5 h-5 text-primary mt-0.5" />
             <div>
               <p className="font-medium text-foreground">
-                {formatPrice(data.estimatedPrice, data.currency)}
+                {formatMoney(data.propertyEstimatedPrice)}
               </p>
               <p className="text-xs text-muted-foreground">Estimated Price</p>
             </div>
