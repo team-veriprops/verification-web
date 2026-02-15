@@ -11,15 +11,14 @@ export default function SocialAuthPopupPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const authStatus = params.get("status");
+    const paymentStatus = params.get("status");
     const userInfoBase64 = params.get("user_info");
     const userInfo = base64UrlToString(userInfoBase64!)
 
-
-    const isSuccess = authStatus === "SOCIALAUTH_SUCCEEDED";
-    const messageType = isSuccess
-      ? "SOCIAL_AUTH_SUCCESS"
-      : "SOCIAL_AUTH_ERROR";
+    const isCancelled = paymentStatus === "PAYMENT_CANCELLED"
+    const isSuccess = paymentStatus === "PAYMENT_SUCCEEDED";
+    const messageType = isCancelled  ? "PAYMENT_CANCELLED" :
+    isSuccess ? "PAYMENT_SUCCESS" : "PAYMENT_ERROR";
 
     // Desktop popup flow
     if (window.opener) {
@@ -29,9 +28,10 @@ export default function SocialAuthPopupPage() {
       );
     } else {
       // Mobile / full redirect fallback
-      window.location.href = isSuccess
-        ? "/portal/dashboard"
-        : "/login?error=social_auth_failed";
+      window.location.href = isCancelled ? "/payment/callback/cancelled" :
+      isSuccess
+        ? "/payment/callback/success"
+        : "/payment/callback/failure";
       return;
     }
 
@@ -53,7 +53,7 @@ export default function SocialAuthPopupPage() {
           <>
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              Completing authentication…
+              Completing payment…
             </p>
           </>
         )}
@@ -62,7 +62,7 @@ export default function SocialAuthPopupPage() {
           <>
             <CheckCircle className="h-6 w-6 text-success" />
             <p className="text-sm text-foreground">
-              Signed in successfully
+              Payment successful
             </p>
           </>
         )}
@@ -71,7 +71,7 @@ export default function SocialAuthPopupPage() {
           <>
             <XCircle className="h-6 w-6 text-destructive" />
             <p className="text-sm text-destructive">
-              Authentication failed
+              Payment failed
             </p>
           </>
         )}

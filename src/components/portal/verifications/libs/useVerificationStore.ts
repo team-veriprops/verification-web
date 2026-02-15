@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { CreateVerificationDto, QueryVerificationDto, SearchVerificationDto, UpdateVerificationDto, VerificationStatus } from "../models";
+import { CreateVerificationDto, QueryVerificationDto, SearchVerificationDto, SearchVerificationTierDto, UpdateVerificationDto, VerificationStatus } from "../models";
 import { VerificationService } from "./verification-service";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { httpClient } from "containers";
@@ -9,14 +9,22 @@ const defaultFilters: Partial<SearchVerificationDto> = {
   pageSize: 6,
   status: VerificationStatus.PENDING
 };
+const verificationTierFilters: Partial<SearchVerificationTierDto> = {
+  page: 0,
+  pageSize: 6,
+};
 
 const cloneDefaultFilters = (): Partial<SearchVerificationDto> => ({
   ...defaultFilters,
+});
+const cloneVerificationTierFilters = (): Partial<SearchVerificationTierDto> => ({
+  ...verificationTierFilters,
 });
 
 interface VerificationStore {
   service: VerificationService; // runtime only (not persisted)
   filters: Partial<SearchVerificationDto>; // persisted + synced with query params
+  verificationTierFilters: Partial<SearchVerificationTierDto>;
   upsertVerificationDto: Partial<CreateVerificationDto | UpdateVerificationDto | object>;
   currentVerification: QueryVerificationDto | null; // persisted only
   viewVerificationDetail: boolean;
@@ -35,6 +43,7 @@ interface VerificationStore {
   //   value: SearchVerificationDto[K]
   // ) => void;
   updateFilters: (updates: Partial<SearchVerificationDto>) => void;
+  updateVerificationTierFilters: (updates: Partial<SearchVerificationTierDto>) => void; // <—
   updateUpsertVerificationDto: (updates: Partial<CreateVerificationDto | UpdateVerificationDto>) => void;
   setCurrentVerification: (currentVerification: QueryVerificationDto | null) => void;
   setViewVerificationDetail: (viewVerificationDetail: boolean) => void;
@@ -52,6 +61,7 @@ export const useVerificationStore = create<VerificationStore>()(
     (set) => ({
       service,
       filters: cloneDefaultFilters(),
+      verificationTierFilters: cloneVerificationTierFilters(),
       upsertVerificationDto: {},
       currentVerification: null,
       viewVerificationDetail: false,
@@ -82,6 +92,10 @@ export const useVerificationStore = create<VerificationStore>()(
         set((state) => ({
           filters: { ...state.filters, ...updates },
         })),
+      updateVerificationTierFilters: (updates) =>
+        set((state) => ({
+          filters: { ...state.verificationTierFilters, ...updates },
+        })),
 
       updateUpsertVerificationDto: (updates) =>
         set((state) => ({
@@ -102,6 +116,7 @@ export const useVerificationStore = create<VerificationStore>()(
       // Persist only filters + currentVerification, skip service
       partialize: (state: {
         filters: SearchVerificationDto;
+        verificationTierFilters: SearchVerificationTierDto;
         upsertVerificationDto: CreateVerificationDto | UpdateVerificationDto | object;
         currentVerification: QueryVerificationDto;
         viewVerificationDetail: boolean;
@@ -110,6 +125,7 @@ export const useVerificationStore = create<VerificationStore>()(
         showReceipt: boolean;
       }) => ({
         filters: state.filters,
+        verificationTierFilters: state.verificationTierFilters,
         upsertVerificationDto: state.upsertVerificationDto,
         currentVerification: state.currentVerification,
         viewVerificationDetail: state.viewVerificationDetail,

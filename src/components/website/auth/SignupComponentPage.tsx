@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Loader2, Check, Mail } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Input } from '@components/3rdparty/ui/input';
@@ -15,9 +15,9 @@ import { useRouter } from 'next/navigation';
 import { CreateUserDto} from '@components/admin/user/models';
 import Link from 'next/link';
 import { SignUpProgress } from './SignUpProgress';
-import { cn, isMobileBrowser} from '@lib/utils';
+import { cn} from '@lib/utils';
 import { OtpVerification } from './OtpVerification';
-import { openSocialPopup } from './libs/auth-utils';
+import { usePopup } from '@hooks/use-popup';
 
 type Step = 'email' | 'otp' | 'details';
 
@@ -38,13 +38,13 @@ const detailsSchema = z.object({
 export default function SignupComponentPage() {
   const router = useRouter();
   const {useSendEmailValidationMessage, useValidateEmailVerificationOtp, useCreateUser, useInitSocialAuth} = useAuthQueries();
-    
-    const sendEmailValidationMessage = useSendEmailValidationMessage()
-    const validateEmailVerificationOtp = useValidateEmailVerificationOtp()
-    const createUser = useCreateUser()
-    const initSocialAuth = useInitSocialAuth()
 
-    const [loading, setLoading] = useState<{
+  const sendEmailValidationMessage = useSendEmailValidationMessage()
+  const validateEmailVerificationOtp = useValidateEmailVerificationOtp()
+  const createUser = useCreateUser()
+  const initSocialAuth = useInitSocialAuth()
+
+  const [loading, setLoading] = useState<{
       email: boolean;
       otp: boolean;
       details: boolean;
@@ -59,7 +59,7 @@ export default function SignupComponentPage() {
 
   // Step state
   const [currentStep, setCurrentStep] = useState<Step>('email')
-  
+
   // Form data
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -73,7 +73,7 @@ export default function SignupComponentPage() {
   const [otpError, setOtpError] = useState('');
   const [socialAuthError, setSocialAuthError] = useState<string | null>(null);
 
-  const popupRef = useRef<Window | null>(null);
+  const { popupRef, initPopup, updatePopupUrl, closePopup } = usePopup()
 
   // Step 1: Email submission
   const handleEmailSubmit = async (e?: React.FormEvent) => {
@@ -181,32 +181,22 @@ const handleSocialAuth = (provider: SocialAuthProvider) => {
     authType: SocialAuthType.SIGNUP,
   };
 
-  const isMobile = isMobileBrowser();
-
   // Desktop: open popup immediately (sync)
-  popupRef.current = !isMobile
-    ? openSocialPopup('about:blank', provider)
-    : null;
+  initPopup(provider)
 
   setLoading(l => ({ ...l, social: true }));
   initSocialAuth.mutate(payload, {
     onSuccess: (data) => {
       setLoading(l => ({ ...l, social: false }));
       setSocialAuthError('');
-
-      if (isMobile) {
-        // Mobile-safe full redirect
-        window.location.href = data.redirectUrl;
-        return;
-      }
-
-      // Desktop: redirect existing popup
-      popupRef.current!.location.href = data.redirectUrl;
+  
+      // Navigate to the auth URL (desktop or mobile)
+      updatePopupUrl(data.redirectUrl)
     },
     onError: (error) => {
       setLoading(l => ({ ...l, social: false }));
-      popupRef.current?.close();
-      popupRef.current = null;
+      // Close popup if any and show error
+      closePopup()
 
       setSocialAuthError(error.message || 'Social sign-up failed');
     },

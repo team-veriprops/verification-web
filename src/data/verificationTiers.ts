@@ -1,9 +1,10 @@
 import { VerificationTier } from "@components/portal/verifications/checkout/models";
+import { VerificationCategory } from "@components/portal/verifications/models";
 
 
 export const verificationTiers: VerificationTier[] = [
   {
-    id: 'basic',
+    id: VerificationCategory.BASIC,
     name: 'Basic Verification',
     description: 'Essential document checks for straightforward transactions',
     features: [
@@ -15,7 +16,7 @@ export const verificationTiers: VerificationTier[] = [
     priceNGN: 75000,
   },
   {
-    id: 'standard',
+    id: VerificationCategory.STANDARD,
     name: 'Standard Verification',
     description: 'Comprehensive verification with physical inspection',
     features: [
@@ -28,7 +29,7 @@ export const verificationTiers: VerificationTier[] = [
     recommended: true,
   },
   {
-    id: 'premium',
+    id: VerificationCategory.PREMIUM,
     name: 'Premium Verification',
     description: 'Complete due diligence with legal assessment',
     features: [
@@ -41,25 +42,25 @@ export const verificationTiers: VerificationTier[] = [
   },
 ];
 
-export const VAT_RATE = 0.075; // 7.5%
+// export const VAT_RATE = 0.075; // 7.5%
 
-export const fxRates: Record<string, number> = {
-  NGN: 1,
-  USD: 0.00063, // ~1590 NGN per USD
-  GBP: 0.00050, // ~2000 NGN per GBP
-  EUR: 0.00058, // ~1720 NGN per EUR
-};
+// export const fxRates: Record<string, number> = {
+//   NGN: 1,
+//   USD: 0.00063, // ~1590 NGN per USD
+//   GBP: 0.00050, // ~2000 NGN per GBP
+//   EUR: 0.00058, // ~1720 NGN per EUR
+// };
 
-export const currencySymbols: Record<string, string> = {
-  NGN: '₦',
-  USD: '$',
-  GBP: '£',
-  EUR: '€',
-};
+// export const currencySymbols: Record<string, string> = {
+//   NGN: '₦',
+//   USD: '$',
+//   GBP: '£',
+//   EUR: '€',
+// };
 
-export const currencyNames: Record<string, string> = {
-  NGN: 'Nigerian Naira',
-  USD: 'US Dollar',
-  GBP: 'British Pound',
-  EUR: 'Euro',
-};
+// export const currencyNames: Record<string, string> = {
+//   NGN: 'Nigerian Naira',
+//   USD: 'US Dollar',
+//   GBP: 'British Pound',
+//   EUR: 'Euro',
+// };

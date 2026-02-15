@@ -57,7 +57,7 @@ export default function TableFooterPagination({
       {/* Pagination controls */}
       <div className="flex items-center space-x-2">
         <span className="text-sm">
-          Page {adjustedPage} of {totalPages}
+          Page {adjustedPage} of {totalPages || 1}
         </span>
         <Button
           variant="ghost"

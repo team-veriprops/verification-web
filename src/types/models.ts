@@ -5,6 +5,49 @@ export enum TransactionCurrency {
   GBP = "GBP",
 }
 
+export const FX_RATES: Record<TransactionCurrency, number> = {
+  [TransactionCurrency.NGN]: 1,
+  [TransactionCurrency.USD]: 0.00063,
+  [TransactionCurrency.GBP]: 0.0005,
+  [TransactionCurrency.EUR]: 0.00058,
+};
+
+export const CURRENCY_SYMBOLS: Record<TransactionCurrency, string> = {
+  [TransactionCurrency.NGN]: "₦",
+  [TransactionCurrency.USD]: "$",
+  [TransactionCurrency.GBP]: "£",
+  [TransactionCurrency.EUR]: "€",
+};
+
+export const CURRENCY_NAMES: Record<TransactionCurrency, string> = {
+  [TransactionCurrency.NGN]: "Nigerian Naira",
+  [TransactionCurrency.USD]: "US Dollar",
+  [TransactionCurrency.GBP]: "British Pound",
+  [TransactionCurrency.EUR]: "Euro",
+};
+
+export const getCurrencySymbol = (currency: TransactionCurrency) =>
+  CURRENCY_SYMBOLS[currency];
+
+export const getCurrencyName = (currency: TransactionCurrency) =>
+  CURRENCY_NAMES[currency];
+
+export const getFxRate = (currency: TransactionCurrency) =>
+  FX_RATES[currency];
+
+export enum PaymentMethod {
+  FLUTTERWAVE = "flutterwave",
+  PAYSTACK = "paystack",
+  STRIPE = "stripe",
+}
+
+export enum PaymentState {
+  IDLE = "idle",
+  PROCESSING = "processing",
+  SUCCESS = "success",
+  FAILURE = "failure",
+}
+
 export enum Language {
   ENGLISH = "en-US",
   FRENCH = "FR",

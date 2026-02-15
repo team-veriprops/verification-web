@@ -24,20 +24,6 @@ const plotSizeUnitLabels: Record<string, string> = {
 };
 
 export function PropertyPreview({ data, showSource = true }: PropertyPreviewProps) {
-  const formatPrice = (price: number, currency: 'NGN' | 'USD') => {
-    if (currency === 'NGN') {
-      return new Intl.NumberFormat('en-NG', {
-        style: 'currency',
-        currency: 'NGN',
-        maximumFractionDigits: 0,
-      }).format(price);
-    }
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 
   return (
     <Card className="border-primary/20 bg-primary/5">
@@ -101,7 +87,7 @@ export function PropertyPreview({ data, showSource = true }: PropertyPreviewProp
           <div className="flex items-start gap-3">
             <Shield className="w-5 h-5 text-primary mt-0.5" />
             <div>
-              <p className="font-medium text-foreground">
+              <p className="font-medium text-foreground capitalize">
                 {data.category}
               </p>
               <p className="text-xs text-muted-foreground">Verification Category</p>
@@ -117,7 +103,7 @@ export function PropertyPreview({ data, showSource = true }: PropertyPreviewProp
               <p className="font-medium text-foreground">
                 {formatMoney(data.propertyEstimatedPrice)}
               </p>
-              <p className="text-xs text-muted-foreground">Estimated Price</p>
+              <p className="text-xs text-muted-foreground">Estimated Property Price</p>
             </div>
           </div>
         )}

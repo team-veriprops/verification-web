@@ -1,6 +1,5 @@
-import { currencySymbols, currencyNames } from '@data/verificationTiers';
 import { cn } from '@lib/utils';
-import { TransactionCurrency } from 'types/models';
+import { getCurrencyName, getCurrencySymbol, TransactionCurrency } from 'types/models';
 
 interface CurrencySelectorProps {
   selectedCurrency: TransactionCurrency;
@@ -36,7 +35,7 @@ export function CurrencySelector({ selectedCurrency, onCurrencyChange }: Currenc
                   : 'border-border bg-card text-muted-foreground hover:border-muted-foreground/30'
               )}
             >
-              <span className="font-semibold">{currencySymbols[currency]}</span>
+              <span className="font-semibold">{getCurrencySymbol(currency)}</span>
               <span className="text-sm">{currency}</span>
             </button>
           );
@@ -45,7 +44,7 @@ export function CurrencySelector({ selectedCurrency, onCurrencyChange }: Currenc
 
       {selectedCurrency !== TransactionCurrency.NGN && (
         <p className="text-xs text-muted-foreground">
-          Prices are converted from {currencyNames[TransactionCurrency.NGN]} (₦) to {currencyNames[selectedCurrency]}.
+          Prices are converted from {getCurrencyName(TransactionCurrency.NGN)} (₦) to {getCurrencyName(selectedCurrency)}.
         </p>
       )}
     </div>

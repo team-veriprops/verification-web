@@ -30,6 +30,7 @@ export function SocialAuthButtons({
   const actionText = action === 'sign-up' ? 'Continue' : 'Sign in';
 
 
+  // Handle Popup Events
   useEffect(() => {
   const handler = (event: MessageEvent) => {
     console.log("event: ", event)

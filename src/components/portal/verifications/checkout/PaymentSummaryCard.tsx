@@ -1,24 +1,17 @@
 import { Receipt, Info } from 'lucide-react';
-import { PaymentSummary } from './models';
-import { currencySymbols } from '@data/verificationTiers';
-import { cn } from '@lib/utils';
+import { cn, convertMoney, formatMoney, formatMoneyFxAware } from '@lib/utils';
 import { TransactionCurrency } from 'types/models';
+import { QueryPaymentCheckoutDto } from '@components/portal/payments/models';
 
 interface PaymentSummaryCardProps {
-  summary: PaymentSummary;
+  currency: TransactionCurrency;
+  summary: QueryPaymentCheckoutDto | null;
   tierName: string;
   animate?: boolean;
 }
 
-export function PaymentSummaryCard({ summary, tierName, animate }: PaymentSummaryCardProps) {
-  const symbol = currencySymbols[summary.currency];
-
-  const formatAmount = (amount: number) => {
-    if (summary.currency === TransactionCurrency.NGN) {
-      return `${symbol}${amount.toLocaleString()}`;
-    }
-    return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
+export function PaymentSummaryCard({ currency, summary, tierName, animate }: PaymentSummaryCardProps) {
+  const vatPercent = (summary?.vatRate ?? 0) * 100;
 
   return (
     <div className={cn(
@@ -39,13 +32,13 @@ export function PaymentSummaryCard({ summary, tierName, animate }: PaymentSummar
             'font-medium text-foreground transition-all duration-200',
             animate && 'animate-price-update'
           )}>
-            {formatAmount(summary.verificationFee)}
+            {formatMoneyFxAware(currency, summary?.cost ?? null)}
           </span>
         </div>
 
         <div className="flex justify-between items-center">
           <span className="text-muted-foreground flex items-center gap-1">
-            VAT (7.5%)
+            {`VAT (${vatPercent}%)`}
             <span className="group relative">
               <Info className="w-3.5 h-3.5 cursor-help" />
               <span className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-foreground text-background rounded whitespace-nowrap">
@@ -57,11 +50,11 @@ export function PaymentSummaryCard({ summary, tierName, animate }: PaymentSummar
             'font-medium text-foreground transition-all duration-200',
             animate && 'animate-price-update'
           )}>
-            {formatAmount(summary.vat)}
+            {formatMoneyFxAware(currency, summary?.tax ?? null)}
           </span>
         </div>
 
-        <div className="section-divider !my-3" />
+        <div className="section-divider my-3!" />
 
         <div className="flex justify-between items-center">
           <span className="font-semibold text-foreground">Total Payable</span>
@@ -69,19 +62,19 @@ export function PaymentSummaryCard({ summary, tierName, animate }: PaymentSummar
             'text-2xl font-bold text-primary transition-all duration-200',
             animate && 'animate-price-update'
           )}>
-            {formatAmount(summary.total)}
+            {formatMoneyFxAware(currency, summary?.total ?? null)}
           </span>
         </div>
 
-        {summary.currency !== TransactionCurrency.NGN && summary.ngnEquivalent && (
+        {currency !== TransactionCurrency.NGN && (
           <div className="flex justify-between items-center text-sm text-muted-foreground">
             <span>NGN equivalent</span>
-            <span>₦{summary.ngnEquivalent.toLocaleString()}</span>
+            <span>{formatMoney(summary?.total ?? null)}</span>
           </div>
         )}
       </div>
 
-      {summary.currency !== TransactionCurrency.NGN && (
+      {currency !== TransactionCurrency.NGN && (
         <p className="mt-4 text-xs text-muted-foreground bg-secondary/50 rounded-lg py-2 px-3">
           Converted from Nigerian Naira (₦). VAT is charged in compliance with Nigerian tax regulations.
         </p>

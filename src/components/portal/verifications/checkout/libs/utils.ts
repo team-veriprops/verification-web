@@ -10,7 +10,8 @@ export function useFxTimer() {
     if (!fxLock.expiresAt || selectedCurrency === TransactionCurrency.NGN) return;
 
     const interval = setInterval(() => {
-      const remaining = fxLock.expiresAt!.getTime() - Date.now();
+      console.log("fxLock: ", fxLock)
+      const remaining = new Date(fxLock?.expiresAt ?? "").getTime() - Date.now();
 
       if (remaining <= 0) {
         set({ fxExpired: true, timeRemaining: 0 });
@@ -22,5 +23,5 @@ export function useFxTimer() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [fxLock.expiresAt, selectedCurrency]);
+  }, [fxLock.expiresAt, selectedCurrency, set]);
 }

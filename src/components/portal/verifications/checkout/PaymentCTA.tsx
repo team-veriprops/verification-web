@@ -1,22 +1,16 @@
 import { ArrowRight } from 'lucide-react';
-import { currencySymbols } from '@data/verificationTiers';
-import { PaymentSummary } from './models';
+import { QueryPaymentCheckoutDto } from '@components/portal/payments/models';
+import { formatMoneyFxAware } from '@lib/utils';
+import { TransactionCurrency } from 'types/models';
 
 interface PaymentCTAProps {
-  summary: PaymentSummary;
+  currency: TransactionCurrency;
+  summary: QueryPaymentCheckoutDto | null;
   disabled?: boolean;
   onSubmit: () => void;
 }
 
-export function PaymentCTA({ summary, disabled, onSubmit }: PaymentCTAProps) {
-  const symbol = currencySymbols[summary.currency];
-  
-  const formatAmount = () => {
-    if (summary.currency === 'NGN') {
-      return `${symbol}${summary.total.toLocaleString()}`;
-    }
-    return `${symbol}${summary.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
+export function PaymentCTA({ currency, summary, disabled, onSubmit }: PaymentCTAProps) {
 
   return (
     <div className="space-y-3">
@@ -25,7 +19,7 @@ export function PaymentCTA({ summary, disabled, onSubmit }: PaymentCTAProps) {
         disabled={disabled}
         className="cta-button flex items-center justify-center gap-2 group"
       >
-        <span>Pay {formatAmount()} & Start Verification</span>
+        <span>Pay {formatMoneyFxAware(currency, summary?.total ?? null)} & Start Verification</span>
         <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
       </button>
       

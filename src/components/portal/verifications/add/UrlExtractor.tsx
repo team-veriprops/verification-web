@@ -6,17 +6,17 @@ import { Alert, AlertDescription } from '@components/3rdparty/ui/alert';
 import { PropertyPreview } from './PropertyPreview';
 import { detectPlatform, extractPropertyFromUrl, isValidUrl, supportedPlatforms, SupportedPlatform } from '@lib/mockUrlExtractor';
 import { cn } from '@lib/utils';
-import { PropertyDetails } from './models';
+import { CreateVerificationDto, UpdateVerificationDto } from '../models';
 
 interface UrlExtractorProps {
-  onExtract: (data: Partial<PropertyDetails>) => void;
+  onExtract: (data: Partial<CreateVerificationDto | UpdateVerificationDto>) => void;
 }
 
 export function UrlExtractor({ onExtract }: UrlExtractorProps) {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [extractedData, setExtractedData] = useState<Partial<PropertyDetails> | null>(null);
+  const [extractedData, setExtractedData] = useState<Partial<CreateVerificationDto | UpdateVerificationDto> | null>(null);
   const [detectedPlatform, setDetectedPlatform] = useState<SupportedPlatform | null>(null);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -2,15 +2,13 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 import {
-  PaymentMethod,
   PaymentState,
   PaymentSummary,
   PaymentResult,
   FXRate,
 } from '@components/portal/verifications/checkout/models';
 
-import { verificationTiers, VAT_RATE, fxRates } from '@data/verificationTiers';
-import { TransactionCurrency } from 'types/models';
+import { getFxRate, PaymentMethod, TransactionCurrency } from 'types/models';
 import { VerificationCategory } from '../../models';
 
 const FX_LOCK_DURATION = 15 * 60 * 1000;
@@ -21,8 +19,8 @@ interface CheckoutStore {
   selectedPaymentMethod: PaymentMethod;
   viewVerificationCategory: boolean;
 
-  paymentState: PaymentState;
-  paymentResult: PaymentResult | null;
+  // paymentState: PaymentState;
+  // paymentResult: PaymentResult | null;
 
   fxLock: FXRate;
   fxExpired: boolean;
@@ -33,14 +31,14 @@ interface CheckoutStore {
   handleCurrencyChange: (c: TransactionCurrency) => void;
   refreshFxRate: () => void;
 
-  processPayment: () => Promise<void>;
-  resetPayment: () => void;
+  // processPayment: () => Promise<void>;
+  // resetPayment: () => void;
 
   setSelectedPaymentMethod: (m: PaymentMethod) => void;
   setViewVerificationCategory: (v: boolean) => void;
 
-  selectedTier: typeof verificationTiers[number];
-  paymentSummary: PaymentSummary;
+  // selectedTier: typeof verificationTiers[number];
+  // paymentSummary: PaymentSummary;
 }
 
 export const useCheckoutStore = create<CheckoutStore>()(
@@ -48,7 +46,7 @@ export const useCheckoutStore = create<CheckoutStore>()(
     (set, get) => ({
       selectedCategory: VerificationCategory.STANDARD,
       selectedCurrency: TransactionCurrency.NGN,
-      selectedPaymentMethod: 'paystack',
+      selectedPaymentMethod: PaymentMethod.PAYSTACK,
       viewVerificationCategory: false,
 
       paymentState: 'idle',
@@ -65,45 +63,45 @@ export const useCheckoutStore = create<CheckoutStore>()(
       fxUpdated: false,
       timeRemaining: null,
 
-      get selectedTier() {
-        return (
-          verificationTiers.find(t => t.id === get().selectedCategory) ??
-          verificationTiers[0]
-        );
-      },
+      // get selectedTier() {
+      //   return (
+      //     verificationTiers.find(t => t.id === get().selectedCategory) ??
+      //     verificationTiers[0]
+      //   );
+      // },
 
-      get paymentSummary() {
-        const tier = get().selectedTier;
-        const currency = get().selectedCurrency;
-        const fx = get().fxLock;
+      // get paymentSummary() {
+      //   const tier = get().selectedTier;
+      //   const currency = get().selectedCurrency;
+      //   const fx = get().fxLock;
 
-        const base = tier.priceNGN;
-        const vat = base * VAT_RATE;
-        const totalNGN = base + vat;
+      //   const base = tier.priceNGN;
+      //   const vat = base * VAT_RATE;
+      //   const totalNGN = base + vat;
 
-        if (currency === TransactionCurrency.NGN) {
-          return { verificationFee: base, vat, total: totalNGN, currency: TransactionCurrency.NGN };
-        }
+      //   if (currency === TransactionCurrency.NGN) {
+      //     return { verificationFee: base, vat, total: totalNGN, currency: TransactionCurrency.NGN };
+      //   }
 
-        if (get().fxExpired || !fx.rate) {
-          return {
-            verificationFee: 0,
-            vat: 0,
-            total: 0,
-            currency,
-            ngnEquivalent: totalNGN,
-          };
-        }
+      //   if (get().fxExpired || !fx.rate) {
+      //     return {
+      //       verificationFee: 0,
+      //       vat: 0,
+      //       total: 0,
+      //       currency,
+      //       ngnEquivalent: totalNGN,
+      //     };
+      //   }
 
-        return {
-          verificationFee: base * fx.rate,
-          vat: vat * fx.rate,
-          total: totalNGN * fx.rate,
-          currency,
-          fxRate: fx.rate,
-          ngnEquivalent: totalNGN,
-        };
-      },
+      //   return {
+      //     verificationFee: base * fx.rate,
+      //     vat: vat * fx.rate,
+      //     total: totalNGN * fx.rate,
+      //     currency,
+      //     fxRate: fx.rate,
+      //     ngnEquivalent: totalNGN,
+      //   };
+      // },
 
       handleCategoryChange: (category) => {
         set({ selectedCategory: category });
@@ -130,7 +128,7 @@ export const useCheckoutStore = create<CheckoutStore>()(
         set({
           fxLock: {
             currency,
-            rate: fxRates[currency],
+            rate: getFxRate(currency),
             lockedAt: now,
             expiresAt,
           },
@@ -148,33 +146,33 @@ export const useCheckoutStore = create<CheckoutStore>()(
         }
       },
 
-      processPayment: async () => {
-        if (get().selectedCurrency !== TransactionCurrency.NGN && get().fxExpired) {
-          throw new Error('FX rate expired');
-        }
+      // processPayment: async () => {
+      //   if (get().selectedCurrency !== TransactionCurrency.NGN && get().fxExpired) {
+      //     throw new Error('FX rate expired');
+      //   }
 
-        set({ paymentState: 'processing' });
+      //   set({ paymentState: 'processing' });
 
-        await new Promise(r => setTimeout(r, 3000));
+      //   await new Promise(r => setTimeout(r, 3000));
 
-        if (Math.random() > 0.1) {
-          set({
-            paymentState: 'success',
-            paymentResult: {
-              success: true,
-              reference: `VRP-${Date.now().toString(36).toUpperCase()}`,
-              amount: get().paymentSummary.total,
-              currency: get().selectedCurrency,
-              category: get().selectedCategory,
-              timestamp: new Date(),
-            },
-          });
-        } else {
-          set({ paymentState: 'failure' });
-        }
-      },
+      //   if (Math.random() > 0.1) {
+      //     set({
+      //       paymentState: 'success',
+      //       paymentResult: {
+      //         success: true,
+      //         reference: `VRP-${Date.now().toString(36).toUpperCase()}`,
+      //         amount: get().paymentSummary.total,
+      //         currency: get().selectedCurrency,
+      //         category: get().selectedCategory,
+      //         timestamp: new Date(),
+      //       },
+      //     });
+      //   } else {
+      //     set({ paymentState: 'failure' });
+      //   }
+      // },
 
-      resetPayment: () => set({ paymentState: 'idle', paymentResult: null }),
+      // resetPayment: () => set({ paymentState: 'idle', paymentResult: null }),
 
       setSelectedPaymentMethod: (m) => set({ selectedPaymentMethod: m }),
       setViewVerificationCategory: (v) => set({ viewVerificationCategory: v }),

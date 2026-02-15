@@ -4,16 +4,11 @@ import DisputeFormComponent from "@components/ui/DisputeFormComponent";
 import { Card } from "@components/3rdparty/ui/card";
 import { Button } from "@components/3rdparty/ui/button";
 import {
-  Building2,
-  Calendar,
   CheckCircle2,
   Clock,
   Download,
-  ExternalLink,
   FileText,
-  MapPin,
   ShieldCheck,
-  User,
 } from "lucide-react";
 import { Separator } from "@components/3rdparty/ui/separator";
 import { Badge } from "@components/3rdparty/ui/badge";
@@ -115,7 +110,7 @@ export default function PaymentDetailComponent() {
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">Amount</p>
                   <p className="text-3xl font-bold">
-                    {formatMoney(currentPayment?.amount!)}
+                    {formatMoney(currentPayment?.amount ?? null)}
                   </p>
                 </div>
               </div>

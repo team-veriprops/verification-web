@@ -1,11 +1,9 @@
 import { Lock, RefreshCw, AlertCircle } from 'lucide-react';
-import { currencySymbols } from '@data/verificationTiers';
 import { cn } from '@lib/utils';
-import { Currency, FXRate } from './models';
+import { getCurrencySymbol, getFxRate, TransactionCurrency } from 'types/models';
 
 interface FXLockIndicatorProps {
-  fxLock: FXRate;
-  currency: Currency;
+  currency: TransactionCurrency;
   timeRemaining: number | null;
   fxExpired: boolean;
   fxUpdated: boolean;
@@ -13,14 +11,13 @@ interface FXLockIndicatorProps {
 }
 
 export function FXLockIndicator({
-  fxLock,
   currency,
   timeRemaining,
   fxExpired,
   fxUpdated,
   onRefresh,
 }: FXLockIndicatorProps) {
-  if (currency === 'NGN') return null;
+  if (currency === TransactionCurrency.NGN) return null;
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -29,8 +26,8 @@ export function FXLockIndicator({
   };
 
   const formatRate = () => {
-    const rate = 1 / fxLock.rate;
-    return `₦${rate.toLocaleString(undefined, { maximumFractionDigits: 0 })} = ${currencySymbols[currency]}1`;
+    const rate = 1/getFxRate(currency);
+    return `₦${rate.toLocaleString(undefined, { maximumFractionDigits: 0 })} = ${getCurrencySymbol(currency)}1`;
   };
 
   if (fxExpired) {
@@ -54,7 +51,7 @@ export function FXLockIndicator({
   return (
     <div className={cn(
       'p-4 rounded-xl border transition-all duration-300',
-      fxUpdated 
+      fxUpdated
         ? 'bg-success/10 border-success/30' 
         : 'bg-accent/10 border-accent/30'
     )}>

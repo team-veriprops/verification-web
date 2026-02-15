@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Input } from '@components/3rdparty/ui/input';
@@ -13,19 +13,18 @@ import { useAuthQueries } from './libs/useAuthQueries';
 import { LoginPayload, SocialAuthProvider, SocialAuthType } from './models';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { isMobileBrowser } from '@lib/utils';
-import { openSocialPopup } from './libs/auth-utils';
+import { usePopup } from '@hooks/use-popup';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 
-export default function SigninComponentPage() {  
-    const {useLogin, useInitSocialAuth} = useAuthQueries();
-    const login = useLogin()
-    const initSocialAuth = useInitSocialAuth()
-    const [isLoading,  setIsLoading] = useState(false);
+export default function SigninComponentPage() {
+  const {useLogin, useInitSocialAuth} = useAuthQueries();
+  const login = useLogin()
+  const initSocialAuth = useInitSocialAuth()
+  const [isLoading,  setIsLoading] = useState(false);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,7 +32,7 @@ export default function SigninComponentPage() {
     
   const [socialAuthError, setSocialAuthError] = useState<string | null>(null);
   
-  const popupRef = useRef<Window | null>(null);
+  const { popupRef, initPopup, updatePopupUrl, closePopup } = usePopup()
 
   const validateForm = () => {
     const result = signInSchema.safeParse({ email, password });
@@ -79,29 +78,19 @@ export default function SigninComponentPage() {
       authType: SocialAuthType.LOGIN,
     };
   
-    const isMobile = isMobileBrowser();
-  
     // Desktop: open popup immediately (sync)
-    popupRef.current = !isMobile
-      ? openSocialPopup('about:blank', provider)
-      : null;
+    initPopup(provider)
   
     initSocialAuth.mutate(payload, {
       onSuccess: (data) => {
         setSocialAuthError('');
   
-        if (isMobile) {
-          // Mobile-safe full redirect
-          window.location.href = data.redirectUrl;
-          return;
-        }
-  
-        // Desktop: redirect existing popup
-        popupRef.current!.location.href = data.redirectUrl;
+        // Navigate to the auth URL (desktop or mobile)
+        updatePopupUrl(data.redirectUrl)
       },
       onError: (error) => {
-        popupRef.current?.close();
-        popupRef.current = null;
+        // Close popup if any and show error
+        closePopup()
   
         setSocialAuthError(error.message || 'Social sign-in failed');
       },

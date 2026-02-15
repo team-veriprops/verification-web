@@ -1,14 +1,13 @@
-import { ArrowDown, Check } from 'lucide-react';
-import { currencySymbols } from '@data/verificationTiers';
-import { cn } from '@lib/utils';
-import { VerificationCategory, VerificationTier } from './models';
+import { Check } from 'lucide-react';
+import { cn, formatMoneyFxAware } from '@lib/utils';
+import { QueryVerificationTierDto, VerificationCategory } from '../models';
+import { TransactionCurrency } from 'types/models';
 
 interface CategorySelectorProps {
-  tiers: VerificationTier[];
+  tiers: QueryVerificationTierDto[];
   selectedCategory: VerificationCategory;
   onCategoryChange: (category: VerificationCategory) => void;
-  currency: string;
-  fxRate: number;
+  currency: TransactionCurrency;
 }
 
 export function CategorySelector({
@@ -16,17 +15,7 @@ export function CategorySelector({
   selectedCategory,
   onCategoryChange,
   currency,
-  fxRate,
 }: CategorySelectorProps) {
-  const formatPrice = (priceNGN: number) => {
-    const price = currency === 'NGN' ? priceNGN : priceNGN * fxRate;
-    const symbol = currencySymbols[currency];
-    
-    if (currency === 'NGN') {
-      return `${symbol}${price.toLocaleString()}`;
-    }
-    return `${symbol}${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
 
   return (
     <div className="space-y-4">
@@ -43,13 +32,13 @@ export function CategorySelector({
 
       <div className="grid gap-4 md:grid-cols-3">
         {tiers.map((tier) => {
-          const isSelected = selectedCategory === tier.id;
+          const isSelected = selectedCategory === tier.category;
           
           return (
             <button
               type='button'
-              key={tier.id}
-              onClick={() => onCategoryChange(tier.id)}
+              key={tier.category}
+              onClick={() => onCategoryChange(tier.category)}
               className={cn(
                 'category-card text-left transition-all duration-200',
                 isSelected && 'selected'
@@ -82,7 +71,7 @@ export function CategorySelector({
                   {tier.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm">
                       {!feature.includes('plus:') ? (
-                        <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                        <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                       ) : (
                         <span className="w-4" />
                       )}
@@ -101,7 +90,7 @@ export function CategorySelector({
                     'price-display transition-all duration-200',
                     isSelected && 'animate-price-update'
                   )}>
-                    {formatPrice(tier.priceNGN)}
+                    {formatMoneyFxAware(currency, tier.priceNgn)}
                   </p>
                 </div>
               </div>

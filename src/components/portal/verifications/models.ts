@@ -40,12 +40,13 @@ export interface QueryVerificationDto extends CreateVerificationDto, BaseQueryDt
   riskScore?: number;
   dateCompleted?: string;
   paid: boolean;
+  invoiceId: string
 }
 
 export interface VerificationDocument {
   type: DocumentType;
   id?: string;
-  file?: File;
+  file?: Blob;
   preview?: string;
 
   name?: string;
@@ -86,4 +87,20 @@ export enum DocumentType {
   SURVEY = 'survey',
   PHOTO = 'photo',
   OTHER = 'other'
+}
+
+
+// Tier
+export interface QueryVerificationTierDto {
+  category: VerificationCategory;
+  name: string;
+  description: string;
+  features: string[];
+  label: string;
+  priceNgn: Money;
+  recommended?: boolean;
+}
+
+export interface SearchVerificationTierDto extends PageRequest, BaseQueryDto {
+
 }

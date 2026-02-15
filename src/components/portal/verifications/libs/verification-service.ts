@@ -1,13 +1,14 @@
 import {
-  CreateVerificationDto,
   QueryVerificationDto,
+  QueryVerificationTierDto,
   SearchVerificationDto,
-  UpdateVerificationDto,
+  SearchVerificationTierDto,
 } from "../models";
 import { Page } from "types/models";
 import { toQueryParams } from "@lib/utils";
 import { HttpClient } from "@lib/FetchHttpClient";
 import { QueryVerificationDetailDto } from "../details/models";
+import { SuccessResponse } from "@components/admin/user/models";
 
 export class VerificationService {
   verificationBaseUrl: string;
@@ -16,9 +17,9 @@ export class VerificationService {
   }
 
   async createVerification(
-      payload: CreateVerificationDto
-  ): Promise<QueryVerificationDto> {
-      return await this.http.post<CreateVerificationDto>(
+      payload: FormData
+  ): Promise<SuccessResponse<QueryVerificationDto>> {
+      return await this.http.post<FormData>(
         `${this.verificationBaseUrl}`,
         payload
       );
@@ -26,9 +27,9 @@ export class VerificationService {
 
   async updateVerification(
       verificationId: string,
-      payload: UpdateVerificationDto
-  ): Promise<QueryVerificationDto> {
-      return await this.http.put<UpdateVerificationDto>(
+      payload: FormData
+  ): Promise<SuccessResponse<QueryVerificationDto>> {
+      return await this.http.put<FormData>(
         `${this.verificationBaseUrl}/${verificationId}`,
         payload
       );
@@ -43,10 +44,19 @@ export class VerificationService {
     );
   }
 
+  async getVerificationTierPage(
+      payload: SearchVerificationTierDto
+    ): Promise<Page<QueryVerificationTierDto>> {
+      const query = toQueryParams(payload);
+      return await this.http.get<Page<QueryVerificationTierDto>>(
+        `${this.verificationBaseUrl}/tiers?${query}`
+      );
+  }
+
   async getVerificationDetail(
       refId: string
-    ): Promise<QueryVerificationDetailDto> {
-      return await this.http.get<QueryVerificationDetailDto>(
+    ): Promise<SuccessResponse<QueryVerificationDetailDto>> {
+      return await this.http.get<SuccessResponse<QueryVerificationDetailDto>>(
         `${this.verificationBaseUrl}/${refId}`
       );
     }

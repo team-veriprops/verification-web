@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { redirect } from "next/navigation";
-import { Measurement, Money } from "types/models";
+import { getFxRate, Measurement, Money, TransactionCurrency } from "types/models";
 
 
 /**
@@ -49,14 +49,22 @@ export function isActivePath(
   });
 }
 
-export const convertMoney = (money: Money): Money => {
+export const convertMoney = (money: Money | null): Money | null => {
+  if(!money){
+    return null
+  }
+
   if (!(money instanceof Money)) {
     money = Money.from(money);
   }
   return money;
 };
 
-export const formatMoney = (money: Money) => {
+export const formatMoney = (money: Money | null) => {
+  if(!money){
+    return "error"
+  }
+  
   money = convertMoney(money);
 
   if (money)
@@ -66,6 +74,13 @@ export const formatMoney = (money: Money) => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(money.getValue());
+};
+
+export const formatMoneyFxAware = (currency: TransactionCurrency, money: Money | null) => {
+    const formattedMoney = convertMoney(money)
+    const fxRateAwareMoney = currency === TransactionCurrency.NGN ? formattedMoney : Money.from({value: (formattedMoney?.getValue() ?? 1) * getFxRate(currency), currency: currency});
+
+    return formatMoney(fxRateAwareMoney);
 };
 
 export const formatMeasurement = (measurement: Measurement | undefined) => {
@@ -204,13 +219,28 @@ export const getStatusBadgeColor = (status: string): string => {
   return colors[status] || "bg-muted text-muted-foreground";
 };
 
+// export function isMobileBrowser(): boolean {
+//   return (
+//     typeof navigator !== 'undefined' &&
+//     /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(
+//       navigator.userAgent
+//     )
+//   );
+// }
+
 export function isMobileBrowser(): boolean {
-  return (
-    typeof navigator !== 'undefined' &&
-    /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(
-      navigator.userAgent
-    )
-  );
+  if (typeof navigator === 'undefined') return false
+
+  const ua = navigator.userAgent
+
+  const isMobileUA =
+    /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(ua)
+
+  // Covers modern iPads that pretend to be desktop Safari
+  const isTouchDevice =
+    'maxTouchPoints' in navigator && navigator.maxTouchPoints > 1
+
+  return isMobileUA || isTouchDevice
 }
 
 function normalizeBase64(input: string): string {
@@ -226,6 +256,10 @@ function normalizeBase64(input: string): string {
 }
 
 export function base64UrlToString(input: string): string {
+  if(!input){
+    return ""
+  }
+  
   const base64 = normalizeBase64(input);
 
   // Server

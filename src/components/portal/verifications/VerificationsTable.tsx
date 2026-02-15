@@ -101,7 +101,7 @@ export default function VerificationsTable() {
       key: "location",
       label: "Property address",
       sortable: true,
-      render: (value, item) => item.location.address,
+      render: (value, item) => item?.location?.address,
     },
     {
       key: "propertyEstimatedPrice",

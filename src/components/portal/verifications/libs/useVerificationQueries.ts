@@ -7,7 +7,9 @@ import {
 import {
   CreateVerificationDto,
   QueryVerificationDto,
+  QueryVerificationTierDto,
   SearchVerificationDto,
+  SearchVerificationTierDto,
   UpdateVerificationDto,
 } from "@components/portal/verifications/models";
 import { Page } from "types/models";
@@ -15,6 +17,7 @@ import { useShallow } from "zustand/react/shallow";
 import { stringifyFilters } from "@lib/utils";
 import { QueryVerificationDetailDto } from "../details/models";
 import { useVerificationStore } from "./useVerificationStore";
+import { SuccessResponse } from "@components/admin/user/models";
 
 /**
  * React Query hooks wrapping VerificationService
@@ -22,18 +25,20 @@ import { useVerificationStore } from "./useVerificationStore";
 export const useVerificationQueries = () => {
   const service = useVerificationStore((state) => state.service);
   const filters = useVerificationStore(useShallow((state) => state.filters));
+  const verificationTierFilters = useVerificationStore(useShallow((state) => state.verificationTierFilters));
 
   const normalizedFilters = stringifyFilters(filters);
+  const normalizedVerificationTierFilters = stringifyFilters(verificationTierFilters);
 
   const useCreateVerification = () =>
     useMutation({
-      mutationFn: (payload: CreateVerificationDto) =>
+      mutationFn: (payload: FormData) =>
         service.createVerification(payload),
   });
 
   const useUpdateVerification = (verificationId: string) =>
     useMutation({
-      mutationFn: (payload: UpdateVerificationDto) =>
+      mutationFn: (payload: FormData) =>
         service.updateVerification(verificationId, payload),
   });
 
@@ -65,10 +70,19 @@ export const useVerificationQueries = () => {
       initialPageParam: 0,
     });
 
+  // Search verification tiers (paged)
+  const useGetVerificationTierPage = () =>
+    useQuery<Page<QueryVerificationTierDto>>({
+      queryKey: ["verification tiers", normalizedVerificationTierFilters],
+      queryFn: async (): Promise<Page<QueryVerificationTierDto>> =>
+        service.getVerificationTierPage(verificationTierFilters as SearchVerificationTierDto),
+      placeholderData: (prev) => prev,
+    });
+
   const useGetVerificationDetail = (verificationId: string) =>
-      useQuery<QueryVerificationDetailDto>({
+      useQuery<SuccessResponse<QueryVerificationDetailDto>>({
         queryKey: ["verification detail", verificationId] as const,
-        queryFn: async (): Promise<QueryVerificationDetailDto> =>
+        queryFn: async (): Promise<SuccessResponse<QueryVerificationDetailDto>> =>
           service.getVerificationDetail(verificationId),
         enabled: !!verificationId, // only fetch if id exists
         placeholderData: (prev) => prev,
@@ -79,6 +93,7 @@ export const useVerificationQueries = () => {
     useUpdateVerification,
     useSearchVerificationPage,
     useSearchVerificationInfinite,
+    useGetVerificationTierPage,
     useGetVerificationDetail
   };
 };

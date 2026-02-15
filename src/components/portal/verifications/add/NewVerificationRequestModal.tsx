@@ -19,16 +19,16 @@ export default function NewVerificationRequestModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<'manual' | 'url'>('manual');
   const [extractedData, setExtractedData] = useState<Partial<CreateVerificationDto | UpdateVerificationDto> | null>(null);
-  const { viewAddVerificationModal, setViewAddVerificationModal, setIsEditing, isEditing, currentVerification } = useVerificationStore();
+  const { viewAddVerificationModal, setViewAddVerificationModal, setIsEditing, isEditing, currentVerification, setCurrentVerification } = useVerificationStore();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const {useCreateVerification, useUpdateVerification} = useVerificationQueries();
-      
+
   const createVerification = useCreateVerification()
   const updateVerification = useUpdateVerification(currentVerification?.id ?? "")
-  
+
   // Lock body scroll when modal is open
   useBodyOverflowHidden(viewAddVerificationModal);
 
@@ -44,7 +44,7 @@ export default function NewVerificationRequestModal() {
   const openCheckout = ()=> {
     router.push("/portal/verifications?action=checkout")
   }
-    
+
 
   const handleExtractedData = (data: Partial<CreateVerificationDto | UpdateVerificationDto>) => {
     setExtractedData(data);
@@ -55,18 +55,20 @@ export default function NewVerificationRequestModal() {
     });
   };
 
-  const handleSubmit = async (payload: CreateVerificationDto | UpdateVerificationDto) => {
+  const handleSubmit = async (payload: FormData) => {
     console.log("form payload: ", payload)
     setIsSubmitting(true);
 
     try{
       if(isEditing){
         updateVerification.mutate(payload, {
-              onSuccess: () => {
+              onSuccess: (response) => {
                 toast({
                   title: 'Verification Request Updated',
                   description: 'Your property verification request has been submitted successfully. You can proceed to checkout now.',
                 });
+
+                setCurrentVerification(response.data ?? null)
 
                 handleClose();
                 openCheckout()
@@ -81,12 +83,13 @@ export default function NewVerificationRequestModal() {
             });
       } else {
         createVerification.mutate(payload, {
-              onSuccess: () => {
+              onSuccess: (response) => {
                 toast({
                   title: 'Verification Request Submitted',
                   description: 'Your property verification request has been submitted successfully. You can proceed to checkout now.',
                 });
 
+                setCurrentVerification(response.data ?? null)
                 handleClose();
                 openCheckout()
               },

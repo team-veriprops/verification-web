@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-import { BaseQueryDto, PageRequest, Money } from "types/models";
+import { BaseQueryDto, PageRequest, Money, PaymentMethod, PropertyType, TransactionCurrency } from "types/models";
+import { VerificationCategory } from "../verifications/models";
 
 // Base Interfaces
 export interface PaymentBaseDto {}
@@ -47,4 +48,49 @@ export enum PaymentStatus {
   FAILED = "failed",
   CANCELLED = "cancelled",
   REFUNDED = "refunded",
+}
+
+export enum PaymentObject {
+  VERIFICATION = "verification",
+}
+
+// Checkout
+export interface QueryPaymentCheckoutDto {
+  invoiceId: string;
+  paymentObject: PaymentObject;
+  paymentObjectId: string;
+  contractId?: string;
+
+  title: string;
+  description: string;
+  address: string;
+  category: VerificationCategory;
+  propertyType: PropertyType
+
+  vatRate: number
+  ngnEquivalent: Money
+  cost: Money;
+  tax: Money;
+  total: Money;
+  paymentMethods: QueryAvailablePaymentMethodDto[];
+  message?: string;
+}
+
+// Authorize
+export interface QueryPaymentAuthorizationDto{
+  authorizationUrl: string
+}
+
+
+// Available Payments
+export interface QueryAvailablePaymentMethodDto {
+    key: PaymentMethod;
+    name: string;
+    description: string;
+    supportedCurrencies: TransactionCurrency[];
+    enabled: boolean
+}
+
+export interface SearchAvailablePaymentMethodDto extends PageRequest, BaseQueryDto {
+
 }

@@ -8,7 +8,7 @@ interface PropertyContextProps {
 }
 
 export function PropertyContext({ property }: PropertyContextProps) {
-  const {viewVerificationCategory, setViewVerificationCategory} = useCheckoutStore()
+  const {viewVerificationCategory, setViewVerificationCategory, selectedCategory} = useCheckoutStore()
   return (
     <div className="checkout-card animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
@@ -41,7 +41,7 @@ export function PropertyContext({ property }: PropertyContextProps) {
           
           <div className={cn('', viewVerificationCategory ? 'cursor-zoom-out' : 'cursor-zoom-in')} onClick={() => setViewVerificationCategory(!viewVerificationCategory)}>
             <div className='flex gap-3'>
-              <span>Basic Verification</span>
+              <span className='capitalize'>{selectedCategory} Verification</span>
               {
               viewVerificationCategory ? 
               <ChevronDown className='w-4 h-4' /> :

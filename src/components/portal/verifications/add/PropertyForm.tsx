@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+
 import { Button } from '@components/3rdparty/ui/button';
 import { Input } from '@components/3rdparty/ui/input';
 import { Textarea } from '@components/3rdparty/ui/textarea';
@@ -21,16 +22,34 @@ import {
   FormLabel,
   FormMessage,
 } from '@components/3rdparty/ui/form';
+
 import { FormStepIndicator } from './FormStepIndicator';
 import { DocumentUploader } from './DocumentUploader';
-import { cn } from '@lib/utils';
 import { PropertyPreview } from './PropertyPreview';
 import { CategorySelector } from '../checkout/CategorySelector';
-import { fxRates, verificationTiers } from '@data/verificationTiers';
 import AddressSearchForm from '@components/ui/AddressSearchForm';
-import { ExactLocation, MeasurementUnit, Money, PropertyType, TransactionCurrency } from 'types/models';
+
+import { cn } from '@lib/utils';
+// import { fxRates, verificationTiers } from '@data/verificationTiers';
 import { useCheckoutStore } from '../checkout/libs/useCheckoutStore';
-import { CreateVerificationDto, UpdateVerificationDto, VerificationDocument } from '../models';
+
+import {
+  ExactLocation,
+  MeasurementUnit,
+  Money,
+  PropertyType,
+  TransactionCurrency,
+} from 'types/models';
+
+import {
+  CreateVerificationDto,
+  UpdateVerificationDto,
+  VerificationDocument,
+} from '../models';
+import { useVerificationQueries } from '../libs/useVerificationQueries';
+import { AsyncStateComponent } from '@components/ui/AsyncStateComponent';
+
+/* ---------------- Steps ---------------- */
 
 const steps = [
   { id: 1, title: 'Property Details', description: 'Basic property information' },
@@ -41,52 +60,88 @@ const steps = [
   { id: 6, title: 'Review', description: 'Review your submission' },
 ];
 
-// Step 1 Schema
+/* ---------------- Schemas ---------------- */
+
 const step1Schema = z.object({
-  propertyType: z.enum([PropertyType.RESIDENTIAL, PropertyType.COMMERCIAL, PropertyType.LAND, PropertyType.INDUSTRIAL], {
-    error: 'Please select a property type',
-  }),
-  propertyTitle: z.string().min(5, 'Property title must be at least 5 characters'),
-  propertyPlotSize: z.string().min(1, 'Plot size is required'),
-  propertyPlotSizeUnit: z.enum([MeasurementUnit.SQM, MeasurementUnit.HECTARES, MeasurementUnit.ACRES, MeasurementUnit.PLOTS]),
-  propertyEstimatedPrice: z.string().min(1, 'Estimated price is required'),
-  currency: z.enum([TransactionCurrency.NGN, TransactionCurrency.USD, TransactionCurrency.GBP, TransactionCurrency.EUR]),
+  propertyType: z.enum(PropertyType,
+    { error: () => ({ message: 'Please select a property type' }) }
+  ),
+
+  propertyTitle: z
+    .string()
+    .min(5, 'Property title must be at least 5 characters'),
+
+  propertyPlotSize: z
+    .string()
+    .min(1, 'Plot size is required')
+    .refine(v => Number(v) > 0, 'Plot size must be greater than zero'),
+
+  propertyPlotSizeUnit: z.enum(MeasurementUnit,
+    { error: () => ({ message: 'Please select a plot size unit' }) }
+  ),
+
+  propertyEstimatedPrice: z
+    .string()
+    .min(1, 'Estimated price is required')
+    .refine(v => Number(v) > 0, 'Price must be greater than zero'),
+
+  currency: z.enum(TransactionCurrency,
+    { error: () => ({ message: 'Please select a currency' }) }
+  ),
 });
 
-// Step 4 Schema
 const step4Schema = z.object({
-  ownerFullName: z.string().min(3, 'Owner name must be at least 3 characters'),
-  sellerFullName: z.string().min(3, 'Seller name must be at least 3 characters'),
+  ownerFullName: z
+    .string()
+    .min(3, 'Owner name must be at least 3 characters'),
+
+  sellerFullName: z
+    .string()
+    .min(3, 'Seller name must be at least 3 characters'),
+
   sellerCompany: z.string().optional(),
-  sellerEmail: z.string().email('Please enter a valid email'),
-  sellerPhone: z.string().min(10, 'Please enter a valid phone number'),
+
+  sellerEmail: z
+    .string()
+    .email('Please enter a valid email'),
+
+  sellerPhone: z
+    .string()
+    .min(10, 'Please enter a valid phone number'),
+
   surveyPlanNumber: z.string().optional(),
+
   beaconNumbers: z.string().optional(),
+
   additionalDetails: z.string().optional(),
 });
 
 const formSchema = step1Schema.and(step4Schema);
+type FormDataSchema = z.infer<typeof formSchema>;
 
-type FormData = z.infer<typeof formSchema>;
+const MAX_STEP = 6;
 
-interface PropertyFormProps {
-  initialData?: Partial<CreateVerificationDto | UpdateVerificationDto>;
-  onSubmit: (data: CreateVerificationDto | UpdateVerificationDto) => void;
-  isSubmitting?: boolean;
-}
+/* ---------------- Component ---------------- */
 
 export function PropertyForm({
   initialData,
   onSubmit,
   isSubmitting = false,
-}: PropertyFormProps) {
-  const [location, setLocation] = useState<ExactLocation | undefined>(undefined);
-  const [locationIsValid, setLocationIsValid] = useState(true);
+}: {
+  initialData?: Partial<CreateVerificationDto | UpdateVerificationDto>;
+  onSubmit: (data: FormData) => void;
+  isSubmitting?: boolean;
+}) {
+  
+  const {useGetVerificationTierPage} = useVerificationQueries();
+  const { data: verificationTiers, isLoading, isError } = useGetVerificationTierPage();
+
   const [currentStep, setCurrentStep] = useState(1);
+  const [location, setLocation] = useState<ExactLocation>();
+  const [locationValid, setLocationValid] = useState(true);
   const [documents, setDocuments] = useState<VerificationDocument[]>(
     initialData?.documents || []
   );
-  const maxStep = 6
 
   const {
     selectedCategory,
@@ -94,19 +149,21 @@ export function PropertyForm({
     handleCategoryChange,
   } = useCheckoutStore();
 
-  const addressRequiredErrorMsg = 'Property physical address is required';
-
-  const form = useForm<FormData>({
+  const form = useForm<FormDataSchema>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
     defaultValues: {
-      propertyType: initialData?.propertyType || undefined,
+      propertyType: initialData?.propertyType,
       propertyTitle: initialData?.propertyTitle || '',
-      propertyPlotSize: initialData?.propertyPlotSize?.value.toString() || '',
-      propertyPlotSizeUnit: initialData?.propertyPlotSize?.unit ?? MeasurementUnit.SQM,
+      propertyPlotSize: initialData?.propertyPlotSize?.value?.toString() || '',
+      propertyPlotSizeUnit:
+        initialData?.propertyPlotSize?.unit ?? MeasurementUnit.SQM,
 
-      propertyEstimatedPrice: initialData?.propertyEstimatedPrice?.getValue().toString() || '0.0',
-      currency: initialData?.propertyEstimatedPrice?.getCurrency() ?? TransactionCurrency.NGN,
+      propertyEstimatedPrice:
+        initialData?.propertyEstimatedPrice?.getValue()?.toString() || '',
+      currency:
+        initialData?.propertyEstimatedPrice?.getCurrency() ??
+        TransactionCurrency.NGN,
 
       ownerFullName: initialData?.ownerFullName || '',
       sellerFullName: initialData?.sellerInfo?.fullName || '',
@@ -116,84 +173,93 @@ export function PropertyForm({
       surveyPlanNumber: initialData?.surveyPlanNumber || '',
       beaconNumbers: initialData?.beaconNumbers || '',
       additionalDetails: initialData?.additionalDetails || '',
-      // documents: initialData?.documents || [],
     },
   });
 
-  const validateCurrentStep = async (): Promise<boolean> => {
-    let fieldsToValidate: (keyof FormData)[] = [];
+  /* ---------------- Step validation ---------------- */
 
-    switch (currentStep) {
-      case 1:
-        fieldsToValidate = [
-          'propertyType',
-          'propertyTitle',
-          'propertyPlotSize',
-          'propertyPlotSizeUnit',
-          'propertyEstimatedPrice',
-          'currency',
-        ];
-        break;
-      case 2:
-        return !!selectedCategory;
-      case 3: {
-        const addressIsSet = !!location;
-        setLocationIsValid(addressIsSet);
-        return true; // TODO: return addressIsSet
-      }
-      case 4:
-        fieldsToValidate = [
-          'ownerFullName',
-          'sellerFullName',
-          'sellerEmail',
-          'sellerPhone',
-        ];
-        break;
-      case 5:
-        // fieldsToValidate = [
-        //   'documents',
-        // ];
-        // break;
-        return true;
+  const validateStep = useCallback(async () => {
+    if (currentStep === 1) {
+      return form.trigger([
+        'propertyType',
+        'propertyTitle',
+        'propertyPlotSize',
+        'propertyPlotSizeUnit',
+        'propertyEstimatedPrice',
+        'currency',
+      ]);
     }
 
-    return form.trigger(fieldsToValidate);
-  };
+    if (currentStep === 2) return !!selectedCategory;
+
+    if (currentStep === 3) {
+      const ok = !!location;
+      setLocationValid(ok);
+      return ok;
+    }
+
+    if (currentStep === 4) {
+      return form.trigger([
+        'ownerFullName',
+        'sellerFullName',
+        'sellerEmail',
+        'sellerPhone',
+      ]);
+    }
+
+    return true;
+  }, [currentStep, form, selectedCategory, location]);
+
+  /* ---------------- Navigation ---------------- */
 
   const handleNext = async () => {
-    console.log("NEXT CLICKED");
-    const isValid = await validateCurrentStep();
-    if (isValid && currentStep < maxStep) {
-      setCurrentStep((prev) => prev + 1);
+    if (await validateStep()) {
+      setCurrentStep(s => Math.min(s + 1, MAX_STEP));
     }
   };
 
-  const handleBack = () => {
-    if (currentStep > 1) {
-      if(currentStep == 7){
-        setCurrentStep(5);
-      } else{
-      setCurrentStep((prev) => prev - 1);
-      }
-    }
-  };
+  const handleBack = () => setCurrentStep(s => Math.max(1, s - 1));
 
-  const handleStepClick = (step: number) => {
-    if (step < currentStep) {
-      setCurrentStep(step);
-    }
-  };
+  const handleSubmitForm = (data: FormDataSchema) => {
+    // const payload: CreateVerificationDto | UpdateVerificationDto = {
+    //   propertyType: data.propertyType,
+    //   propertyTitle: data.propertyTitle,
+    //   propertyPlotSize: {
+    //     value: Number(data.propertyPlotSize),
+    //     unit: data.propertyPlotSizeUnit,
+    //   },
+    //   propertyEstimatedPrice: Money.from({
+    //     value: Number(data.propertyEstimatedPrice),
+    //     currency: data.currency,
+    //   }),
+    //   category: selectedCategory,
+    //   ownerFullName: data.ownerFullName,
+    //   sellerInfo: {
+    //     fullName: data.sellerFullName,
+    //     company: data.sellerCompany,
+    //     email: data.sellerEmail,
+    //     phone: data.sellerPhone,
+    //   },
+    //   surveyPlanNumber: data.surveyPlanNumber,
+    //   beaconNumbers: data.beaconNumbers,
+    //   additionalDetails: data.additionalDetails,
+    //   location,
+    //   documents,
+    // };
 
-  const handleFormSubmit = (data: FormData) => {
-    console.log("FORM SUBMITTED");
-    const propertyData: CreateVerificationDto | UpdateVerificationDto = {
+    const formData = new FormData();
+
+    formData.append('payload', JSON.stringify({
       propertyType: data.propertyType,
       propertyTitle: data.propertyTitle,
-      propertyPlotSize: {value: parseFloat(data.propertyPlotSize), unit: data.propertyPlotSizeUnit},
-      propertyEstimatedPrice: Money.from({value: parseFloat(data.propertyEstimatedPrice), currency: data.currency}),
-      category: selectedCategory,
-      surveyPlanNumber: data.surveyPlanNumber,
-      beaconNumbers: data.beaconNumbers,
+      propertyPlotSize: {
+        value: Number(data.propertyPlotSize),
+        unit: data.propertyPlotSizeUnit,
+      },
+      propertyEstimatedPrice: {
+        value: Number(data.propertyEstimatedPrice),
+        currency: data.currency,
+      },
       ownerFullName: data.ownerFullName,
       sellerInfo: {
         fullName: data.sellerFullName,
@@ -201,13 +267,25 @@ export function PropertyForm({
         email: data.sellerEmail,
         phone: data.sellerPhone,
       },
+      category: selectedCategory,
+      surveyPlanNumber: data.surveyPlanNumber,
+      beaconNumbers: data.beaconNumbers,
       additionalDetails: data.additionalDetails,
-      location,
-      documents,
-    };
 
-    onSubmit(propertyData);
-};
+
+      location,
+      documents: documents.map(d => ({
+        type: d.type,
+        filename: d?.name ?? "",
+      })),
+    }));
+
+    documents.forEach(doc => {
+      formData.append('files', doc.file ?? ""); // multiple allowed
+    });
+
+    onSubmit(formData);
+  };
 
   const formValues = form.watch();
   const previewData: Partial<CreateVerificationDto | UpdateVerificationDto> = {
@@ -229,41 +307,22 @@ export function PropertyForm({
     documents,
   };
 
-  const onAddressChange = (location: ExactLocation | undefined) => {
-    setLocation(location);
-  };
-
-  // const requiredDocuments: MediaType[] = [
-  //   {
-  //     key: "CofO",
-  //     type: "image",
-  //     title: "CofO"
-  //   }, 
-  //   {
-      
-  //     key: "Deep of transfer",
-  //     type: "image",
-  //     title: "Deep of transfer"
-  //   }
-  //   ]
-
   return (
-     <Form {...form}>
-      <form 
+    <Form {...form}>
+      <form className="space-y-8"
       onSubmit={(e) => {
           console.log("Submit fired: step= ", currentStep)
-        if (currentStep < maxStep) {
+        if (currentStep < MAX_STEP) {
           e.preventDefault(); // stop form submission
           handleNext();       // advance to next step
         } else {
-          form.handleSubmit(handleFormSubmit)(e); // actually submit at step 5
+          form.handleSubmit(handleSubmitForm)(e); // actually submit at step 5
         }
-      }} 
-      className="space-y-8">
+      }}
+      >
         <FormStepIndicator
           steps={steps}
           currentStep={currentStep}
-          onStepClick={handleStepClick}
         />
 
         {/* Step Content */}
@@ -381,6 +440,8 @@ export function PropertyForm({
                       <SelectContent>
                         <SelectItem value="NGN">Nigerian Naira (₦)</SelectItem>
                         <SelectItem value="USD">US Dollar ($)</SelectItem>
+                        <SelectItem value="GBP">British Pound (£)</SelectItem>
+                        <SelectItem value="EUR">Euro (€)</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -390,25 +451,34 @@ export function PropertyForm({
             </div>
           </div>
 
-          {/* Step 2: Property Verification Category */}
-          <section className={cn("space-y-6", currentStep !== 2 && "hidden")}>
-              <CategorySelector
-                  tiers={verificationTiers}
-                  selectedCategory={selectedCategory}
-                  onCategoryChange={handleCategoryChange}
-                  currency={selectedCurrency}
-                  fxRate={fxRates[selectedCurrency]}
-              />
-          </section>
+          <div className={cn('space-y-6', currentStep !== 2 && 'hidden')}>
+            <AsyncStateComponent
+                    isLoading={isLoading}
+                    isError={isError}
+                    data={verificationTiers}
+                    loadingText="Loading verification categories..."
+                    errorText="Failed to load verification categories, please refresh the page, and try again later."
+                    emptyText="No verification categories found."
+                  >
+                    {() => (
+                      <CategorySelector
+                          tiers={verificationTiers?.items ?? []}
+                          selectedCategory={selectedCategory}
+                          onCategoryChange={handleCategoryChange}
+                          currency={selectedCurrency}
+                      />
+                    )}
+            </AsyncStateComponent>
+          </div>
 
           {/* Step 3: Location */}
-          <div className={cn("space-y-6", currentStep !== 3 && "hidden")}>
-            <AddressSearchForm onChange={onAddressChange} />
-            {!locationIsValid && (
-          <p className="text-sm text-red-500">
-            {addressRequiredErrorMsg}
-          </p>
-        )}
+          <div className={cn('space-y-6', currentStep !== 3 && 'hidden')}>
+            <AddressSearchForm onChange={setLocation} />
+            {!locationValid && (
+              <p className="text-sm text-red-500">
+                Property physical address is required
+              </p>
+            )}
           </div>
 
           {/* Step 4: Ownership & Survey */}
@@ -546,30 +616,15 @@ export function PropertyForm({
               documents={documents}
               onChange={setDocuments}
             />
-
-            {/* <DocumentUploadField
-                            control={form.control}
-                            name="documents"
-                            label="Required Documents *"
-                            // description="Upload all required property verification documents. Survey Plan and C of O are mandatory."
-                            requiredTypes={requiredDocuments}
-                            maxFiles={requiredDocuments.length}
-                            propertyId="property-123"
-                            placeholder="Tap to upload required documents"
-                          /> */}
           </div>
           {/* Step 6: Preview */}
-          <div className={cn("space-y-6", currentStep !== 6 && "hidden")}>
-            {currentStep === 6 && (
-              <div className="pt-6 border-t border-border">
-                <h4 className="text-sm font-medium text-foreground mb-4">Review Your Submission</h4>
-                <PropertyPreview data={previewData} showSource={false} />
-              </div>
-            )}
+          <div className={cn('space-y-6', currentStep !== 6 && 'hidden')}>
+            <PropertyPreview data={previewData} showSource={false} />
           </div>
         </div>
 
-        {/* Navigation */}
+
+           {/* Navigation */}
         <div className="flex items-center justify-between pt-6 border-t border-border">
           <Button
             type="button"
@@ -584,7 +639,7 @@ export function PropertyForm({
 
 
           <Button type="submit" variant="default">
-            {currentStep < maxStep ? (
+            {currentStep < MAX_STEP ? (
               <>
                 Next
                 <ChevronRight className="w-4 h-4 ml-2" />
@@ -598,25 +653,35 @@ export function PropertyForm({
               'Submit Verification Request'
             )}
           </Button>
-{/* 
-          {currentStep < 6 ? (
-            <Button type="button" onClick={handleNext}>
-              Next
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
-          ) : (
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                'Submit Verification Request'
-              )}
-            </Button>
-          )} */}
         </div>
+
+        {/* Navigation
+        // <div className="flex justify-between pt-6 border-t">
+        //   <Button
+        //     type="button"
+        //     variant="outline"
+        //     disabled={currentStep === 1}
+        //     onClick={back}
+        //     className={cn(currentStep === 1 && 'invisible')}
+        //   >
+        //     <ChevronLeft className="w-4 h-4 mr-2" />
+        //     Back
+        //   </Button>
+
+        //   {currentStep < MAX_STEP ? (
+        //     <Button type="button" onClick={next}>
+        //       Next
+        //       <ChevronRight className="w-4 h-4 ml-2" />
+        //     </Button>
+        //   ) : (
+        //     <Button type="submit" disabled={isSubmitting}>
+        //       {isSubmitting && (
+        //         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        //       )}
+        //       Submit Verification Request
+        //     </Button>
+        //   )}
+        // </div> */}
       </form>
     </Form>
   );
