@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "./useAuthStore";
 import { CreateUserDto, SuccessResponse } from "@components/admin/user/models";
 import { useEffect } from "react";
-import { ActiveAuditor, ChangePasswordPayload, EmailValidationRequest, InitSocialLoginResponse, LoginPayload, OtpVerificationRequest, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
+import { ActiveAuditor, ChangePasswordPayload, VerificationRequestDto, InitSocialLoginResponse, LoginPayload, RecoverPasswordMessagePayload, RecoverPasswordPayload, SocialAuthProvider, SocialAuthType } from "../models";
 import { useRouter } from "next/navigation";
 
 /**
@@ -107,16 +107,28 @@ const useLogout = () => {
         service.sendRecoverPasswordMessage(payload),
   });
     
-  const useSendEmailValidationMessage = () =>
+  const useSendEmailVerificationMessage = () =>
     useMutation({
-      mutationFn: (payload: EmailValidationRequest) =>
-        service.sendEmailValidationMessage(payload),
+      mutationFn: (payload: VerificationRequestDto) =>
+        service.sendEmailVerificationMessage(payload),
   });
     
   const useValidateEmailVerificationOtp = () =>
     useMutation({
-      mutationFn: (payload: OtpVerificationRequest) =>
+      mutationFn: (payload: VerificationRequestDto) =>
         service.validateEmailVerificationOtp(payload),
+  });
+    
+  const useSendPhoneVerificationMessage = () =>
+    useMutation({
+      mutationFn: (payload: VerificationRequestDto) =>
+        service.sendPhoneVerificationMessage(payload),
+  });
+    
+  const useValidatePhoneVerificationOtp = () =>
+    useMutation({
+      mutationFn: (payload: VerificationRequestDto) =>
+        service.validatePhoneVerificationOtp(payload),
   });
     
   const useRecoverPassword = () =>
@@ -134,8 +146,10 @@ const useLogout = () => {
     useLogout,
     useChangePassword,
     useSendRecoverPasswordMessage,
-    useSendEmailValidationMessage,
+    useSendEmailVerificationMessage,
     useValidateEmailVerificationOtp,
+    useSendPhoneVerificationMessage,
+    useValidatePhoneVerificationOtp,
     useRecoverPassword
   };
 };

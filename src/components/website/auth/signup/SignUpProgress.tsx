@@ -1,23 +1,25 @@
 import { Check } from 'lucide-react';
 import { cn } from '@lib/utils';
 
-type Step = 'email' | 'otp' | 'details';
+export enum SignupStep {
+  EMAIL_PHONE = "email_phone",
+  DETAILS = "details",
+}
 
 interface SignUpProgressProps {
-  currentStep: Step;
+  currentStep: SignupStep;
 }
 
 const steps = [
-  { id: 'email', label: 'Email' },
-  { id: 'otp', label: 'Verify' },
-  { id: 'details', label: 'Details' },
+  { id: SignupStep.EMAIL_PHONE, label: 'Email & Phone' },
+  { id: SignupStep.DETAILS, label: 'Account Details' },
 ] as const;
 
 export function SignUpProgress({ currentStep }: SignUpProgressProps) {
   const currentIndex = steps.findIndex(s => s.id === currentStep);
 
   return (
-    <div className="flex items-center justify-center gap-2 mb-20">
+    <div className="flex items-center justify-center gap-2 mb-10">
       {steps.map((step, index) => {
         const isCompleted = index < currentIndex;
         const isCurrent = step.id === currentStep;

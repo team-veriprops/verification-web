@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
+import { PhoneNumber } from "@components/ui/form/CountryCodeSelect";
 import { BaseQueryDto, ExactLocation, Measurement, Money, PageRequest, PropertyType } from "types/models";
 
 // Base Interfaces
@@ -77,7 +78,7 @@ export interface SellerInfo {
   fullName: string;
   company?: string;
   email: string;
-  phone: string;
+  phone: PhoneNumber;
 }
 
 // export type PropertyType = 'residential' | 'commercial' | 'land' | 'industrial';

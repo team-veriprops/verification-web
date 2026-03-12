@@ -113,7 +113,7 @@ export default function CheckoutComponentModal(){
     getPaymentAuthorization.mutate(selectedPaymentMethod,{
         onSuccess: (response) => {
           updatePopupUrl(response?.data?.authorizationUrl ?? "")
-          handleClose();
+          // handleClose();
         },
           onError: (error) => {
             closePopup()
@@ -133,16 +133,22 @@ export default function CheckoutComponentModal(){
 
     const { type, error } = event.data || {};
 
+    if (type === 'PAYMENT_CANCELLED') {
+      closePopup()
+
+      router.push('/payment/redirect/cancelled');
+    }
+
     if (type === 'PAYMENT_SUCCESS') {
       closePopup()
 
-      router.push('/payment/callback/success');
+      router.push('/payment/redirect/success');
     }
 
     if (type === 'PAYMENT_ERROR') {
       closePopup()
 
-      router.push('/payment/callback/failure');
+      router.push('/payment/redirect/failure');
     }
   };
 

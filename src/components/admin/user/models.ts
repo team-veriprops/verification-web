@@ -1,13 +1,14 @@
 import { BaseQueryDto, PageRequest } from "types/models";
 import { QueryProfileDto, SearchProfileDto } from "./profile/models";
+import { PhoneNumber } from "@components/ui/form/CountryCodeSelect";
+import { EmailSource } from "@components/website/auth/models";
 
 export interface UpdateUserDto {
   dob?: string;
   gender?: Gender;
   lastActiveDate?: string;
   email?: string;
-  phone?: string;
-  phoneExt?: string;
+  phone?: PhoneNumber;
   password?: string;
   password_last_updated?: string;
   status?: UserStatus;
@@ -26,14 +27,15 @@ export interface QueryUserDto extends BaseQueryDto, UpdateUserDto {
 }
 
 export interface CreateUserDto {
-  otp: string;
+  phoneOtp: string;
+  emailOtp: string;
   email: string;
-  phone?: string;
-  phoneExt?: string;
+  phone?: PhoneNumber;
   password: string;
   firstname: string;  // min length: 2, max length: 30
   lastname: string;   // min length: 2, max length: 30
   gender?: Gender;
+  emailSource: EmailSource
 }
 
 export interface UpdateNameDto {

@@ -36,6 +36,7 @@ export const usePaymentQueries = () => {
       queryKey: ["payment checkout"] as const,
       queryFn: async (): Promise<SuccessResponse<QueryPaymentCheckoutDto>> =>
         service.getPaymentCheckout(invoiceId),
+      enabled: !!invoiceId, // only fetch if id exists
       placeholderData: (prev) => prev,
   });
 

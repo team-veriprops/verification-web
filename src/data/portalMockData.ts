@@ -1,8 +1,10 @@
+import { PhoneNumber } from "@components/ui/form/CountryCodeSelect";
+
 export interface User {
   id: string;
   name: string;
   email: string;
-  phone: string;
+  phone: PhoneNumber;
   avatar: string | null;
   address: string;
 }
@@ -50,7 +52,7 @@ export interface TaskNote {
 
 export interface Assignee {
   name: string;
-  phone: string;
+  phone: PhoneNumber;
   email: string;
 }
 

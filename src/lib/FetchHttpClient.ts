@@ -136,7 +136,7 @@ export class FetchHttpClient implements HttpClient {
     }
     this.isRefreshing = true;
     try {
-      await fetch(`/api/users/auths/refresh-token`, {
+      await fetch(`/api/users/auth/sessions/current`, {
         method: "POST",
         credentials: "include",
       });

@@ -4,22 +4,22 @@ import { useEffect, useState } from "react";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { base64UrlToString } from "@lib/utils";
 
-type Status = "processing" | "success" | "error";
+type Status = "processing" | "cancelled" | "success" | "error";
 
 export default function SocialAuthPopupPage() {
   const [status, setStatus] = useState<Status>("processing");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const authStatus = params.get("status");
+    const paymentStatus = params.get("status");
     const userInfoBase64 = params.get("user_info");
     const userInfo = base64UrlToString(userInfoBase64!)
 
+    const isCancelled = paymentStatus?.toLowerCase() === "PAYMENT_CANCELLED"
+    const isSuccess = paymentStatus === "PAYMENT_SUCCEEDED";
 
-    const isSuccess = authStatus === "PAYMENT_SUCCEEDED";
-    const messageType = isSuccess
-      ? "PAYMENT_SUCCESS"
-      : "PAYMENT_ERROR";
+    const messageType = isCancelled  ? "PAYMENT_CANCELLED" :
+    isSuccess ? "PAYMENT_SUCCESS" : "PAYMENT_ERROR";
 
     // Desktop popup flow
     if (window.opener) {
@@ -29,19 +29,22 @@ export default function SocialAuthPopupPage() {
       );
     } else {
       // Mobile / full redirect fallback
-      window.location.href = isSuccess
-        ? "/payment/success"
-        : "/payment/failure";
+      window.location.href = isCancelled ? "/payment/redirect/cancelled" :
+      isSuccess
+        ? "/payment/redirect/success"
+        : "/payment/redirect/failure";
       return;
     }
 
     setTimeout(() => { // Just to achieve async
-      setStatus(isSuccess ? "success" : "error");
+      setStatus(
+        isCancelled ? "cancelled" :
+        isSuccess ? "success" : "error");
     }, 0);
 
     const timer = setTimeout(() => {
       window.close();
-    }, isSuccess ? 800 : 1500);
+    }, isSuccess || !isCancelled ? 8000 : 3500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -54,6 +57,15 @@ export default function SocialAuthPopupPage() {
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               Completing payment…
+            </p>
+          </>
+        )}
+
+        {status === "cancelled" && (
+          <>
+            <XCircle className="h-6 w-6 text-accent-foreground" />
+            <p className="text-sm text-accent-foreground">
+              Payment cancelled
             </p>
           </>
         )}

@@ -1,209 +1,157 @@
 "use client"
 
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
-import { Button } from '@components/3rdparty/ui/button';
-import { Input } from '@components/3rdparty/ui/input';
-import { Label } from '@components/3rdparty/ui/label';
-import { z } from 'zod';
-import { SocialAuthButtons } from './SocialAuthButtons';
-import { TrustBadge } from './TrustBadge';
-import { PasswordInput } from './PasswordInput';
-import { useAuthQueries } from './libs/useAuthQueries';
-import { LoginPayload, SocialAuthProvider, SocialAuthType } from './models';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { usePopup } from '@hooks/use-popup';
+import { Loader2 } from "lucide-react"
+import { Button } from "@components/3rdparty/ui/button"
+import { Input } from "@components/3rdparty/ui/input"
+import { Label } from "@components/3rdparty/ui/label"
+import { PasswordInput } from "./PasswordInput"
+import { SocialAuthButtons } from "./SocialAuthButtons"
+import { TrustBadge } from "./TrustBadge"
+import { useAuthQueries } from "./libs/useAuthQueries"
+import { LoginPayload, SocialAuthType } from "./models"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm, FormProvider } from "react-hook-form"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { useState } from "react"
+import { FormField } from "@components/ui/form/FormField"
 
 const signInSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+})
+
+type FormValues = z.infer<typeof signInSchema>
 
 export default function SigninComponentPage() {
-  const {useLogin, useInitSocialAuth} = useAuthQueries();
+  const router = useRouter()
+  const { useLogin } = useAuthQueries()
   const login = useLogin()
-  const initSocialAuth = useInitSocialAuth()
-  const [isLoading,  setIsLoading] = useState(false);
-  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
-    
-  const [socialAuthError, setSocialAuthError] = useState<string | null>(null);
-  
-  const { popupRef, initPopup, updatePopupUrl, closePopup } = usePopup()
 
-  const validateForm = () => {
-    const result = signInSchema.safeParse({ email, password });
-    if (!result.success) {
-      const fieldErrors: { email?: string; password?: string } = {};
-      result.error.issues.forEach((err) => {
-        if (err.path[0] === 'email') fieldErrors.email = err.message;
-        if (err.path[0] === 'password') fieldErrors.password = err.message;
-      });
-      setErrors(fieldErrors);
-      return false;
+  const [generalError, setGeneralError] = useState<string | null>(null)
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(signInSchema),
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  })
+
+  const {
+    handleSubmit,
+    formState: { isValid },
+  } = form
+
+  const isLoading = login.isPending
+
+  const onSubmit = (data: FormValues) => {
+    setGeneralError(null)
+
+    const payload: LoginPayload = {
+      username: data.email,
+      password: data.password,
     }
-    setErrors({});
-    return true;
-  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    setIsLoading(true)
-    e.preventDefault();
-    if (!validateForm()) return;
-
-        const payload: LoginPayload = {
-          username: email,
-          password: password
-        };
-        
-        login.mutate(payload, {
-          onSuccess: () => {
-          setIsLoading(false)
-          redirect('/portal/dashboard');
-          },
-          onError: (error) => {
-            console.log("error: ", error)
-            setIsLoading(false)
-            setErrors({ general: error.message });
-          }
-        });
-  };
-
-  const handleSocialAuth = (provider: SocialAuthProvider) => {
-    const payload = {
-      provider,
-      authType: SocialAuthType.LOGIN,
-    };
-  
-    // Desktop: open popup immediately (sync)
-    initPopup(provider)
-  
-    initSocialAuth.mutate(payload, {
-      onSuccess: (data) => {
-        setSocialAuthError('');
-  
-        // Navigate to the auth URL (desktop or mobile)
-        updatePopupUrl(data.redirectUrl)
+    login.mutate(payload, {
+      onSuccess: () => {
+        router.push("/portal/dashboard")
       },
       onError: (error) => {
-        // Close popup if any and show error
-        closePopup()
-  
-        setSocialAuthError(error.message || 'Social sign-in failed');
+        setGeneralError(error?.message ?? "Invalid credentials")
       },
-    });
-  };
-
-  const isFormValid = email.length > 0 && password.length > 0;
+    })
+  }
 
   return (
     <>
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-display font-semibold text-foreground mb-2">
-          Secure access to property verification
+          Sign In
         </h1>
         <p className="text-muted-foreground">
           Sign in to request, track, or review property verification reports.
         </p>
       </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* General Error */}
-        {errors.general && (
-          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-            {errors.general}
+      <FormProvider {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          
+          {/* General Error */}
+          {generalError && (
+            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+              {generalError}
+            </div>
+          )}
+
+          {/* Email */}
+          <FormField name="email" label="Email address">
+            <Input
+              type="email"
+              placeholder="you@example.com"
+              autoComplete="email"
+              disabled={isLoading}
+            />
+          </FormField>
+
+          {/* Password */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Password</Label>
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-primary hover:text-primary/80 transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <FormField name="password">
+              <PasswordInput
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                disabled={isLoading}
+              />
+            </FormField>
           </div>
-        )}
 
-        {/* Email Field */}
-        <div className="space-y-2">
-          <Label htmlFor="email">Email address</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={errors.email ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}
-            disabled={isLoading}
-            autoComplete="email"
-          />
-          {errors.email && (
-            <p className="text-sm text-destructive animate-fade-in">{errors.email}</p>
-          )}
-        </div>
-
-        {/* Password Field */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <Link
-              href="/auth/forgot-password"
-              className="text-sm text-primary hover:text-primary/80 transition-colors"
-            >
-              Forgot password?
-            </Link>
-          </div>
-          <PasswordInput
-            id="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={!!errors.password}
-            disabled={isLoading}
-            autoComplete="current-password"
-          />
-          {errors.password && (
-            <p className="text-sm text-destructive animate-fade-in">{errors.password}</p>
-          )}
-        </div>
-
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          variant="default"
-          className="w-full"
-          disabled={!isFormValid || isLoading}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Signing in...
-            </>
-          ) : (
-            'Continue securely'
-          )}
-        </Button>
-
-        {/* Trust Badge */}
-        <TrustBadge variant="security" />
-
-        {/* Social Auth */}
-        <SocialAuthButtons
-                  onGoogleClick={()=> handleSocialAuth(SocialAuthProvider.GOOGLE)}
-                  onAppleClick={()=> handleSocialAuth(SocialAuthProvider.APPLE)}
-                  isLoading={isLoading}
-                  action="sign-in"
-                  inputSocialAuthError={socialAuthError!}
-                  popupRef={popupRef}
-                />
-
-        {/* Sign Up Link */}
-        <p className="text-center text-sm text-muted-foreground pt-4">
-          New to Veriprops?{' '}
-          <Link
-            href="/auth/sign-up"
-            className="font-medium text-primary hover:text-primary/80 transition-colors"
+          {/* Submit */}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!isValid || isLoading}
           >
-            Create an account
-          </Link>
-        </p>
-      </form>
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Continue securely"
+            )}
+          </Button>
+
+          <TrustBadge variant="security" />
+
+          <SocialAuthButtons
+            authType={SocialAuthType.LOGIN}
+            isLoading={isLoading}
+          />
+
+          <p className="text-center text-sm text-muted-foreground pt-4">
+            New to Veriprops?{" "}
+            <Link
+              href="/auth/sign-up"
+              className="font-medium text-primary hover:text-primary/80 transition-colors"
+            >
+              Create an account
+            </Link>
+          </p>
+        </form>
+      </FormProvider>
     </>
-  );
+  )
 }

@@ -1,4 +1,5 @@
 import { UserPersona } from "@components/admin/user/models";
+import { PhoneNumber } from "@components/ui/form/CountryCodeSelect";
 
 export interface RedirectResponse {
   redirectUrl: string;
@@ -15,6 +16,44 @@ export enum SocialAuthProvider {
   FACEBOOK = "facebook",
 }
 
+export enum SocialAuthResponseType {
+  SOCIALAUTH_LINK_REQUIRED = "SOCIALAUTH_LINK_REQUIRED",
+  SOCIALAUTH_SUCCEEDED = "SOCIALAUTH_SUCCEEDED",
+  SOCIALAUTH_DATA_REQUIRED = "SOCIALAUTH_DATA_REQUIRED",
+}
+
+export enum EmailSource {
+  APPLE = "apple",
+  FACEBOOK = "facebook",
+  GOOGLE = "google",
+  EMAIL_LOGIN = "email-login",
+  ADMIN = "admin",
+  MANUAL = "manual",
+}
+
+export interface SocialLoginUserInfoDto {
+  provider: SocialAuthProvider;
+
+  id?: string;
+  email?: string;
+  email_verified?: boolean;
+
+  firstname?: string;
+  lastname?: string;
+
+  exp?: number;
+
+  otp: string;
+
+  operation_type?: SocialAuthType;
+
+  frontend_origin: string;
+
+  response_code?: SocialAuthResponseType;
+
+  response_message?: string;
+}
+
 export interface LoginPayload {
   username: string;
   password: string;
@@ -25,14 +64,11 @@ export interface ChangePasswordPayload {
   newPassword: string;
 }
 
-export interface EmailValidationRequest{
-    email: string
-    isANewUser: boolean
-}
-
-export interface OtpVerificationRequest{
-    emailOrPhone: string
-    otp: string
+export interface VerificationRequestDto {
+  email?: string | null;
+  phone?: PhoneNumber | null
+  isANewUser: boolean;
+  otp?: string | null;
 }
 
 export interface RecoverPasswordPayload {
@@ -60,8 +96,7 @@ export interface ActiveAuditor {
   firstname: string;
   lastname: string;
   fullname: string;
-  phone?: string;
-  phoneExt?: string;
+  phone?: PhoneNumber;
   email: string;
   userType: string;
   personas?: UserPersona[];

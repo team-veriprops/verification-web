@@ -1,33 +1,38 @@
-import { RefObject, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@components/3rdparty/ui/button';
 import { useRouter } from 'next/navigation';
+import { usePopup } from '@hooks/use-popup';
+import { useAuthQueries } from './libs/useAuthQueries';
+import { SocialAuthProvider, SocialAuthResponseType, SocialAuthType, SocialLoginUserInfoDto } from './models';
+import OauthLinkupRequestModal from './modals/OauthLinkupRequestModal';
+import OauthMoreDataRequestModal from './modals/OauthMoreDataRequestModal';
+import { base64UrlToString } from '@lib/utils';
 
 interface SocialAuthButtonsProps {
-  onGoogleClick: () => Promise<void> | void;
-  onAppleClick: () => Promise<void> | void;
-  action?: 'sign-in' | 'sign-up';
+  authType: SocialAuthType;
   isLoading?: boolean;
-  inputSocialAuthError?: string;
-  popupRef?: RefObject<Window | null>
 }
 
-type Provider = 'google' | 'apple' | null;
-
 export function SocialAuthButtons({
-  onGoogleClick,
-  onAppleClick,
-  action = 'sign-in',
+  authType,
   isLoading = false,
-  inputSocialAuthError = '',
-  popupRef
 }: SocialAuthButtonsProps) {
   const router = useRouter();
-  const [socialAuthError, setSocialAuthError] = useState<string | null>(inputSocialAuthError);
-  
-  const [processing, setProcessing] = useState<Provider>(null);
+  const [socialAuthError, setSocialAuthError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState<SocialAuthProvider | null>(null);
+
+  const {useInitSocialAuth} = useAuthQueries();
+  const initSocialAuth = useInitSocialAuth()
+
+  const { popupRef, initPopup, updatePopupUrl, closePopup } = usePopup()
+
   const isProcessing = processing !== null && !socialAuthError;
 
-  const actionText = action === 'sign-up' ? 'Continue' : 'Sign in';
+  const actionText = authType === SocialAuthType.SIGNUP ? 'Continue' : 'Sign in';
+
+  const [oauthLinkupRequest, setOauthLinkupRequest] = useState(false)
+  const [oauthMoreDataRequest, setOauthMoreDataRequest] = useState(false)
+  const [userInfo, setUserInfo] = useState<SocialLoginUserInfoDto | null>(null)
 
 
   // Handle Popup Events
@@ -40,9 +45,12 @@ export function SocialAuthButtons({
     // Source window check (security)
     if (popupRef?.current && event.source !== popupRef.current) return;
 
-    const { type, error } = event.data || {};
+    const { status, userInfo, error } = event.data || {};
 
-    if (type === 'SOCIAL_AUTH_SUCCESS') {
+    console.log("status: ", status)
+    console.log("userInfo: ", userInfo)
+
+    if (status === SocialAuthResponseType.SOCIALAUTH_SUCCEEDED) {
       popupRef?.current?.close();
       if(popupRef){
         popupRef.current = null;
@@ -51,14 +59,24 @@ export function SocialAuthButtons({
       router.push('/portal/dashboard');
     }
 
-    if (type === 'SOCIAL_AUTH_ERROR') {
+    // User info
+    const decodedStr = base64UrlToString(userInfo!);
+    const userInfoObj: SocialLoginUserInfoDto = JSON.parse(decodedStr);
+    setUserInfo(userInfoObj)
+      
+    console.log("userInfoObj: ", userInfoObj)
+    if (error) console.error(error);
+
+    if(status === SocialAuthResponseType.SOCIALAUTH_LINK_REQUIRED){
+      setOauthLinkupRequest(true)
+    }
+
+    if (status === SocialAuthResponseType.SOCIALAUTH_DATA_REQUIRED) {
       popupRef?.current?.close();
       if(popupRef){
         popupRef.current = null;
       }
-
-      setSocialAuthError('Social Authentication Failed');
-      if (error) console.error(error);
+      setOauthMoreDataRequest(true)
     }
   };
 
@@ -66,27 +84,56 @@ export function SocialAuthButtons({
   return () => window.removeEventListener('message', handler);
 }, [router, popupRef]);
 
-const handleClick = async (
-  provider: Exclude<Provider, null>,
-  fn: () => Promise<void> | void
-) => {
-  if (processing || isLoading) return;
+const handleSocialAuth = (provider: SocialAuthProvider) => {
+  const payload = {
+    provider,
+    authType: authType,
+  };
 
-  setProcessing(provider);
+  // Desktop: open popup immediately (sync)
+  initPopup(provider)
 
-  try {
-    const result = fn();
+  setProcessing(provider)
 
-    // Ensure async consistency
-    if (result instanceof Promise) {
-      await result;
-    }
-  } catch (err) {
-    // Only reset on failure
-    setProcessing(null);
-    throw err;
-  }
+  initSocialAuth.mutate(payload, {
+    onSuccess: (data) => {
+
+      setProcessing(null)
+      setSocialAuthError('');
+      // Navigate to the auth URL (desktop or mobile)
+      updatePopupUrl(data.redirectUrl)
+    },
+    onError: (error) => {
+      setProcessing(null)
+      // Close popup if any and show error
+      closePopup()
+
+      setSocialAuthError(error.message || authType == SocialAuthType.LOGIN ? 'Social sign-in failed' : 'Social sign-up failed');
+    },
+  });
 };
+
+// const handleClick = async (
+//   provider: Exclude<Provider, null>,
+//   fn: () => Promise<void> | void
+// ) => {
+//   if (processing || isLoading) return;
+
+//   setProcessing(provider);
+
+//   try {
+//     const result = fn();
+
+//     // Ensure async consistency
+//     if (result instanceof Promise) {
+//       await result;
+//     }
+//   } catch (err) {
+//     // Only reset on failure
+//     setProcessing(null);
+//     throw err;
+//   }
+// };
 
   return (
     <div className="space-y-3">
@@ -109,7 +156,7 @@ const handleClick = async (
           variant="outline"
           className="social-auth-button h-11"
           disabled={(processing === 'google' && isProcessing) || isLoading}
-          onClick={() => handleClick('google', onGoogleClick)}
+          onClick={() => handleSocialAuth(SocialAuthProvider.GOOGLE)}
         >
           <>
 
@@ -133,7 +180,7 @@ const handleClick = async (
           variant="outline"
           className="social-auth-button h-11"
           disabled={(processing === 'apple' && isProcessing) || isLoading}
-          onClick={() => handleClick('apple', onAppleClick)}
+          onClick={() => handleSocialAuth(SocialAuthProvider.APPLE)}
         >
           <>
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -154,6 +201,9 @@ const handleClick = async (
             {socialAuthError}
           </p>
       )}
+
+      {oauthLinkupRequest && <OauthLinkupRequestModal userInfo={userInfo} />}
+      {oauthMoreDataRequest && <OauthMoreDataRequestModal userInfo={userInfo} />}
     </div>
   );
 }
