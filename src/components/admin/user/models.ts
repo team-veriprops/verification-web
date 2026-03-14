@@ -103,3 +103,12 @@ export interface SuccessResponse<T> {
   trace_id?: string;
   data?: T;
 }
+
+export interface JwtPayload {
+  sub?: string
+  email?: string
+  exp?: number
+  iat?: number
+  role?: string
+  user_type: UserType
+}

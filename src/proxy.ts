@@ -1,4 +1,6 @@
+import { JwtPayload, UserType } from "@components/admin/user/models";
 import { NextRequest, NextResponse } from "next/server";
+import { jwtDecode } from "jwt-decode";
 
 export function proxy(req: NextRequest) {
   const jwt = req.cookies.get("__Host-access_token")?.value;
@@ -15,8 +17,17 @@ export function proxy(req: NextRequest) {
   let redirectUrl = undefined
 
   if (isLoggedIn) {
+      const decodedJwt = jwtDecode<JwtPayload>(jwt);
+      console.log("decodedJwt: ", decodedJwt)
+      const redirectPath = decodedJwt?.user_type === UserType.ADMIN ? "/admin/dashboard" : "/portal/dashboard";
       if (isOnAuth){ // Is on auth path while already logged in
-        redirectUrl = new URL("/portal/dashboard", req.url);
+        redirectUrl = new URL(redirectPath, req.url);
+      }
+      if (isOnDashboard && decodedJwt?.user_type === UserType.ADMIN){ // Is on dashboard path while user is ADMIN
+        redirectUrl = new URL(redirectPath, req.url);
+      }
+      if (isOnAdmin && decodedJwt?.user_type === UserType.USER){ // Is on admin path while user is USER
+        redirectUrl = new URL(redirectPath, req.url);
       }
   }else if(!isOnAuth){ // Not login, and not on login path
       redirectUrl = new URL("/auth/sign-in", req.url);
