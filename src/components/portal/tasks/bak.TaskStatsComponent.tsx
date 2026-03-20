@@ -7,7 +7,7 @@ import { AsyncStateComponent } from "@components/ui/AsyncStateComponent";
 import { useTaskStore } from "./libs/useTaskStore";
 import { cn } from "@lib/utils";
 import { TaskStatus, TaskStatusDetail } from "./models";
-import { useAuthStore } from "@components/website/auth/libs/useAuthStore";
+import { useUserStore } from "@components/admin/user/libs/useUserStore";
 
 export const TaskStatsComponent = () => {
 
@@ -20,7 +20,7 @@ export const TaskStatsComponent = () => {
   const [avgResolutionTimeHours, setAvgResolutionTimeHours] =
     useState<number>();
 
-  const { activeAuditor } = useAuthStore();
+  const { activeAuditor } = useUserStore();
   const { useGetTaskStats } = useTaskQueries();
   const {
     data: userVerifierStats,

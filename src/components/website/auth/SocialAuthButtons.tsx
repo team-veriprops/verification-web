@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@components/3rdparty/ui/button';
 import { useRouter } from 'next/navigation';
 import { usePopup } from '@hooks/use-popup';
-import { useAuthQueries } from './libs/useAuthQueries';
+import { useUserQueries } from '../../admin/user/libs/useUserQueries';
 import { SocialAuthProvider, SocialAuthResponseType, SocialAuthType, SocialLoginUserInfoDto } from './models';
 import OauthLinkupRequestModal from './modals/OauthLinkupRequestModal';
 import OauthMoreDataRequestModal from './modals/OauthMoreDataRequestModal';
@@ -21,7 +21,7 @@ export function SocialAuthButtons({
   const [socialAuthError, setSocialAuthError] = useState<string | null>(null);
   const [processing, setProcessing] = useState<SocialAuthProvider | null>(null);
 
-  const {useInitSocialAuth} = useAuthQueries();
+  const {useInitSocialAuth} = useUserQueries();
   const initSocialAuth = useInitSocialAuth()
 
   const { popupRef, initPopup, updatePopupUrl, closePopup } = usePopup()

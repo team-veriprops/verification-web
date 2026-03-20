@@ -3,10 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@3rdparty/ui/button";
 import { motion } from "framer-motion";
 import VerifiedInput, { VerifiedInputType, verifyFormSchema, type VerifyFormValues } from "@components/ui/verified_input/VerifiedInput";
-import { useAuthStore } from "../libs/useAuthStore";
+import { useUserStore } from "../../../admin/user/libs/useUserStore";
 import { useEffect } from "react";
 import { SignupStep } from "./SignUpProgress";
-import { useAuthQueries } from "../libs/useAuthQueries";
+import { useUserQueries } from "../../../admin/user/libs/useUserQueries";
 import { EmailSource, VerificationRequestDto } from "../models";
 
 
@@ -30,8 +30,8 @@ type SignupProps  = {
 }
 
 export default function VerifyEmailPhoneForm({onSetCurrentStep, email, emailSource, emailOtp, emailVerified=false, phoneVerified=false}: SignupProps) {
-  const {updateCreateUserPayload} = useAuthStore();
-  const {useSendEmailVerificationMessage, useValidateEmailVerificationOtp, useSendPhoneVerificationMessage, useValidatePhoneVerificationOtp} = useAuthQueries();
+  const {updateCreateUserPayload} = useUserStore();
+  const {useSendEmailVerificationMessage, useValidateEmailVerificationOtp, useSendPhoneVerificationMessage, useValidatePhoneVerificationOtp} = useUserQueries();
   
   const sendEmailVerificationMessage = useSendEmailVerificationMessage()
   const validateEmailVerificationOtp = useValidateEmailVerificationOtp()

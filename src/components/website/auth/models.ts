@@ -117,4 +117,3 @@ export interface ActiveAuditor {
   escrowId?: string;
   inboxId?: string;
 }
-

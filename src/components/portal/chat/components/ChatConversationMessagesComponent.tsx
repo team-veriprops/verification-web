@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Textarea } from "@components/3rdparty/ui/textarea";
 import TypingIndicator from "./TypingIndicator";
 import { Input } from "@components/3rdparty/ui/input";
-import { useAuthStore } from "@components/website/auth/libs/useAuthStore";
+import { useUserStore } from "@components/admin/user/libs/useUserStore";
 import InfiniteScrollTriggerComponent from "@components/ui/InfiniteScrollTriggerComponent";
 import { formatDate } from "@lib/time";
 
@@ -57,7 +57,7 @@ export default function ChatConversationMessagesComponent(){
 
     const [conversationMessages, setConversationMessages] = useState<QueryMessageDto[]>([])
   
-    const {activeAuditor} = useAuthStore()
+    const {activeAuditor} = useUserStore()
     
         const {
                 currentConversation,

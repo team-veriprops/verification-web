@@ -3,13 +3,14 @@
 import { ReactNode, useState } from "react";
 import { X } from "lucide-react";
 import { SidebarProvider } from "@components/3rdparty/ui/sidebar";
-import PortalSidebar from "@components/portal/PortalSidebar";
-import PortalHeader from "@components/portal/PortalHeader";
-import { useAuthQueries } from "@components/website/auth/libs/useAuthQueries";
+import PortalSidebar from "@components/nav/PortalSidebar";
+import PortalHeader from "@components/nav/PortalHeader";
+import { useUserQueries } from "@components/admin/user/libs/useUserQueries";
+import { adminNavItems } from "@components/admin/nav";
 
 export default function PortalLayout({ children }: { children: ReactNode }) {
     // Get Auth Details
-  const { useGetAuth } = useAuthQueries();
+  const { useGetAuth } = useUserQueries();
   useGetAuth();
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -19,7 +20,7 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
       <div className="min-h-screen flex w-full bg-background">
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
-          <PortalSidebar />
+          <PortalSidebar navItems={adminNavItems} />
         </div>
 
         {/* Mobile Sidebar Overlay */}
@@ -34,7 +35,8 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
             {/* Sidebar Panel */}
             <div className="absolute left-0 top-0 bottom-0 w-64 animate-fade-right">
               <div className="relative h-full">
-                <PortalSidebar 
+                <PortalSidebar
+                   navItems={adminNavItems}
                   isMobile 
                   onClose={() => setMobileMenuOpen(false)} 
                 />
@@ -51,7 +53,7 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0">
-          <PortalHeader onMenuClick={() => setMobileMenuOpen(true)} />
+          <PortalHeader app="admin" navItems={adminNavItems} onMenuClick={() => setMobileMenuOpen(true)} />
           
           <main className="flex-1 p-4 lg:p-6 overflow-auto">
             {children}

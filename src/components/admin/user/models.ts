@@ -1,61 +1,6 @@
 import { BaseQueryDto, PageRequest } from "types/models";
-import { QueryProfileDto, SearchProfileDto } from "./profile/models";
 import { PhoneNumber } from "@components/ui/form/CountryCodeSelect";
 import { EmailSource } from "@components/website/auth/models";
-
-export interface UpdateUserDto {
-  dob?: string;
-  gender?: Gender;
-  lastActiveDate?: string;
-  email?: string;
-  phone?: PhoneNumber;
-  password?: string;
-  password_last_updated?: string;
-  status?: UserStatus;
-  firstname?: string;
-  middle_name?: string;
-  lastname?: string;
-  notes?: string;
-  avatar?: string
-}
-
-
-export interface QueryUserDto extends BaseQueryDto, UpdateUserDto {
-  fullname: string;
-  type?: UserType;
-  role: string;
-}
-
-export interface CreateUserDto {
-  phoneOtp: string;
-  emailOtp: string;
-  email: string;
-  phone?: PhoneNumber;
-  password: string;
-  firstname: string;  // min length: 2, max length: 30
-  lastname: string;   // min length: 2, max length: 30
-  gender?: Gender;
-  emailSource: EmailSource
-}
-
-export interface UpdateNameDto {
-  firstname: string;
-  middle_name: string;
-  lastname: string;
-}
-
-export interface SearchUserDto extends PageRequest, BaseQueryDto, UpdateUserDto {
-  userType?: UserType;
-}
-
-export interface SearchUserAndProfileDto extends SearchProfileDto, SearchUserDto {}
-
-export interface LoginSuccessDto extends QueryUserDto, QueryProfileDto {
-  profileId?: string;
-  pending_kyc?: string[]
-}
-
-
 
 
 export enum UserStatus {
@@ -95,15 +40,6 @@ export enum Roles {
   LAWYER = 'LAWYER',
 }
 
-
-export interface SuccessResponse<T> {
-  status: string;          // always "success"
-  code: string;            // typically "200"
-  message?: string;
-  trace_id?: string;
-  data?: T;
-}
-
 export interface JwtPayload {
   sub?: string
   email?: string
@@ -111,4 +47,66 @@ export interface JwtPayload {
   iat?: number
   role?: string
   user_type: UserType
+}
+
+// User
+export interface UserBaseDto {
+  bio?: string;
+}
+
+export interface CreateUserDto extends UserBaseDto {
+  phoneOtp: string;
+  emailOtp: string;
+  email: string;
+  phone?: PhoneNumber;
+  password: string;
+  firstname: string;  // min length: 2, max length: 30
+  lastname: string;   // min length: 2, max length: 30
+  gender?: Gender;
+  emailSource: EmailSource
+}
+
+export interface UpdateProfileDto extends UserBaseDto {
+  firstname: string;
+  middleName: string;
+  lastname: string;
+  dob?: Date;
+  gender?: Gender;
+}
+
+export interface SearchUserDto extends PageRequest, BaseQueryDto {
+  userId?: string;
+  userType?: UserType;
+  persona?: UserPersona
+}
+
+export interface QueryUserDto extends BaseQueryDto, UserBaseDto {
+  fullname: string;
+  userType?: UserType;
+  persona?: UserPersona;
+  avatar?: string;
+  phone?: PhoneNumber
+  email?: string
+}
+
+
+// Invites
+export interface CreateInvitedUserDto {
+  email: string;
+  firstname: string;
+  lastname: string;
+  role: string;
+}
+
+export interface SearchInvitedUserDto extends PageRequest, BaseQueryDto {
+  email?: string;
+  firstname?: string;
+  lastname?: string;
+  role?: string;
+  userType?: UserType;
+}
+
+export interface QueryInvitedUserDto extends CreateInvitedUserDto, BaseQueryDto {
+  fullname: string;
+  userType: UserType;
 }

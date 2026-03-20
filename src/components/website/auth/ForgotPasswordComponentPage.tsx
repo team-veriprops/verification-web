@@ -6,7 +6,7 @@ import { Button } from '@components/3rdparty/ui/button';
 import { Input } from '@components/3rdparty/ui/input';
 import { Label } from '@components/3rdparty/ui/label';
 import { z } from 'zod';
-import { useAuthQueries } from './libs/useAuthQueries';
+import { useUserQueries } from '../../admin/user/libs/useUserQueries';
 import { RecoverPasswordMessagePayload } from './models';
 import Link from 'next/link';
 
@@ -15,7 +15,7 @@ const forgotPasswordSchema = z.object({
 });
 
 export default function ForgotPasswordComponentPage() {
-  const {useSendRecoverPasswordMessage} = useAuthQueries();
+  const {useSendRecoverPasswordMessage} = useUserQueries();
   const sendRecoverPasswordMessage = useSendRecoverPasswordMessage()
   const [isLoading,  setIsLoading] = useState(false);
   

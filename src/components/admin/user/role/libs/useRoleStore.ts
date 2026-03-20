@@ -6,7 +6,7 @@ import { httpClient } from "containers";
 
 const defaultFilters: Partial<SearchRoleDto> = {
   page: 0,
-  pageSize: 6,
+  page_size: 6,
 };
 
 const cloneDefaultFilters = (): Partial<SearchRoleDto> => ({

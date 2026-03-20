@@ -245,3 +245,11 @@ export interface PageDetails {
   description: string;
   activeTab?: string;
 }
+
+export interface SuccessResponse<T> {
+  status: string;          // always "success"
+  code: string;            // typically "200"
+  message?: string;
+  traceId?: string;
+  data?: T;
+}

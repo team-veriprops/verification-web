@@ -7,7 +7,7 @@ import { Label } from "@components/3rdparty/ui/label"
 import { PasswordInput } from "./PasswordInput"
 import { SocialAuthButtons } from "./SocialAuthButtons"
 import { TrustBadge } from "./TrustBadge"
-import { useAuthQueries } from "./libs/useAuthQueries"
+import { useUserQueries } from "../../admin/user/libs/useUserQueries"
 import { LoginPayload, SocialAuthType } from "./models"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -26,7 +26,7 @@ type FormValues = z.infer<typeof signInSchema>
 
 export default function SigninComponentPage() {
   const router = useRouter()
-  const { useLogin } = useAuthQueries()
+  const { useLogin } = useUserQueries()
   const login = useLogin()
 
   const [generalError, setGeneralError] = useState<string | null>(null)

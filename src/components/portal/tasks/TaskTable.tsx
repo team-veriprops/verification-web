@@ -19,12 +19,12 @@ import {
   SelectValue,
 } from "@components/3rdparty/ui/select";
 
-import { useAuthStore } from "@components/website/auth/libs/useAuthStore";
+import { useUserStore } from "@components/admin/user/libs/useUserStore";
 import { KeyValue } from "types/models";
 import TaskDetailsDrawer, { verifierRoleIcons } from "./details/TaskDetailsDrawer";
 
 export const TaskTable = () => {
-  const { activeAuditor } = useAuthStore();
+  const { activeAuditor } = useUserStore();
   const { settings } = useGlobalSettings();
   const {
     TaskFilters,

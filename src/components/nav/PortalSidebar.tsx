@@ -1,14 +1,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  FileCheck,
-  ClipboardList,
-  AlertTriangle,
-  MessageSquare,
-  CreditCard,
-  Settings,
-  HelpCircle,
   LogOut,
   ChevronLeft,
   Shield,
@@ -17,32 +9,30 @@ import { cn } from "@lib/utils";
 import { Button } from "@components/3rdparty/ui/button";
 import { useSidebar } from "@components/3rdparty/ui/sidebar";
 import { Separator } from "@components/3rdparty/ui/separator";
-import { Fragment } from "react";
-import { useAuthQueries } from "@components/website/auth/libs/useAuthQueries";
+import { ElementType, Fragment } from "react";
+import { useUserQueries } from "@components/admin/user/libs/useUserQueries";
 import BrandLogo from "@components/ui/BrandLogo";
 
-const navItems = [
-  { title: "Dashboard", href: "/portal/dashboard", icon: LayoutDashboard, has_separator_after: false },
-  { title: "My Verifications", href: "/portal/verifications", icon: FileCheck, has_separator_after: false },
-  { title: "Payments", href: "/portal/payments", icon: CreditCard, has_separator_after: false },
-  { title: "Chats", href: "/portal/chats", icon: MessageSquare, has_separator_after: false },
-  { title: "Disputes", href: "/portal/disputes", icon: AlertTriangle, has_separator_after: false },
-  { title: "Tasks", href: "/portal/tasks", icon: ClipboardList, has_separator_after: true },
-  { title: "Settings", href: "/portal/settings", icon: Settings, has_separator_after: false },
-  { title: "Support & Help", href: "/portal/support", icon: HelpCircle, has_separator_after: false },
-];
+
+export interface NavItem{
+    title: string
+    href: string
+    icon: ElementType
+    has_separator_after: boolean
+}
 
 interface PortalSidebarProps {
   className?: string;
   onClose?: () => void;
   isMobile?: boolean;
+  navItems: NavItem[]
 }
 
-const PortalSidebar = ({ className, onClose, isMobile = false }: PortalSidebarProps) => {
+const PortalSidebar = ({ navItems, className, onClose, isMobile = false }: PortalSidebarProps) => {
   const pathname = usePathname();
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed" && !isMobile;
-  const {useLogout} = useAuthQueries()
+  const {useLogout} = useUserQueries()
   const {mutate: logout, isPending} = useLogout()
 
   const handleLogout = () => {
@@ -50,8 +40,9 @@ const PortalSidebar = ({ className, onClose, isMobile = false }: PortalSidebarPr
   };
 
   const isActive = (href: string) => {
-    if (href === "/portal/dashboard") {
-      return pathname === "/portal" || pathname === "/portal/dashboard";
+    if (href.endsWith("/dashboard")) {
+      const base = href.replace("/dashboard", "");
+      return pathname === base || pathname === href;
     }
     return pathname.startsWith(href);
   };

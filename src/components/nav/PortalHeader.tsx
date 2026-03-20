@@ -13,77 +13,86 @@ import {
   DropdownMenuTrigger,
 } from "@components/3rdparty/ui/dropdown-menu";
 import { useSidebar } from "@components/3rdparty/ui/sidebar";
-import NotificationDropdown from "./NotificationDropdown";
+import NotificationDropdown from "../portal/NotificationDropdown";
 import { mockUser } from "@data/portalMockData";
-import { useAuthQueries } from "@components/website/auth/libs/useAuthQueries";
+import { useUserQueries } from "@components/admin/user/libs/useUserQueries";
+import { NavItem } from "./PortalSidebar";
+import { capitalizeFirst } from "@lib/utils";
 
 interface PortalHeaderProps {
   onMenuClick: () => void;
+  navItems: NavItem[];
+  app: "portal" | "admin"
 }
 
-const routeTitles: Record<string, string> = {
-  "/portal": "Dashboard",
-  "/portal/dashboard": "Dashboard",
-  "/portal/verifications": "My Verifications",
-  "/portal/tasks": "Tasks",
-  "/portal/disputes": "Disputes",
-  "/portal/chats": "Chats",
-  "/portal/payments": "Payments",
-  "/portal/settings": "Settings",
-  "/portal/support": "Support & Help",
-};
+// const routeTitles: Record<string, string> = {
+//   "/portal": "Dashboard",
+//   "/portal/dashboard": "Dashboard",
+//   "/portal/verifications": "My Verifications",
+//   "/portal/tasks": "Tasks",
+//   "/portal/disputes": "Disputes",
+//   "/portal/chats": "Chats",
+//   "/portal/payments": "Payments",
+//   "/portal/settings": "Settings",
+//   "/portal/support": "Support & Help",
+// };
 
-const PortalHeader = ({ onMenuClick }: PortalHeaderProps) => {
+const PortalHeader = ({ app, navItems, onMenuClick }: PortalHeaderProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const { state, toggleSidebar } = useSidebar();
-  const {useLogout} = useAuthQueries()
+  const {useLogout} = useUserQueries()
   const {mutate: logout, isPending} = useLogout()
+
+  const routeTitles: Record<string, string> = Object.fromEntries([
+  [`/${app}`, "Dashboard"],
+  ...navItems.map(({ href, title }) => [href, title]),
+  ]);
 
   const getPageTitle = () => {
     const path = pathname;
 
-    if (path.startsWith("/portal/verifications/") && path !== "/portal/verifications") {
-      return "Verification Detail";
-    }
-    if (path.startsWith("/portal/tasks/") && path !== "/portal/tasks") {
-      return "Task Detail";
-    }
-    if (path.startsWith("/portal/disputes/") && path !== "/portal/disputes") {
-      return "Dispute Detail";
-    }
+    // if (path.startsWith("/portal/verifications/") && path !== "/portal/verifications") {
+    //   return "Verification Detail";
+    // }
+    // if (path.startsWith("/portal/tasks/") && path !== "/portal/tasks") {
+    //   return "Task Detail";
+    // }
+    // if (path.startsWith("/portal/disputes/") && path !== "/portal/disputes") {
+    //   return "Dispute Detail";
+    // }
 
-    return routeTitles[path] || "Portal";
+    return routeTitles[path] || capitalizeFirst(app);
   };
 
   const getBreadcrumbs = () => {
     const path = pathname;
-    const crumbs = [{ label: "Portal", href: "/portal/dashboard" }];
+    const crumbs = [{ label: capitalizeFirst(app), href: `/${app}/dashboard` }];
 
-    if (path.startsWith("/portal/verifications")) {
-      crumbs.push({ label: "Verifications", href: "/portal/verifications" });
-      if (path !== "/portal/verifications") {
-        const id = path.split("/").pop();
-        crumbs.push({ label: id || "Detail", href: path });
-      }
-    } else if (path.startsWith("/portal/tasks")) {
-      crumbs.push({ label: "Tasks", href: "/portal/tasks" });
-      if (path !== "/portal/tasks") {
-        const id = path.split("/").pop();
-        crumbs.push({ label: id || "Detail", href: path });
-      }
-    } else if (path.startsWith("/portal/disputes")) {
-      crumbs.push({ label: "Disputes", href: "/portal/disputes" });
-      if (path !== "/portal/disputes") {
-        const id = path.split("/").pop();
-        crumbs.push({ label: id || "Detail", href: path });
-      }
-    } else {
+    // if (path.startsWith("/portal/verifications")) {
+    //   crumbs.push({ label: "Verifications", href: "/portal/verifications" });
+    //   if (path !== "/portal/verifications") {
+    //     const id = path.split("/").pop();
+    //     crumbs.push({ label: id || "Detail", href: path });
+    //   }
+    // } else if (path.startsWith("/portal/tasks")) {
+    //   crumbs.push({ label: "Tasks", href: "/portal/tasks" });
+    //   if (path !== "/portal/tasks") {
+    //     const id = path.split("/").pop();
+    //     crumbs.push({ label: id || "Detail", href: path });
+    //   }
+    // } else if (path.startsWith("/portal/disputes")) {
+    //   crumbs.push({ label: "Disputes", href: "/portal/disputes" });
+    //   if (path !== "/portal/disputes") {
+    //     const id = path.split("/").pop();
+    //     crumbs.push({ label: id || "Detail", href: path });
+    //   }
+    // } else {
       const title = getPageTitle();
-      if (title !== "Dashboard") {
+      // if (title !== "Dashboard") {
         crumbs.push({ label: title, href: path });
-      }
-    }
+      // }
+    // }
 
     return crumbs;
   };
@@ -163,10 +172,10 @@ const PortalHeader = ({ onMenuClick }: PortalHeaderProps) => {
             </div>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push("/portal/settings")}>
+            <DropdownMenuItem onClick={() => router.push(`/${app}/settings`)}>
               Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push("/portal/settings")}>
+            <DropdownMenuItem onClick={() => router.push(`/${app}/settings`)}>
               Settings
             </DropdownMenuItem>
 

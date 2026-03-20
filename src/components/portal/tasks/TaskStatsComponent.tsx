@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { AlertCircle, AlertTriangle, CheckCircle2, ClipboardList, Clock, Loader2 } from "lucide-react";
 import StatsCard from "@components/portal/StatsCard";
-import { useAuthStore } from "@components/website/auth/libs/useAuthStore";
+import { useUserStore } from "@components/admin/user/libs/useUserStore";
 import { useTaskQueries } from "./libs/useTaskQueries";
 import { TaskStatus } from "./models";
 import { useTaskStore } from "./libs/useTaskStore";
@@ -12,7 +12,7 @@ export default function TaskStatsComponent() {
   
   
     const { updateTaskFilters } = useTaskStore();
-    const { activeAuditor } = useAuthStore();
+    const { activeAuditor } = useUserStore();
     const { useGetTaskStats } = useTaskQueries();
     const {
       data: taskStats,

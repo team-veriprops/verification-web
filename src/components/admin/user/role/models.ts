@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
-
 import { BaseQueryDto, PageRequest } from "types/models";
 
 // Base Interfaces
@@ -24,5 +22,5 @@ export interface SearchRoleDto extends PageRequest, BaseQueryDto {
 
 // Query DTO (combination of Create + PartialUpdate + BaseQuery)
 export interface QueryRoleDto extends CreateRoleDto, BaseQueryDto {
-  
+  company_id?: string;
 }  

@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { redirect } from "next/navigation";
 import { getFxRate, Measurement, Money, TransactionCurrency } from "types/models";
+import { HttpError } from "./FetchHttpClient";
 
 
 /**
@@ -271,4 +272,15 @@ export function base64UrlToString(input: string): string {
   const binary = window.atob(base64);
   const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
   return new TextDecoder().decode(bytes);
+}
+
+export function capitalizeFirst(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function getErrorMessage(error: Error, defaultMessage: string): string {
+  return (
+    error?.message || defaultMessage ||
+    "Something went wrong"
+  );
 }

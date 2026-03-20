@@ -1,5 +1,5 @@
 export default function PortalPage() {
   return (
-    <div>Welcome to admin</div>
+    <div>Welcome to admin dashboard</div>
   )
 }

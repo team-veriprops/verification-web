@@ -10,13 +10,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuthQueries } from '../libs/useAuthQueries'
+import { useUserQueries } from '../../../admin/user/libs/useUserQueries'
 import { CreateUserDto } from '@components/admin/user/models'
 import { FormField } from '@components/ui/form/FormField'
 import zxcvbn from 'zxcvbn'
-import { useAuthStore } from '../libs/useAuthStore'
+import { useUserStore } from '../../../admin/user/libs/useUserStore'
 import { EmailSource } from '../models'
 
+/* ---------------- Schema ---------------- */
 /* ---------------- Schema ---------------- */
 
 const detailsSchema = z.object({
@@ -41,8 +42,8 @@ type SignupDetailsFormProps = {
 
 export default function SignupDetailsForm({firstname='', lastname=''}: SignupDetailsFormProps) {
   const router = useRouter()
-  const {createUserPayload} = useAuthStore();
-  const { useCreateUser } = useAuthQueries()
+  const {createUserPayload} = useUserStore();
+  const { useCreateUser } = useUserQueries()
   const createUser = useCreateUser()
   const[errorMessage, setErrorMessage] = useState<string | null>();
   const[isSubmitting, setIsSubmitting] = useState<boolean>(false);

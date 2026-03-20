@@ -4,14 +4,14 @@ import PageHeader from "@components/ui/PageHeader";
 import { PageDetails } from "types/models";
 import { AvailabilityToggle } from "./AvailabilityToggle";
 import { TaskTable } from "./TaskTable";
-import { useAuthStore } from "@components/website/auth/libs/useAuthStore";
+import { useUserStore } from "@components/admin/user/libs/useUserStore";
 import TaskStatsComponent from "./TaskStatsComponent";
 
 export default function VerifierComponentPage({
   title,
   description,
 }: PageDetails) {
-  const { activeAuditor } = useAuthStore();
+  const { activeAuditor } = useUserStore();
   return (
     <>
         <div className=" relative">

@@ -8,10 +8,10 @@ import {
 import { Button } from "@components/3rdparty/ui/button";
 import DashboardStatsComponent from "./DashboardStatsComponent";
 import RecentVerificationActivityComponent from "./RecentVerificationActivityComponent";
-import { useAuthStore } from "@components/website/auth/libs/useAuthStore";
+import { useUserStore } from "@components/admin/user/libs/useUserStore";
 
 export default function DashboardComponentPage() {
-  const {activeAuditor} = useAuthStore()
+  const {activeAuditor} = useUserStore()
 
   return (
     <div className="space-y-6 lg:space-y-8">
