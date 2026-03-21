@@ -7,7 +7,7 @@ export interface RoleBaseDto {}
 export interface CreateRoleDto extends RoleBaseDto {
   name: string;
   description: string;
-  system_roles: string[];
+  systemRoles: string[];
   is_system_role?: boolean;
   status?: string;
 }
