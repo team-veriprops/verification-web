@@ -5,7 +5,6 @@ import { Button } from '@components/3rdparty/ui/button'
 import { Input } from '@components/3rdparty/ui/input'
 import { PasswordInput } from '../PasswordInput'
 import { TrustBadge } from '../TrustBadge'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useEffect, useState } from 'react'
@@ -16,21 +15,7 @@ import { FormField } from '@components/ui/form/FormField'
 import zxcvbn from 'zxcvbn'
 import { useUserStore } from '../../../admin/user/libs/useUserStore'
 import { EmailSource } from '../models'
-
-/* ---------------- Schema ---------------- */
-/* ---------------- Schema ---------------- */
-
-const detailsSchema = z.object({
-  firstname: z.string().min(2, 'First name must be at least 2 characters'),
-  lastname: z.string().min(2, 'Last name must be at least 2 characters'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string()
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword']
-})
-
-type FormValues = z.infer<typeof detailsSchema>
+import { detailsSchema, type DetailsFormValues } from './schemas'
 
 const STORAGE_KEY = 'veriprops-signup-details-draft'
 
@@ -48,7 +33,7 @@ export default function SignupDetailsForm({firstname='', lastname=''}: SignupDet
   const[errorMessage, setErrorMessage] = useState<string | null>();
   const[isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const form = useForm<FormValues>({
+  const form = useForm<DetailsFormValues>({
     resolver: zodResolver(detailsSchema),
     mode: 'onChange',
     defaultValues: {
@@ -85,7 +70,7 @@ export default function SignupDetailsForm({firstname='', lastname=''}: SignupDet
 
   /* -------- Submit -------- */
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = (data: DetailsFormValues) => {
     setErrorMessage(null)
     setIsSubmitting(true)
     localStorage.removeItem(STORAGE_KEY)

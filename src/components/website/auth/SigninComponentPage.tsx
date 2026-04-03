@@ -9,20 +9,13 @@ import { SocialAuthButtons } from "./SocialAuthButtons"
 import { TrustBadge } from "./TrustBadge"
 import { useUserQueries } from "../../admin/user/libs/useUserQueries"
 import { LoginPayload, SocialAuthType } from "./models"
-import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, FormProvider } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useState } from "react"
 import { FormField } from "@components/ui/form/FormField"
-
-const signInSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
-})
-
-type FormValues = z.infer<typeof signInSchema>
+import { signInSchema, type SignInFormValues } from "./schemas"
 
 export default function SigninComponentPage() {
   const router = useRouter()
@@ -31,7 +24,7 @@ export default function SigninComponentPage() {
 
   const [generalError, setGeneralError] = useState<string | null>(null)
 
-  const form = useForm<FormValues>({
+  const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
     mode: "onChange",
     defaultValues: {
@@ -47,7 +40,7 @@ export default function SigninComponentPage() {
 
   const isLoading = login.isPending
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = (data: SignInFormValues) => {
     setGeneralError(null)
 
     const payload: LoginPayload = {

@@ -6,48 +6,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import VerificationModal from "./VerificationModal";
 import type { UseFormReturn } from "react-hook-form";
 
-import { z } from "zod";
 import PhoneInputWithCountry from "../form/PhoneInputWithCountry";
 import { toast } from "sonner";
 import { VerifiedInputVerificationProps } from "@components/website/auth/signup/VerifyEmailPhoneForm";
+import { verifyFormSchema, type VerifyFormValues } from "./schemas";
+
+export { verifyFormSchema, type VerifyFormValues };
 
 export enum VerifiedInputType {
   EMAIL = "Email",
   PHONE = "Phone"
 }
-// export const verifyFormSchema = z.object({
-//   email: z.string().email("Please enter a valid email address"),
-//   countryCode: z.string().min(1, "Country code is required"),
-//   dialCode: z.string().min(1, "Dial code is required"),
-//   phone: z.string().min(10, "Phone must be at least 10 digits").regex(/^\d+$/, "Phone must contain only digits"),
-//   emailVerified: z.literal(true, { error: () => ({ message: "Email must be verified" }) }),
-//   phoneVerified: z.literal(true, { error: () => ({ message: "Phone must be verified" }) }),
-// });
-
-export const verifyFormSchema = z
-  .object({
-    email: z.string().email({ message: "Please enter a valid email address" }),
-    countryCode: z.string().min(1, { message: "Country code is required" }),
-    dialCode: z.string().min(1, { message: "Dial code is required" }),
-    phone: z
-      .string()
-      .regex(/^\d+$/, { message: "Phone must contain only digits" })
-      .min(7)
-      .max(15),
-
-    emailVerified: z.boolean(),
-    phoneVerified: z.boolean(),
-  })
-  .refine((data) => data.emailVerified === true, {
-    message: "Email must be verified",
-    path: ["emailVerified"],
-  })
-  .refine((data) => data.phoneVerified === true, {
-    message: "Phone must be verified",
-    path: ["phoneVerified"],
-  });
-
-export type VerifyFormValues = z.infer<typeof verifyFormSchema>;
 
 interface VerifiedInputProps {
   form: UseFormReturn<VerifyFormValues>;

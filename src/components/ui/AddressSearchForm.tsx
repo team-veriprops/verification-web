@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete } from "@react-google-maps/api";
 import { ExactLocation } from "types/models";
+import { addressSchema, type AddressFormValues } from "./schemas";
 
 /* ------------------------------------------------------------------
    Local minimal Google type (avoids library conflicts)
@@ -16,36 +16,10 @@ type GoogleAddressComponent = {
 };
 
 /* ------------------------------------------------------------------
-   Zod schema (inline)
-------------------------------------------------------------------- */
-
-const addressSchema = z
-  .object({
-    address: z.string().min(5, "Select a valid address"),
-    country: z.string().min(1),
-    state: z.string().min(2, "State is required"),
-    lga: z.string().optional(),
-    city: z.string().optional(),
-    area: z.string().optional(),
-    street: z.string().optional(),
-    streetNumber: z.string().optional(),
-    postalCode: z.string().optional(),
-    latitude: z.string().min(1, "Latitude missing"),
-    longitude: z.string().min(1, "Longitude missing"),
-    placeId: z.string().min(1, "Select an address from suggestions"),
-  })
-  .refine(data => data.country === "Nigeria", {
-    path: ["country"],
-    message: "Address must be in Nigeria",
-  });
-
-type FormValues = z.infer<typeof addressSchema>;
-
-/* ------------------------------------------------------------------
    Constants
 ------------------------------------------------------------------- */
 
-const initialValues: FormValues = {
+const initialValues: AddressFormValues = {
   address: "",
   country: "Nigeria",
   state: "",
@@ -79,7 +53,7 @@ export default function AddressSearchForm({onChange}:AddressSearchFormProps) {
     register,
     reset,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: initialValues,
   });
@@ -112,7 +86,7 @@ export default function AddressSearchForm({onChange}:AddressSearchFormProps) {
     const components =
       place.address_components as GoogleAddressComponent[];
 
-    const values: FormValues = {
+    const values: AddressFormValues = {
       address: place.formatted_address || "",
       country: extract(components, ["country"]),
       state: extract(components, ["administrative_area_level_1"]),

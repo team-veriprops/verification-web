@@ -21,22 +21,13 @@ import { useUserStore } from "./libs/useUserStore";
 import { CreateInvitedUserDto } from "./models";
 
 import { useForm, FormProvider } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { toast } from "@3rdparty/ui/use-toast";
 import { getErrorMessage } from "@lib/utils";
 import { FormField } from "@components/ui/form/FormField";
 import { FormSelect } from "@components/ui/form/FormSelect";
-
-const inviteSchema = z.object({
-  firstname: z.string().min(1, "First name is required"),
-  lastname: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  role: z.string().min(1, "Role is required"),
-});
-
-type InviteFormValues = z.infer<typeof inviteSchema>;
+import { inviteSchema, type InviteFormValues } from "./schemas";
 
 export default function InviteAdminUserDialog() {
   const [isModalOpen, setIsModalOpen] = useState(false);
