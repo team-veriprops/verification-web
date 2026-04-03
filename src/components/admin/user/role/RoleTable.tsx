@@ -9,20 +9,21 @@ import { Action, Column, DataTable } from "@components/ui/DataTable";
 import { QueryRoleDto } from "./models";
 import { useRoleStore } from "./libs/useRoleStore";
 import { useRoleQueries } from "./libs/useRoleQueries";
-import { useCompanyStore } from "../../libs/useCompanyStore";
+import { getErrorMessage } from "@lib/utils";
+import { toast } from "@components/3rdparty/ui/use-toast";
 
 export default function RoleTable() {
-  const { settings } = useGlobalSettings();
+  // const { settings } = useGlobalSettings();
   const { filters, updateFilters, setCurrentRole, setViewRoleDetail } =
     useRoleStore();
 
-  const {currentCompany} = useCompanyStore()
-  const { useSearchRolePage } = useRoleQueries();
-  const { data, isLoading, isError, error } = useSearchRolePage(currentCompany?.id!);
+  const { useSearchRolePage, useDeleteRole } = useRoleQueries();
+  const { data, isLoading, isError, error } = useSearchRolePage();
+  const deleteRole = useDeleteRole()
 
-  useEffect(() => {
-    updateFilters({ page_size: settings.rowsPerPage, is_system_role: undefined});
-  }, [settings.rowsPerPage, updateFilters]);
+  // useEffect(() => {
+  //   updateFilters({ pageSize: settings.rowsPerPage, isSystemRole: undefined});
+  // }, [settings.rowsPerPage, updateFilters]);
 
   const columns: Column<QueryRoleDto>[] = [
     {
@@ -45,7 +46,7 @@ export default function RoleTable() {
       sortable: true,
       render: (value, role) => (
         <div className="flex gap-1 flex-wrap">
-          {role.system_roles.map((systemRole) => (
+          {role.systemRoles.map((systemRole) => (
             <Badge key={systemRole} variant="outline" className="text-xs">
               {systemRole}
             </Badge>
@@ -54,12 +55,12 @@ export default function RoleTable() {
       ),
     },
     {
-      key: "is_system_role",
+      key: "isSystemRole",
       label: "Type",
       sortable: true,
       render: (value, role) => (
-        <Badge variant={role.is_system_role ? "default" : "secondary"}>
-          {role.is_system_role ? "System" : "Custom"}
+        <Badge variant={role.isSystemRole ? "default" : "secondary"}>
+          {role.isSystemRole ? "System" : "Custom"}
         </Badge>
       ),
     },
@@ -70,7 +71,7 @@ export default function RoleTable() {
       label: "Remove Role",
       icon: BadgeMinus,
       onClick: (role) => {
-        console.log("Removed", role.id);
+        handleDeleteRole(role)
       },
     },
   ];
@@ -79,6 +80,26 @@ export default function RoleTable() {
     setCurrentRole(role);
     setViewRoleDetail(true);
   };
+
+  const handleDeleteRole = (role: QueryRoleDto) => {
+    deleteRole.mutate(role.id ?? "", {
+      onSuccess: () => {
+        toast({
+          title: "Role deleted",
+          description: `${role.name} has been deleted successfully.`,
+        });
+      },
+      onError: (error: Error) => {
+        const message = getErrorMessage(error, "Failed to delete role");
+
+        toast({
+          title: "Error",
+          description: message,
+          variant: "destructive",
+        });
+      },
+    })
+  }
 
   return (
     <>

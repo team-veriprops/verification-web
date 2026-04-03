@@ -38,12 +38,12 @@ export function ClientWrapperProvider({ children }: { children: React.ReactNode 
       disableTransitionOnChange
     >
       <QueryClientProvider client={queryClient}>
-        <LoadScript
+        {/* <LoadScript
           googleMapsApiKey={publicConfig.googleMapsApiKey!}
           libraries={googleLibraries}
-        >
+        > */}
         {children}
-        </LoadScript>
+        {/* </LoadScript> */}
       </QueryClientProvider>
       <Toaster />
     </ThemeProvider>

@@ -147,6 +147,13 @@ export const useUserQueries = () => {
       placeholderData: (prev) => prev,
       // enabled: !!company_id, // only fetch if company_id exists
     });
+  
+
+  const useDeleteUser = () =>
+    useMutation({
+      mutationFn: (userId: string) =>
+        service.deleteUser(userId),
+  });
 
   // Invites
   const useInviteNormalUser = () =>
@@ -161,13 +168,11 @@ export const useUserQueries = () => {
         service.inviteAdminUser(payload),
   });
 
-  const useReInviteUser = (inviteId: string) => 
-    useQuery<SuccessResponse<QueryInvitedUserDto>>({
-      queryKey: ["re-invite_user", inviteId] as const,
-      queryFn: async (): Promise<SuccessResponse<QueryInvitedUserDto>> => service.reInviteUser(inviteId),
-      placeholderData: (prev) => prev,
-      enabled: !inviteId
-    });
+  const useReInviteUser = () =>
+    useMutation({
+      mutationFn: (inviteId: string) =>
+        service.reInviteUser(inviteId),
+  });
 
   const useGetInviteUser = (inviteId: string) => 
     useQuery<SuccessResponse<QueryInvitedUserDto>>({
@@ -186,6 +191,13 @@ export const useUserQueries = () => {
       // enabled: !!company_id, // only fetch if company_id exists
     });
 
+
+  const useDeleteInvitedUser = () =>
+    useMutation({
+      mutationFn: (inviteId: string) =>
+        service.deleteInviteUser(inviteId),
+  });
+
   return {
     useInitSocialAuth,
     useCreateUser,
@@ -201,11 +213,13 @@ export const useUserQueries = () => {
     useValidatePhoneVerificationOtp,
     useRecoverPassword,
     useSearchUserPage,
+    useDeleteUser,
 
     useInviteNormalUser,
     useInviteAdminUser,
     useReInviteUser,
     useGetInviteUser,
-    useSearchInvitedUserPage
+    useSearchInvitedUserPage,
+    useDeleteInvitedUser
   };
 };

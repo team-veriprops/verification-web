@@ -6,7 +6,7 @@ import { httpClient } from "containers";
 
 const defaultFilters: Partial<SearchRoleDto> = {
   page: 0,
-  page_size: 6,
+  pageSize: 6,
 };
 
 const cloneDefaultFilters = (): Partial<SearchRoleDto> => ({
@@ -18,16 +18,6 @@ interface RoleStore {
   filters: Partial<SearchRoleDto>; // persisted + synced with query params
   currentRole: QueryRoleDto | null; // persisted only
   viewRoleDetail: boolean;
-  setFilters: (
-    updater:
-      | Partial<SearchRoleDto>
-      | ((prev: Partial<SearchRoleDto>) => Partial<SearchRoleDto>)
-  ) => void;
-  resetFilters: () => void;
-  updateFilter: <K extends keyof SearchRoleDto>(
-    key: K,
-    value: SearchRoleDto[K]
-  ) => void;
   updateFilters: (updates: Partial<SearchRoleDto>) => void; // <—
   setCurrentRole: (currentRole: QueryRoleDto | null) => void;
   setViewRoleDetail: (viewRoleDetail: boolean) => void;
@@ -43,24 +33,6 @@ export const useRoleStore = create<RoleStore>()(
       filters: cloneDefaultFilters(),
       currentRole: null,
       viewRoleDetail: false,
-
-      // merge filters (instead of replacing)
-      setFilters: (updater) =>
-        set((state) => {
-          const next =
-            typeof updater === "function" ? updater(state.filters) : updater;
-          return { filters: { ...state.filters, ...next } };
-        }),
-
-      // reset to defaults
-      resetFilters: () => set({ filters: cloneDefaultFilters() }),
-
-      // update a single filter key
-      updateFilter: (key, value) =>
-        set((state) => ({
-          filters: { ...state.filters, [key]: value },
-        })),
-
       // update multiple filter keys at once
       updateFilters: (updates) =>
         set((state) => ({
@@ -75,7 +47,7 @@ export const useRoleStore = create<RoleStore>()(
       name: "veriprops-role", // localStorage key
       storage: createJSONStorage(() => localStorage), // hydration-safe
       // Persist only filters + currentRole, skip service
-      partialize: (state: { filters: any; currentRole: any; viewRoleDetail: boolean }) => ({
+      partialize: (state: { filters: SearchRoleDto; currentRole: QueryRoleDto; viewRoleDetail: boolean }) => ({
         filters: state.filters,
         currentRole: state.currentRole,
         viewRoleDetail: state.viewRoleDetail,

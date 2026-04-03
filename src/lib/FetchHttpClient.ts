@@ -193,6 +193,12 @@ export class FetchHttpClient implements HttpClient {
     return controller.signal;
   }
 
+  private isLogout(response: Response, method: string): boolean{
+    const logoutUrl = "/users/auth/sessions/current"
+
+    return response.url.indexOf(logoutUrl) > 0 && method.toLocaleUpperCase() === "DELETE"
+  }
+
   // --- HttpClient methods ---
   async get<T = any>(url: string, config?: RequestInit & { timeout?: number; signal?: AbortSignal }): Promise<T> {
     return this.request<T>(url, { ...config, method: "GET" });

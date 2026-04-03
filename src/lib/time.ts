@@ -10,6 +10,9 @@ export const formatRelativeTime = (dateString: string): string => {
 
 export const formatDate = (dateStr: string) => {
   // console.log("formatDate(dateStr: string): ", dateStr)
+  if(!dateStr){
+    return ""
+  }
 
   return new Date(dateStr).toLocaleDateString("en-US", {
     year: "numeric",

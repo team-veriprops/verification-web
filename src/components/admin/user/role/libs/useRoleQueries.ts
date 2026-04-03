@@ -3,8 +3,10 @@ import {
   CreateRoleDto,
   QueryRoleDto,
   SearchRoleDto,
-} from "@components/portal/company/team/role/models";
-import { Page } from "types/models";
+  UpdateRoleDto,
+  UpdateSystemRolesDto,
+} from "../models";
+import { Page, SuccessResponse } from "types/models";
 import { useShallow } from "zustand/react/shallow";
 import { stringifyFilters } from "@lib/utils";
 import { useRoleStore } from "./useRoleStore";
@@ -18,29 +20,72 @@ export const useRoleQueries = () => {
   const queryClient = useQueryClient();
   const normalizedFilters = stringifyFilters(filters);
 
-  const useCreateRole = (company_id: string) =>
+  const useCreateRole = () =>
     useMutation({
       mutationFn: (payload: CreateRoleDto) =>
-        service.createRole(company_id, payload),
+        service.createRole(payload),
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["roles", company_id],
+          queryKey: ["create-role"],
         });
       },
     });
 
-  // Search role list (paged)
-  const useSearchRolePage = (company_id: string) =>
+  const useGetRole = (roleId: string) => 
+      useQuery<SuccessResponse<QueryRoleDto>>({
+        queryKey: ["get-invited_user", roleId] as const,
+        queryFn: async (): Promise<SuccessResponse<QueryRoleDto>> => service.getRole(roleId),
+        placeholderData: (prev) => prev,
+        enabled: !roleId
+  });
+
+  const useSearchRolePage = () =>
     useQuery<Page<QueryRoleDto>>({
-      queryKey: ["roles", normalizedFilters, company_id],
+      queryKey: ["roles", normalizedFilters],
       queryFn: async (): Promise<Page<QueryRoleDto>> =>
-        service.searchRolePage(company_id, filters as SearchRoleDto),
+        service.searchRolePage(filters as SearchRoleDto),
       placeholderData: (prev) => prev,
-      enabled: !!company_id, // only fetch if company_id exists
-    });
+      // enabled: !!company_id, // only fetch if company_id exists
+  });
+
+  const useUpdateRole = () =>
+    useMutation({
+      mutationFn: (roleId: string, payload: UpdateRoleDto) =>
+        service.updateRole(roleId, payload),
+  });
+
+  const useUpdateSystemRoles = () =>
+    useMutation({
+      mutationFn: (roleId: string, updateDto: UpdateSystemRolesDto) =>
+        service.updateSystemRoles(roleId, updateDto),
+  });
+
+  const useDeactivateRole = () =>
+    useMutation({
+      mutationFn: (roleId: string) =>
+        service.deactivateRole(roleId),
+  });
+
+  const useActivateRole = () =>
+    useMutation({
+      mutationFn: (roleId: string) =>
+        service.activateRole(roleId),
+  });
+
+  const useDeleteRole = () =>
+    useMutation({
+      mutationFn: (roleId: string) =>
+        service.deleteRole(roleId),
+  });
 
   return {
     useCreateRole,
+    useGetRole,
     useSearchRolePage,
+    useUpdateRole,
+    useUpdateSystemRoles,
+    useDeactivateRole,
+    useActivateRole,
+    useDeleteRole
   };
 };

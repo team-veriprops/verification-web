@@ -7,14 +7,16 @@ import PageHeader from "@components/ui/PageHeader";
 import { useUserStore } from "./libs/useUserStore";
 import { useGlobalSettings } from "@stores/useGlobalSettings";
 import UsersTable from "./UserTable";
-import { BadgeDollarSign, Shield, ShieldUser, UserSearch } from "lucide-react";
+import { BadgeDollarSign, Shield, ShieldUser, UserSearch, MailPlus } from "lucide-react";
 import { UserPersona, UserType } from "./models";
+import UserInviteTable from "./UserInviteTable";
 
 export enum UserCategory {
   ALL = "all",
   BUYERS = "buyers",
   AGENTS = "agents",
   ADMIN = "admin",
+  INVITED = "invited admin",
 }
 
 const userStats = {
@@ -47,6 +49,7 @@ export default function UserComponentPage({ title, description }: PageDetails) {
     { key: UserCategory.BUYERS, userType: UserType.USER, persona: UserPersona.BUYER, icon: BadgeDollarSign , label: `${UserCategory.BUYERS} (${userStats?.buyers ?? 0})` },
     { key: UserCategory.AGENTS, userType: UserType.USER, persona: UserPersona.VERIFIER, icon: Shield, label: `${UserCategory.AGENTS} (${userStats?.agents ?? 0})` },
     { key: UserCategory.ADMIN, userType: UserType.ADMIN, persona: UserPersona.GUEST, icon: ShieldUser ,  label: `${UserCategory.ADMIN} (${userStats?.admin ?? 0})` },
+    { key: UserCategory.INVITED, userType: UserType.ADMIN, persona: UserPersona.GUEST, icon: MailPlus ,  label: `${UserCategory.INVITED} (${userStats?.admin ?? 0})` },
   ] as const;
 
   const verificationTabByKey = Object.fromEntries(
@@ -97,33 +100,11 @@ export default function UserComponentPage({ title, description }: PageDetails) {
       
                 {verificationTabs.map(({ key }) => (
                   <TabsContent key={key} value={key} className="space-y-6">
-                    <UsersTable />
+                    {(key !== UserCategory.INVITED) && <UsersTable />}
+                    {(key === UserCategory.INVITED) && <UserInviteTable />}
                   </TabsContent>
                 ))}
               </Tabs>
-
-      {/* <Tabs
-        value={activeTab}
-        onValueChange={(value) => {
-          updateRoleFilters({ page: settings.firstPage });
-          updateUserFilters({ page: settings.firstPage });
-          setActiveTab(value)
-        }}
-        className="space-y-6"
-      >
-        <TabsList>
-          <TabsTrigger value="members">Team Members</TabsTrigger>
-          <TabsTrigger value="roles">Role Management</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="members" className="space-y-6">
-          <MembersTable />
-        </TabsContent>
-
-        <TabsContent value="roles" className="space-y-6">
-          <RolesTable />
-        </TabsContent>
-      </Tabs> */}
     </motion.div>
   );
 }

@@ -112,6 +112,10 @@ export class UserService {
     );
   }
 
+  async deleteUser(userId: string): Promise<SuccessResponse<QueryUserDto>> {
+    return this.http.delete<SuccessResponse<QueryUserDto>>(`${this.authBaseUrl}/${userId}`);
+  }
+
   // Invites
   async inviteNormalUser(payload: CreateInvitedUserDto): Promise<SuccessResponse<QueryInvitedUserDto>> {
     return this.http.post<CreateInvitedUserDto, SuccessResponse<QueryInvitedUserDto>>(
@@ -143,6 +147,10 @@ export class UserService {
     return await this.http.get<Page<QueryInvitedUserDto>>(
       `${this.authBaseUrl}/invites?${query}`
     );
+  }
+
+  async deleteInviteUser(inviteId: string): Promise<SuccessResponse<QueryInvitedUserDto>> {
+    return this.http.delete<SuccessResponse<QueryInvitedUserDto>>(`${this.authBaseUrl}/invites/${inviteId}`);
   }
 
 }

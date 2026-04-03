@@ -1,25 +1,61 @@
-import { QueryRoleDto, SearchRoleDto, CreateRoleDto } from "../models";
-import { Page } from "types/models";
-import { buildPath, toQueryParams } from "@lib/utils";
+import { QueryRoleDto, SearchRoleDto, CreateRoleDto, UpdateRoleDto, UpdateSystemRolesDto } from "../models";
+import { Page, SuccessResponse } from "types/models";
+import { toQueryParams } from "@lib/utils";
 import { HttpClient } from "@lib/FetchHttpClient";
 
 export class RoleService {
-  role_base_url: string;
+  roleBaseUrl: string;
   constructor(private readonly http: HttpClient) {
-    this.role_base_url = "/companies/{company_id}/roles";
+    this.roleBaseUrl = "/users/roles";
   }
 
-  async createRole(company_id: string, payload: CreateRoleDto): Promise<QueryRoleDto> {
-    return await this.http.post<CreateRoleDto>(
-      `${buildPath(this.role_base_url, {company_id})}`,
+  async createRole(payload: CreateRoleDto): Promise<SuccessResponse<QueryRoleDto>> {
+    return await this.http.post<CreateRoleDto, SuccessResponse<QueryRoleDto>>(
+      `${this.roleBaseUrl}`,
       payload
     );
   }
 
-  async searchRolePage(company_id: string, payload: SearchRoleDto): Promise<Page<QueryRoleDto>> {
+  async getRole(roleId: string): Promise<SuccessResponse<QueryRoleDto>> {
+    return this.http.get<SuccessResponse<QueryRoleDto>>(
+      `${this.roleBaseUrl}/${roleId}`,
+    );
+  }
+
+  async searchRolePage(payload: SearchRoleDto): Promise<Page<QueryRoleDto>> {
     const query = toQueryParams(payload);
     return await this.http.get<Page<QueryRoleDto>>(
-      `${buildPath(this.role_base_url, {company_id})}?${query}`
+      `${this.roleBaseUrl}?${query}`
     );
+  }
+
+  async updateRole(roleId: string, payload: UpdateRoleDto): Promise<SuccessResponse<QueryRoleDto>> {
+    return this.http.put<UpdateRoleDto, SuccessResponse<QueryRoleDto>>(
+      `${this.roleBaseUrl}/${roleId}`,
+      payload
+    );
+  }
+
+  async updateSystemRoles(roleId: string, updateDto: UpdateSystemRolesDto): Promise<boolean> {
+    return this.http.patch<UpdateSystemRolesDto, boolean>(
+      `${this.roleBaseUrl}/${roleId}/system-roles`,
+      updateDto
+    );
+  }
+
+  async deactivateRole(roleId: string): Promise<boolean> {
+    return this.http.patch<boolean>(
+      `${this.roleBaseUrl}/${roleId}/deactivate`
+    );
+  }
+
+  async activateRole(roleId: string): Promise<boolean> {
+    return this.http.patch<boolean>(
+      `${this.roleBaseUrl}/${roleId}/activate`
+    );
+  }
+
+  async deleteRole(roleId: string): Promise<SuccessResponse<QueryRoleDto>> {
+    return this.http.delete<SuccessResponse<QueryRoleDto>>(`${this.roleBaseUrl}/${roleId}`);
   }
 }

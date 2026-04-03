@@ -109,4 +109,5 @@ export interface SearchInvitedUserDto extends PageRequest, BaseQueryDto {
 export interface QueryInvitedUserDto extends CreateInvitedUserDto, BaseQueryDto {
   fullname: string;
   userType: UserType;
+  dateReinvited: string
 }

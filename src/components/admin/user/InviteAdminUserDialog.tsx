@@ -108,7 +108,15 @@ export default function InviteAdminUserDialog() {
   };
 
   return (
-    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+    <Dialog open={isModalOpen} onOpenChange={
+      (open) => {
+        setIsModalOpen(open);
+        if (!open) {
+          reset();
+          setApiError(null);
+        }
+      }
+    }>
       <DialogTrigger asChild>
         <Button>
           <UserPlus className="h-4 w-4 mr-2" />
@@ -127,7 +135,7 @@ export default function InviteAdminUserDialog() {
             <div className="flex gap-2">
               <div className="flex-1">
                 <FormField name="firstname" label="First name">
-                  <Input autoComplete="given-name" />
+                  <Input autoFocus  autoComplete="given-name" />
                 </FormField>
               </div>
 
@@ -183,7 +191,7 @@ export default function InviteAdminUserDialog() {
                 Cancel
               </Button>
 
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || isLoading || !dataPage?.items.length}>
                 <Mail className="h-4 w-4 mr-2" />
                 {isSubmitting ? "Sending..." : "Send Invitation"}
               </Button>
