@@ -4,8 +4,6 @@ import { Input } from "@3rdparty/ui/input";
 import { Textarea } from "@3rdparty/ui/textarea";
 import { Checkbox } from "@3rdparty/ui/checkbox";
 import { DocumentUploadField } from "@components/ui/upload/DocumentUploadField";
-import z from "zod";
-import { MediaItem } from "@components/ui/upload/MediaCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@components/3rdparty/ui/button";
@@ -20,29 +18,13 @@ import {
 } from "@components/3rdparty/ui/form";
 import { toast } from "@components/3rdparty/ui/use-toast";
 import { QueryTaskDto } from "../../models";
+import { propertyFormSchema, type PropertyFormValues } from "./schemas";
 
 interface RegistryFormProps {
   task: QueryTaskDto;
   canSubmit: boolean;
   handleSaveDraft: () => void;
 }
-
-const propertyFormSchema = z.object({
-  registryRefNumber: z
-    .string()
-    .min(3, "Property name must be at least 3 characters"),
-  stampNumber: z.string().min(5, "Address is required"),
-  officerName: z.string().min(5, "Address is required"),
-  matchCheck: z.boolean().refine((val) => val === true, {
-    message: "You must confirm the property details match the registry records",
-  }),
-  registryNotes: z.string().optional(),
-  documents: z
-    .array(z.custom<MediaItem>())
-    .min(1, "At least one document is required"),
-});
-
-type PropertyFormValues = z.infer<typeof propertyFormSchema>;
 
 export function RegistryForm({
   task,

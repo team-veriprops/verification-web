@@ -13,13 +13,8 @@ import { useState } from "react";
 
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import z from "zod";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/3rdparty/ui/form";
-
-const contactFormSchema = z.object({
-  topic: z.string().min(1, "Topic is required"),
-  message: z.string().min(1, "Message is required"),
-});
+import { contactFormSchema } from "./schemas";
 
 export default function ContactTabsContent() {
   const [messageSending, setMessageSending] = useState(false);

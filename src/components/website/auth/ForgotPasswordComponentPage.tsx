@@ -5,14 +5,10 @@ import { Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button } from '@components/3rdparty/ui/button';
 import { Input } from '@components/3rdparty/ui/input';
 import { Label } from '@components/3rdparty/ui/label';
-import { z } from 'zod';
 import { useUserQueries } from '../../admin/user/libs/useUserQueries';
 import { RecoverPasswordMessagePayload } from './models';
 import Link from 'next/link';
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-});
+import { forgotPasswordSchema } from './schemas';
 
 export default function ForgotPasswordComponentPage() {
   const {useSendRecoverPasswordMessage} = useUserQueries();

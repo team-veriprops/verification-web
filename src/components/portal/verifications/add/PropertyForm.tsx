@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
 import { Button } from '@components/3rdparty/ui/button';
@@ -40,6 +39,7 @@ import {
   PropertyType,
   TransactionCurrency,
 } from 'types/models';
+import { step1Schema, step4Schema, propertyFormSchema, type PropertyFormData } from './schemas';
 
 import {
   CreateVerificationDto,
@@ -60,64 +60,6 @@ const steps = [
   { id: 6, title: 'Review', description: 'Review your submission' },
 ];
 
-/* ---------------- Schemas ---------------- */
-
-const step1Schema = z.object({
-  propertyType: z.enum(PropertyType,
-    { error: () => ({ message: 'Please select a property type' }) }
-  ),
-
-  propertyTitle: z
-    .string()
-    .min(5, 'Property title must be at least 5 characters'),
-
-  propertyPlotSize: z
-    .string()
-    .min(1, 'Plot size is required')
-    .refine(v => Number(v) > 0, 'Plot size must be greater than zero'),
-
-  propertyPlotSizeUnit: z.enum(MeasurementUnit,
-    { error: () => ({ message: 'Please select a plot size unit' }) }
-  ),
-
-  propertyEstimatedPrice: z
-    .string()
-    .min(1, 'Estimated price is required')
-    .refine(v => Number(v) > 0, 'Price must be greater than zero'),
-
-  currency: z.enum(TransactionCurrency,
-    { error: () => ({ message: 'Please select a currency' }) }
-  ),
-});
-
-const step4Schema = z.object({
-  ownerFullName: z
-    .string()
-    .min(3, 'Owner name must be at least 3 characters'),
-
-  sellerFullName: z
-    .string()
-    .min(3, 'Seller name must be at least 3 characters'),
-
-  sellerCompany: z.string().optional(),
-
-  sellerEmail: z
-    .string()
-    .email('Please enter a valid email'),
-
-  sellerPhone: z
-    .string()
-    .min(10, 'Please enter a valid phone number'),
-
-  surveyPlanNumber: z.string().optional(),
-
-  beaconNumbers: z.string().optional(),
-
-  additionalDetails: z.string().optional(),
-});
-
-const formSchema = step1Schema.and(step4Schema);
-type FormDataSchema = z.infer<typeof formSchema>;
 
 const MAX_STEP = 6;
 
@@ -149,8 +91,8 @@ export function PropertyForm({
     handleCategoryChange,
   } = useCheckoutStore();
 
-  const form = useForm<FormDataSchema>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<PropertyFormData>({
+    resolver: zodResolver(propertyFormSchema),
     mode: 'onChange',
     defaultValues: {
       propertyType: initialData?.propertyType,
@@ -220,7 +162,7 @@ export function PropertyForm({
 
   const handleBack = () => setCurrentStep(s => Math.max(1, s - 1));
 
-  const handleSubmitForm = (data: FormDataSchema) => {
+  const handleSubmitForm = (data: PropertyFormData) => {
     // const payload: CreateVerificationDto | UpdateVerificationDto = {
     //   propertyType: data.propertyType,
     //   propertyTitle: data.propertyTitle,
