@@ -8,9 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm dev             # Start dev server (port 3000)
 pnpm build           # Production build
 pnpm lint            # ESLint check
+pnpm test            # Run tests in watch mode (Vitest)
+pnpm test:run        # Run tests once (CI)
+pnpm test:ui         # Open Vitest browser UI
 ```
 
-No test framework is configured.
+Tests use **Vitest** + React Testing Library. Test files are co-located with source files (`*.test.ts` / `*.test.tsx`). Always import test utilities explicitly: `import { describe, it, expect, vi } from "vitest"`.
 
 ## Architecture
 
