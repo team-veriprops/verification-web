@@ -78,3 +78,23 @@ Server-only config is in `src/lib/config/server.ts` (throws if imported on clien
 ### Path Aliases
 
 Configured in `tsconfig.json` with `baseUrl: "src"`. Common aliases: `@app`, `@components`, `@lib`, `@stores`, `@hooks`.
+
+
+## Code Style
+- Use type hints on all functions
+- Doctrings required for every not straight forward functions (Function whose purpose is not easily clear by mere looking into them)
+- Add a comment explaining the purpose of any React Component at the top of the component file; before anything in the file.
+- Variable names should match finance terminology (e.g)
+
+## Domain Terms
+- **Term**: Description
+
+## Workflow for new Features
+1. Write a plan and confirm with user before coding
+2. Write tests first (Test Driven Development - TDD)
+3. Implement the Feature
+4. Run test and confirm all passing
+5. Update this CLAUDE.md if new patterns emerge
+
+## Do not Touch
+- .env, .env.* - API keys, never log or print these
