@@ -58,7 +58,7 @@ New features should follow this pattern. Each feature's files live together in `
 
 ### Forms
 
-React Hook Form + Zod 4. Define a Zod schema, infer the type, pass to `useForm<T>({ resolver: zodResolver(schema) })`.
+React Hook Form (Try using wrapped Components in `src/components/ui/form`) + Zod 4. Define a Zod schema, infer the type, pass to `useForm<T>({ resolver: zodResolver(schema) })`.
 
 ### UI Components
 
