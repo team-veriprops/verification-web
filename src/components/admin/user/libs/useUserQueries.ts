@@ -179,7 +179,7 @@ export const useUserQueries = () => {
       queryKey: ["get-invited_user", inviteId] as const,
       queryFn: async (): Promise<SuccessResponse<QueryInvitedUserDto>> => service.getInviteUser(inviteId),
       placeholderData: (prev) => prev,
-      enabled: !inviteId
+      enabled: !!inviteId
     });
 
   const useSearchInvitedUserPage = () =>
