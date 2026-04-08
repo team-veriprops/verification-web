@@ -55,6 +55,7 @@ export interface UserBaseDto {
 }
 
 export interface CreateUserDto extends UserBaseDto {
+  invitedUserId?: string;
   phoneOtp: string;
   emailOtp: string;
   email: string;

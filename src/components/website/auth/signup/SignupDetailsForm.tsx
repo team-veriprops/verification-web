@@ -21,11 +21,12 @@ const STORAGE_KEY = 'veriprops-signup-details-draft'
 
 /* ---------------- Component ---------------- */
 type SignupDetailsFormProps = {
+  invitedUserId?: string
   firstname?: string
   lastname?: string
 }
 
-export default function SignupDetailsForm({firstname='', lastname=''}: SignupDetailsFormProps) {
+export default function SignupDetailsForm({firstname='', lastname='', invitedUserId=''}: SignupDetailsFormProps) {
   const router = useRouter()
   const {createUserPayload} = useUserStore();
   const { useCreateUser } = useUserQueries()
@@ -76,6 +77,7 @@ export default function SignupDetailsForm({firstname='', lastname=''}: SignupDet
     localStorage.removeItem(STORAGE_KEY)
 
     const payload: CreateUserDto = {
+                invitedUserId,
                 phone: createUserPayload.phone,
                 phoneOtp: createUserPayload.phoneOtp ?? "",
                 email: createUserPayload.email ?? "",
